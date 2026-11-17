@@ -8,7 +8,7 @@ import random
 import re
 from datetime import datetime
 
-LOGO_URL = "https://raw.githubusercontent.com/Montoya100/Mostacho-Botanas-Web/main/logo.png"
+LOGO_URL = "https://raw.githubusercontent.com/Montoya100/Frimexth/main/logo.png"
 DATA_FILE = "productos_frimex.json"
 POPULAR_FILE = "populares_frimex.json"
 BANNER_FILE = "banner_frimex.json"
@@ -138,10 +138,10 @@ if "trivia_questions_db" not in st.session_state:
     st.session_state.trivia_questions_db = load_saved_trivia()
 
 # ==========================================
-# LIGAS Y ARCHIVOS DE RESPALDO
+# LIGAS Y ARCHIVOS DE RESPALDO (CON FORMATO RAW)
 # ==========================================
-DEFAULT_BANNER = "https://raw.githubusercontent.com/Montoya100/Mostacho-Botanas-Web/main/banner.jpg"
-DEFAULT_PRODUCT_IMG = "https://raw.githubusercontent.com/Montoya100/Mostacho-Botanas-Web/main/image.jpg"
+DEFAULT_BANNER = "https://raw.githubusercontent.com/Montoya100/Frimexth/main/banner.png"
+DEFAULT_PRODUCT_IMG = "https://raw.githubusercontent.com/Montoya100/Frimexth/main/image.jpg"
 
 def load_saved_banner():
     if os.path.exists(BANNER_FILE):
@@ -332,7 +332,7 @@ sub_text_color = "#64748b" if not st.session_state.auto_dark_mode else "#94a3b8"
 card_bg = "#ffffff" if not st.session_state.auto_dark_mode else "#1e293b"
 border_color = "#e2e8f0" if not st.session_state.auto_dark_mode else "#334155"
 
-# NUEVA PALETA EN TONOS ROJOS (FRIMEX)
+# PALETA EN TONOS ROJOS (FRIMEX)
 BTN_GENERAL = "#DC2626"         # Rojo principal
 BTN_GENERAL_HOVER = "#B91C1C"   # Rojo oscuro para hover
 BTN_CART_FAB = "#EF4444"        # Rojo brillante para FAB de carrito
@@ -909,7 +909,6 @@ elif st.session_state.nav_view == "carrito":
                         
         st.write("---")
 
-        # --- TOTAL A PAGAR CON ICONO OUTLINE ---
         st.markdown(f"""
         <div style="background: {card_bg}; border: 2px solid {BTN_GENERAL}; border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 16px;">
             <span class="material-symbols-outlined" style="font-size: 28px; color: {BTN_GENERAL}; vertical-align: middle; margin-right: 4px;">receipt_long</span>
@@ -918,7 +917,6 @@ elif st.session_state.nav_view == "carrito":
         </div>
         """, unsafe_allow_html=True)
 
-        # --- PRODUCTO GANCHO / SUGERENCIA DESDE EL PANEL ---
         sugg_id = st.session_state.cart_suggestion.get("id")
         if sugg_id:
             sugg_prod = next((p for p in st.session_state.products if str(p.get("id")) == str(sugg_id)), None)
@@ -934,7 +932,6 @@ elif st.session_state.nav_view == "carrito":
         st.text_area("Dirección / Referencias (Obligatorio)", key="customer_address", placeholder="Calle, número, colonia...")
         st.text_input("Notas adicionales (Opcional)", key="customer_notes", placeholder="Ej. Cambio de $500")
 
-        # --- TRIVIA PRE-WHATSAPP ---
         st.markdown("---")
         st.subheader("🧠 ¡Juega y gana una sorpresa antes de enviar!")
 
