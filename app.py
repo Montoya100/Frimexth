@@ -379,7 +379,7 @@ BTN_WHATSAPP = "#25D366"
 BTN_WHATSAPP_HOVER = "#20ba5a"
 
 # ==========================================
-# CSS DINÁMICO Y BARRA FIJA (STICKY HEADER)
+# CSS DINÁMICO Y SUPRESIÓN DE ELEMENTOS EXTERNOS
 # ==========================================
 if st.session_state.auto_dark_mode:
     theme_specific_css = """
@@ -453,6 +453,15 @@ st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
+    /* Ocultar cualquier botón flotante o inyectado externamente (como G-Hub, Pinterest, extensiones) */
+    .stApp > div:has(> iframe), 
+    header[data-testid="stHeader"] ~ div div[style*="position: fixed"],
+    div[class*="viewerBadge"],
+    div[class*="assistive"] {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
+
     @keyframes whatsappPulse {{
         0% {{ transform: scale(1); box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }}
         50% {{ transform: scale(1.03); box-shadow: 0 6px 24px rgba(37, 211, 102, 0.75); }}
@@ -488,30 +497,39 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 5rem !important; /* Espacio para que el contenido no quede debajo de la barra fija */
+        padding-top: 6rem !important;
         padding-bottom: 6rem !important;
         max-width: 100% !important;
     }}
 
-    /* BARRA SUPERIOR FIJA (STICKY HEADER) */
+    /* BARRA SUPERIOR FIJA Y CONTENEDOR DE LOGOTIPO PROTAGONISTA SIN RECORTES */
     .sticky-header {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
+        height: 90px;
         z-index: 99998;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 10px 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        justify-content: center;
+        padding: 8px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }}
+
+    .sticky-logo-container {{
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }}
 
     .sticky-logo {{
-        width: 65px;
-        height: 65px;
+        max-height: 72px;
+        width: auto;
         object-fit: contain;
         background: transparent;
+        display: block;
     }}
 
     input::placeholder, textarea::placeholder {{
@@ -656,24 +674,15 @@ st.markdown(f"""
         margin-bottom: 8px;
     }}
 
-    /* Estilos responsivos para logotipo centrado en móvil y más grande en web */
+    /* Tamaños adaptativos limpios para el logo sin recortes */
     @media (max-width: 768px) {{
-        .sticky-header {{
-            justify-content: center !important;
-            padding: 8px 16px !important;
-        }}
         .sticky-logo {{
-            width: 85px !important;
-            height: 85px !important;
-        }}
-        .hide-on-mobile {{
-            display: none !important;
+            max-height: 62px !important;
         }}
     }}
     @media (min-width: 769px) {{
         .sticky-logo {{
-            width: 90px !important;
-            height: 90px !important;
+            max-height: 78px !important;
         }}
     }}
 
@@ -772,20 +781,15 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
 # ==========================================
 # 4. BARRA DE NAVEGACIÓN FIJA CON LOGO PROTAGONISTA
 # ==========================================
-cart_btn_text = f"({total_items}) - ${total_cart_amount:.2f} MXN" if total_items > 0 else "Carrito"
-
 st.markdown(f"""
 <div class="sticky-header">
-    <div style="display: flex; align-items: center;">
+    <div class="sticky-logo-container">
         <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
-    </div>
-    <div style="display: flex; align-items: center;">
-        <!-- El botón del carrito se renderiza de forma nativa abajo para mantener la acción fluida -->
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Botón superior derecho para acceso rápido al carrito
+# Botón superior derecho para acceso rápido al carrito con icono outlined
 col_spacer, col_top_cart = st.columns([4, 1])
 with col_top_cart:
     cart_top_label = f"🛒 ({total_items}) - ${total_cart_amount:.2f}" if total_items > 0 else "🛒 Carrito"
@@ -824,7 +828,7 @@ if st.session_state.nav_view == "catalogo":
     # POPULARES
     popular_ids = [str(p.get("id")) for p in st.session_state.popular_items]
     if popular_ids:
-        st.markdown(f"### <span class='material-symbols-outlined' style='font-size: 24px; color: #DC2626;'>local_fire_department</span> Populares", unsafe_allow_html=True)
+        st.markdown(f"### <span class='material-symbols-outlined' style='font-size: 24px; color: #DC2626; vertical-align: bottom; margin-right: 4px;'>local_fire_department</span> Populares", unsafe_allow_html=True)
         pop_list = [p for p in st.session_state.products if str(p.get("id")) in popular_ids]
         if pop_list:
             pop_cols = st.columns(min(len(pop_list), 3))
@@ -834,7 +838,7 @@ if st.session_state.nav_view == "catalogo":
                     p_price = safe_float(p.get("price"), 0.0)
                     st.markdown(f"""
                     <div class="pop-card-box" style="background-color: {card_bg};">
-                        <div class="popular-badge">🔥 Lo más pedido</div>
+                        <div class="popular-badge">Lo más pedido</div>
                         <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 15px;" onerror="this.src='{DEFAULT_PRODUCT_IMG}';" />
                         <div class="pop-card-title" style="color: {text_color};">{p.get('name')}</div>
                         <div style="color: {BTN_GENERAL}; font-weight: 900; font-size: 0.95rem;">${p_price:.2f} MXN</div>
@@ -948,7 +952,7 @@ if st.session_state.nav_view == "catalogo":
                         st.markdown('</div>', unsafe_allow_html=True)
 
     if total_items > 0:
-        fab_label = f":material/shopping_cart: Ver Carrito ({total_items}) - ${total_cart_amount:.2f} MXN"
+        fab_label = "🛒 Ver Carrito"
         st.button(
             fab_label,
             type="primary",
@@ -957,10 +961,10 @@ if st.session_state.nav_view == "catalogo":
         )
 
 elif st.session_state.nav_view == "carrito":
-    if st.button(":material/arrow_back: Volver al Catálogo", use_container_width=False, key="back_to_cat_btn"):
+    if st.button("Volver al Catálogo", use_container_width=False, key="back_to_cat_btn"):
         go_to_catalogo()
         
-    st.markdown("### :material/shopping_cart: Carrito de Compras y Pedido")
+    st.markdown("### <span class='material-symbols-outlined' style='vertical-align: bottom; color: #DC2626;'>shopping_cart</span> Carrito de Compras y Pedido", unsafe_allow_html=True)
     st.caption(f"Artículos seleccionados: {total_items}")
     
     if st.session_state.get("order_sent", False):
@@ -994,7 +998,7 @@ elif st.session_state.nav_view == "carrito":
                     st.markdown(f"**{p.get('name')}**")
                     st.caption(f"{qty} x ${p_price:.2f} = ${subtotal:.2f}")
                 with col_c2:
-                    if st.button(":material/delete: Quitar", key=f"del_cart_{item_id}", use_container_width=True):
+                    if st.button("Quitar", key=f"del_cart_{item_id}", use_container_width=True):
                         del st.session_state.cart[item_id]
                         st.rerun()
                         
@@ -1013,19 +1017,19 @@ elif st.session_state.nav_view == "carrito":
             sugg_prod = next((p for p in st.session_state.products if str(p.get("id")) == str(sugg_id)), None)
             if sugg_prod and str(sugg_id) not in st.session_state.cart:
                 sugg_price = safe_float(sugg_prod.get("price"), 0.0)
-                st.info(f"💡 **¿Te hace falta algo más?** ¡Acompaña tu pedido con unos deliciosos **{sugg_prod.get('name')}** por solo **${sugg_price:.2f} MXN**!")
+                st.info(f"**¿Te hace falta algo más?** ¡Acompaña tu pedido con unos deliciosos **{sugg_prod.get('name')}** por solo **${sugg_price:.2f} MXN**!")
                 if st.button(f"Agregar {sugg_prod.get('name')} al carrito", key="add_sugg_btn"):
                     add_to_cart(str(sugg_id))
                     st.rerun()
         
-        st.subheader(":material/local_shipping: Datos de Entrega")
+        st.subheader("Datos de Entrega")
         
         st.text_input("Nombre del cliente (Obligatorio)", key="customer_name", placeholder="Ej. Juan Pérez")
         st.text_area("Dirección / Referencias (Obligatorio)", key="customer_address", placeholder="Calle, número, colonia...")
         st.text_input("Notas adicionales (Opcional)", key="customer_notes", placeholder="Ej. Cambio de $500")
 
         st.markdown("---")
-        st.subheader("🧠 ¡Juega y gana una sorpresa antes de enviar!")
+        st.subheader("¡Juega y gana una sorpresa antes de enviar!")
 
         if not st.session_state.trivia_answered:
             if "current_trivia_idx" not in st.session_state:
@@ -1053,7 +1057,7 @@ elif st.session_state.nav_view == "carrito":
                 st.rerun()
         else:
             if st.session_state.trivia_won:
-                st.success("🎉 ¡Correcto! Has ganado una sorpresa en tu pedido.")
+                st.success("¡Correcto! Has ganado una sorpresa en tu pedido.")
             else:
                 st.warning("¡Casi la tienes! No te preocupes, tu pedido sigue en pie.")
 
@@ -1080,7 +1084,7 @@ elif st.session_state.nav_view == "carrito":
                 if valid_cash:
                     cash_given = valid_cash[0]
                     change = cash_given - total_price
-                    change_text = f"💵 Paga con: ${cash_given:.2f} MXN\n🪙 Cambio: ${change:.2f} MXN\n"
+                    change_text = f"Paga con: ${cash_given:.2f} MXN\nCambio: ${change:.2f} MXN\n"
 
         msg_header = "NUEVO PEDIDO FRIMEX\n"
         msg_date = f"Fecha: {order_date}\n"
@@ -1092,7 +1096,7 @@ elif st.session_state.nav_view == "carrito":
         msg_items_header = "\nDETALLE DE PRODUCTOS:\n" + "\n".join(order_summary) + "\n\n"
         msg_total = f"TOTAL: *${total_price:.2f} MXN*\n"
         
-        msg_trivia = f"\n🎁 PREMIO GANADO: Sorpresa\n🏷️ {verification_code}" if st.session_state.trivia_won else ""
+        msg_trivia = f"\nPREMIO GANADO: Sorpresa\n{verification_code}" if st.session_state.trivia_won else ""
 
         full_message = msg_header + msg_date + msg_customer + msg_address + msg_notes + msg_change + msg_items_header + msg_total + msg_trivia
         encoded_message = urllib.parse.quote(full_message)
@@ -1124,10 +1128,10 @@ elif st.session_state.nav_view == "carrito":
             )
 
 elif st.session_state.nav_view == "admin":
-    if st.button(":material/arrow_back: Volver al Catálogo", use_container_width=False, key="back_from_admin"):
+    if st.button("Volver al Catálogo", use_container_width=False, key="back_from_admin"):
         go_to_catalogo()
 
-    st.markdown("### :material/settings: Panel de Administración y Configuración")
+    st.markdown("### <span class='material-symbols-outlined' style='vertical-align: bottom; color: #DC2626;'>settings</span> Panel de Administración y Configuración", unsafe_allow_html=True)
     
     if not st.session_state.admin_authenticated:
         st.subheader("Acceso Restringido")
@@ -1142,13 +1146,13 @@ elif st.session_state.nav_view == "admin":
         st.success("¡Acceso concedido!")
         
         tab_prod, tab_pop, tab_sugg, tab_banner, tab_upload, tab_trivia, tab_theme = st.tabs([
-            "📦 Productos", 
-            "⭐ Populares", 
-            "💡 Sugerencia Carrito", 
-            "🖼️ Banner", 
-            "📤 Subir",
-            "🧠 Trivia",
-            "🌓 Apariencia"
+            "Productos", 
+            "Populares", 
+            "Sugerencia Carrito", 
+            "Banner", 
+            "Subir",
+            "Trivia",
+            "Apariencia"
         ])
         
         with tab_prod:
@@ -1331,5 +1335,5 @@ st.markdown("<br><br>", unsafe_allow_html=True)
 
 col_foot1, col_foot_admin, col_foot2 = st.columns(3)
 with col_foot_admin:
-    if st.button(":material/settings: Admin", use_container_width=True, key="admin_footer_btn"):
+    if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
         go_to_admin()
