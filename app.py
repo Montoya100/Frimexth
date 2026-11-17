@@ -379,7 +379,7 @@ BTN_WHATSAPP = "#25D366"
 BTN_WHATSAPP_HOVER = "#20ba5a"
 
 # ==========================================
-# CSS DINÁMICO Y BLOQUEO DE BOTONES EXTERNOS (G-HUB/PINTEREST)
+# CSS DINÁMICO Y ELIMINACIÓN DE ELEMENTOS EXTERNOS
 # ==========================================
 if st.session_state.auto_dark_mode:
     theme_specific_css = """
@@ -507,25 +507,24 @@ st.markdown(f"""
         max-width: 100% !important;
     }}
 
-    /* BARRA SUPERIOR FIJA Y LOGO CLARO Y VISIBLE */
+    /* BARRA SUPERIOR FIJA Y LOGOTIPO PROTAGONISTA COMPLETO */
     .sticky-header {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 85px;
+        height: 90px;
         z-index: 99998;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 10px 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 8px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }}
 
     .sticky-logo {{
-        height: 65px;
+        max-height: 72px;
         width: auto;
-        max-width: 250px;
         object-fit: contain;
         background: transparent;
         display: block;
@@ -774,12 +773,12 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Botón superior derecho para acceso rápido al carrito con icono OUTLINED
+# Botón superior derecho para acceso rápido al carrito con icono OUTLINED puro (sin emojis)
 col_spacer, col_top_cart = st.columns([4, 1])
 with col_top_cart:
-    cart_top_label = "shopping_cart Carrito" if total_items == 0 else f"shopping_cart ({total_items}) - ${total_cart_amount:.2f}"
-    # Renderizamos con icono de Material Symbols Outlined
-    if st.button(f"🛒 Carrito ({total_items}) - ${total_cart_amount:.2f}" if total_items > 0 else "🛒 Carrito", use_container_width=True, key="header_top_cart_btn"):
+    cart_label_html = f'<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 20px; margin-right: 4px;">shopping_cart</span> Carrito ({total_items}) - ${total_cart_amount:.2f}' if total_items > 0 else '<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 20px; margin-right: 4px;">shopping_cart</span> Carrito'
+    
+    if st.button(f"Carrito ({total_items})" if total_items > 0 else "Carrito", use_container_width=True, key="header_top_cart_btn"):
         st.session_state.show_variants_modal = False
         if st.session_state.nav_view != "carrito":
             go_to_cart()
