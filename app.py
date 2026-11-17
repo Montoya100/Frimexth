@@ -291,7 +291,7 @@ st.markdown(f"""
         max-width: 100% !important;
     }}
 
-    /* BARRA SUPERIOR FIJA CON CONTRASTE PARA QUE EL LOGO RESALTE */
+    /* BARRA SUPERIOR FIJA CON CONTRASTE SÓLIDO PARA EL LOGO */
     .sticky-header {{
         position: fixed;
         top: 0;
@@ -366,9 +366,10 @@ st.markdown(f"""
 # Botón superior derecho con icono Outline puro (Material Symbols)
 col_sp, col_cart = st.columns([4, 1])
 with col_cart:
-    cart_label_html = f'<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px; margin-right: 4px;">shopping_cart</span> Carrito ({total_items})' if total_items > 0 else '<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px; margin-right: 4px;">shopping_cart</span> Carrito'
+    cart_btn_label = "shopping_cart Carrito" if total_items == 0 else f"shopping_cart Carrito ({total_items})"
     
-    if st.button("🛒 " + (f"Carrito ({total_items})" if total_items > 0 else "Carrito"), use_container_width=True, key="top_cart_btn"):
+    # Renderizamos mediante botón con HTML personalizado integrado o texto limpio
+    if st.button("🛒 Carrito" + (f" ({total_items})" if total_items > 0 else ""), use_container_width=True, key="top_cart_btn"):
         st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
         st.rerun()
 
@@ -380,7 +381,6 @@ if st.session_state.nav_view == "catalogo":
     
     st.markdown('<div style="background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); color: white; padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 14px;"><span class="material-symbols-outlined" style="vertical-align: -4px; margin-right: 4px;">local_shipping</span> ¡Envíos directos en ruta Frimex!</div>', unsafe_allow_html=True)
     
-    # Listado simple de productos
     cols = st.columns(3)
     for idx, p in enumerate(st.session_state.products):
         with cols[idx % 3]:
@@ -410,8 +410,3 @@ elif st.session_state.nav_view == "carrito":
             p = next((item for item in st.session_state.products if str(item.get("id")) == str(item_id)), None)
             if p:
                 st.write(f"- {qty}x {p.get('name')} (${safe_float(p.get('price')) * qty:.2f} MXN)")
-
-<ElicitationsGroup message="¿Cómo se visualiza el logotipo y la barra ahora en tu pantalla?">
-  <Elicitation label="¡Listo, ya se ve perfecto!" query="El logotipo ya se ve claro en la barra fija y los botones molestos desaparecieron."/>
-  <Elicitation label="Aún persiste algún detalle" query="Aún tengo un detalle con la visualización del logotipo o los elementos."/>
-</ElicitationsGroup>
