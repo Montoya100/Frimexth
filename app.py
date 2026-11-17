@@ -212,7 +212,6 @@ def fetch_loyverse_products():
         if items_res.status_code == 200:
             raw_items = items_res.json().get("items", [])
             
-            # FILTRO ESTRICTO: Únicamente productos de la sección "Frimex Venta en Ruta"
             route_items = []
             for item in raw_items:
                 cat_name = str(item.get("category_name", "")).lower()
@@ -606,13 +605,13 @@ st.markdown(f"""
         margin-bottom: 4px;
     }}
 
-    .product-price {
+    .product-price {{
         color: {BTN_GENERAL};
         font-weight: 900;
         font-size: 1.05rem;
         margin-top: 4px;
         margin-bottom: 8px;
-    }
+    }}
 
     {theme_specific_css}
 </style>
