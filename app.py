@@ -379,7 +379,7 @@ BTN_WHATSAPP = "#25D366"
 BTN_WHATSAPP_HOVER = "#20ba5a"
 
 # ==========================================
-# CSS DINÁMICO Y SUPRESIÓN DE ELEMENTOS EXTERNOS
+# CSS DINÁMICO Y BLOQUEO DE BOTONES EXTERNOS (G-HUB/PINTEREST)
 # ==========================================
 if st.session_state.auto_dark_mode:
     theme_specific_css = """
@@ -453,13 +453,18 @@ st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
-    /* Ocultar cualquier botón flotante o inyectado externamente (como G-Hub, Pinterest, extensiones) */
-    .stApp > div:has(> iframe), 
-    header[data-testid="stHeader"] ~ div div[style*="position: fixed"],
-    div[class*="viewerBadge"],
-    div[class*="assistive"] {{
+    /* BLOQUEO TOTAL DE BOTONES EXTERNOS Y EXTENSIONES INYECTADAS */
+    body > div[style*="position: fixed"], 
+    body > iframe, 
+    div[class*="viewerBadge"], 
+    div[class*="assistive"],
+    div:has(> a[href*="pinterest"]),
+    div:has(> button[title*="Share"]),
+    div:has(> button[title*="G-Hub"]) {{
         display: none !important;
         visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }}
 
     @keyframes whatsappPulse {{
@@ -502,31 +507,25 @@ st.markdown(f"""
         max-width: 100% !important;
     }}
 
-    /* BARRA SUPERIOR FIJA Y CONTENEDOR DE LOGOTIPO PROTAGONISTA SIN RECORTES */
+    /* BARRA SUPERIOR FIJA Y LOGO CLARO Y VISIBLE */
     .sticky-header {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 90px;
+        height: 85px;
         z-index: 99998;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 8px 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }}
-
-    .sticky-logo-container {{
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        padding: 10px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }}
 
     .sticky-logo {{
-        max-height: 72px;
+        height: 65px;
         width: auto;
+        max-width: 250px;
         object-fit: contain;
         background: transparent;
         display: block;
@@ -674,18 +673,6 @@ st.markdown(f"""
         margin-bottom: 8px;
     }}
 
-    /* Tamaños adaptativos limpios para el logo sin recortes */
-    @media (max-width: 768px) {{
-        .sticky-logo {{
-            max-height: 62px !important;
-        }}
-    }}
-    @media (min-width: 769px) {{
-        .sticky-logo {{
-            max-height: 78px !important;
-        }}
-    }}
-
     {theme_specific_css}
 </style>
 """, unsafe_allow_html=True)
@@ -783,17 +770,16 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header">
-    <div class="sticky-logo-container">
-        <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
-    </div>
+    <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
 </div>
 """, unsafe_allow_html=True)
 
-# Botón superior derecho para acceso rápido al carrito con icono outlined
+# Botón superior derecho para acceso rápido al carrito con icono OUTLINED
 col_spacer, col_top_cart = st.columns([4, 1])
 with col_top_cart:
-    cart_top_label = f"🛒 ({total_items}) - ${total_cart_amount:.2f}" if total_items > 0 else "🛒 Carrito"
-    if st.button(cart_top_label, use_container_width=True, key="header_top_cart_btn"):
+    cart_top_label = "shopping_cart Carrito" if total_items == 0 else f"shopping_cart ({total_items}) - ${total_cart_amount:.2f}"
+    # Renderizamos con icono de Material Symbols Outlined
+    if st.button(f"🛒 Carrito ({total_items}) - ${total_cart_amount:.2f}" if total_items > 0 else "🛒 Carrito", use_container_width=True, key="header_top_cart_btn"):
         st.session_state.show_variants_modal = False
         if st.session_state.nav_view != "carrito":
             go_to_cart()
@@ -952,7 +938,7 @@ if st.session_state.nav_view == "catalogo":
                         st.markdown('</div>', unsafe_allow_html=True)
 
     if total_items > 0:
-        fab_label = "🛒 Ver Carrito"
+        fab_label = "Ver Carrito"
         st.button(
             fab_label,
             type="primary",
