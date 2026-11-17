@@ -241,13 +241,18 @@ def fetch_loyverse_products():
                 item_name = item.get("item_name", "Producto")
                 desc = item.get("description", "")
                 
+                base_item_price = safe_float(item.get("price"), 0.0)
+                
                 if variants:
                     for var in variants:
                         price_val = var.get("price")
-                        if price_val is None and "store_prices" in var:
-                            store_prices = var.get("store_prices", {})
-                            if store_prices:
-                                price_val = list(store_prices.values())[0]
+                        if price_val is None or safe_float(price_val, 0.0) == 0.0:
+                            if base_item_price > 0:
+                                price_val = base_item_price
+                            elif "store_prices" in var:
+                                store_prices = var.get("store_prices", {})
+                                if store_prices:
+                                    price_val = list(store_prices.values())[0]
                         
                         price = safe_float(price_val, 0.0)
                         var_name = var.get("variant_name", "")
@@ -261,6 +266,15 @@ def fetch_loyverse_products():
                             "description": desc,
                             "image": DEFAULT_PRODUCT_IMG
                         })
+                else:
+                    products_list.append({
+                        "id": str(item.get("id")),
+                        "name": item_name,
+                        "category": category_mapped,
+                        "price": base_item_price,
+                        "description": desc,
+                        "image": DEFAULT_PRODUCT_IMG
+                    })
     except:
         pass
 
@@ -365,13 +379,17 @@ BTN_WHATSAPP = "#25D366"
 BTN_WHATSAPP_HOVER = "#20ba5a"
 
 # ==========================================
-# CSS DINÁMICO
+# CSS DINÁMICO Y BARRA FIJA (STICKY HEADER)
 # ==========================================
 if st.session_state.auto_dark_mode:
     theme_specific_css = """
         .stApp, body, html, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #121212 !important;
             color: #f1f5f9 !important;
+        }
+        .sticky-header {
+            background-color: #121212 !important;
+            border-bottom: 1px solid #334155 !important;
         }
         .app-title { color: #f8fafc !important; }
         .app-subtitle { color: #94a3b8 !important; }
@@ -401,6 +419,10 @@ else:
         .stApp, body, html, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #f8fafc !important;
             color: #1e293b !important;
+        }
+        .sticky-header {
+            background-color: #f8fafc !important;
+            border-bottom: 1px solid #e2e8f0 !important;
         }
         .app-title { color: #1e293b !important; }
         .app-subtitle { color: #64748b !important; }
@@ -466,9 +488,30 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 1.5rem !important;
+        padding-top: 5rem !important; /* Espacio para que el contenido no quede debajo de la barra fija */
         padding-bottom: 6rem !important;
         max-width: 100% !important;
+    }}
+
+    /* BARRA SUPERIOR FIJA (STICKY HEADER) */
+    .sticky-header {{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 99998;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }}
+
+    .sticky-logo {{
+        width: 65px;
+        height: 65px;
+        object-fit: contain;
+        background: transparent;
     }}
 
     input::placeholder, textarea::placeholder {{
@@ -613,6 +656,27 @@ st.markdown(f"""
         margin-bottom: 8px;
     }}
 
+    /* Estilos responsivos para logotipo centrado en móvil y más grande en web */
+    @media (max-width: 768px) {{
+        .sticky-header {{
+            justify-content: center !important;
+            padding: 8px 16px !important;
+        }}
+        .sticky-logo {{
+            width: 85px !important;
+            height: 85px !important;
+        }}
+        .hide-on-mobile {{
+            display: none !important;
+        }}
+    }}
+    @media (min-width: 769px) {{
+        .sticky-logo {{
+            width: 90px !important;
+            height: 90px !important;
+        }}
+    }}
+
     {theme_specific_css}
 </style>
 """, unsafe_allow_html=True)
@@ -706,21 +770,26 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# 4. ENCABEZADO (LOGO PROTAGONISTA)
+# 4. BARRA DE NAVEGACIÓN FIJA CON LOGO PROTAGONISTA
 # ==========================================
-col_title, col_cart_btn = st.columns([3, 1])
+cart_btn_text = f"({total_items}) - ${total_cart_amount:.2f} MXN" if total_items > 0 else "Carrito"
 
-with col_title:
-    st.markdown(f"""
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="{LOGO_URL}" style="width: 95px; height: 95px; object-fit: contain; background: transparent;" onerror="this.style.display='none'" />
+st.markdown(f"""
+<div class="sticky-header">
+    <div style="display: flex; align-items: center;">
+        <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
-    """, unsafe_allow_html=True)
+    <div style="display: flex; align-items: center;">
+        <!-- El botón del carrito se renderiza de forma nativa abajo para mantener la acción fluida -->
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-with col_cart_btn:
-    st.write("")
-    cart_btn_label = f"({total_items}) - ${total_cart_amount:.2f}" if total_items > 0 else ""
-    if st.button(":material/shopping_cart: Carrito " + cart_btn_label, use_container_width=True, key="header_cart_btn"):
+# Botón superior derecho para acceso rápido al carrito
+col_spacer, col_top_cart = st.columns([4, 1])
+with col_top_cart:
+    cart_top_label = f"🛒 ({total_items}) - ${total_cart_amount:.2f}" if total_items > 0 else "🛒 Carrito"
+    if st.button(cart_top_label, use_container_width=True, key="header_top_cart_btn"):
         st.session_state.show_variants_modal = False
         if st.session_state.nav_view != "carrito":
             go_to_cart()
