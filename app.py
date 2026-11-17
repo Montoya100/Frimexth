@@ -91,7 +91,7 @@ if "customer_notes" not in st.session_state:
 if "order_sent" not in st.session_state:
     st.session_state.order_sent = False
 
-LOYVERSE_TOKEN = "1a4ee083d81e4525a48503180767c22d"
+LOYVERSE_TOKEN = "0c1c93162c4441099be4862722f079b9"
 WHATSAPP_PHONE = "522381174698"
 
 # ==========================================
@@ -138,7 +138,7 @@ if "trivia_questions_db" not in st.session_state:
     st.session_state.trivia_questions_db = load_saved_trivia()
 
 # ==========================================
-# LIGAS Y ARCHIVOS DE RESPALDO (CON FORMATO RAW)
+# LIGAS Y ARCHIVOS DE RESPALDO (FORMATO RAW)
 # ==========================================
 DEFAULT_BANNER = "https://raw.githubusercontent.com/Montoya100/Frimexth/main/banner.png"
 DEFAULT_PRODUCT_IMG = "https://raw.githubusercontent.com/Montoya100/Frimexth/main/image.jpg"
@@ -198,7 +198,25 @@ def fetch_loyverse_products():
     try:
         items_res = requests.get("https://api.loyverse.com/v1.0/items", headers=headers, timeout=5)
         if items_res.status_code == 200:
-            for item in items_res.json().get("items", []):
+            raw_items = items_res.json().get("items", [])
+            
+            # FILTRO ESTRICTO: Únicamente productos de la sección "Frimex Venta en Ruta" o que contengan "venta en ruta"
+            route_items = []
+            for item in raw_items:
+                cat_name = str(item.get("category_name", "")).lower()
+                if "venta en ruta" in cat_name or "frimex venta en ruta" in cat_name:
+                    route_items.append(item)
+            
+            # Si no encuentra coincidencia exacta, respaldamos con ruta genérica para evitar vacíos
+            if not route_items:
+                for item in raw_items:
+                    cat_name = str(item.get("category_name", "")).lower()
+                    if "ruta" in cat_name:
+                        route_items.append(item)
+
+            items_to_process = route_items if route_items else []
+
+            for item in items_to_process:
                 cat_name = item.get("category_name", "Individual")
                 if not cat_name:
                     cat_name = "Individual"
@@ -332,16 +350,16 @@ sub_text_color = "#64748b" if not st.session_state.auto_dark_mode else "#94a3b8"
 card_bg = "#ffffff" if not st.session_state.auto_dark_mode else "#1e293b"
 border_color = "#e2e8f0" if not st.session_state.auto_dark_mode else "#334155"
 
-# PALETA EN TONOS ROJOS (FRIMEX)
-BTN_GENERAL = "#DC2626"         # Rojo principal
-BTN_GENERAL_HOVER = "#B91C1C"   # Rojo oscuro para hover
-BTN_CART_FAB = "#EF4444"        # Rojo brillante para FAB de carrito
+# PALETA ROJA (FRIMEX)
+BTN_GENERAL = "#DC2626"         
+BTN_GENERAL_HOVER = "#B91C1C"   
+BTN_CART_FAB = "#EF4444"        
 BTN_CART_FAB_HOVER = "#DC2626"
-BTN_WHATSAPP = "#25D366"        # Verde oficial WhatsApp
+BTN_WHATSAPP = "#25D366"        
 BTN_WHATSAPP_HOVER = "#20ba5a"
 
 # ==========================================
-# CSS DINÁMICO SEGÚN TEMA SELECCIONADO
+# CSS DINÁMICO
 # ==========================================
 if st.session_state.auto_dark_mode:
     theme_specific_css = """
@@ -407,20 +425,10 @@ st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
-    /* ANIMACIÓN DE PULSO / LATIDO PARA EL FAB DE WHATSAPP */
     @keyframes whatsappPulse {{
-        0% {{
-            transform: scale(1);
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-        }}
-        50% {{
-            transform: scale(1.03);
-            box-shadow: 0 6px 24px rgba(37, 211, 102, 0.75);
-        }}
-        100% {{
-            transform: scale(1);
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-        }}
+        0% {{ transform: scale(1); box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }}
+        50% {{ transform: scale(1.03); box-shadow: 0 6px 24px rgba(37, 211, 102, 0.75); }}
+        100% {{ transform: scale(1); box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }}
     }}
 
     .whatsapp-fab-animated {{
@@ -455,19 +463,6 @@ st.markdown(f"""
         padding-top: 1.5rem !important;
         padding-bottom: 6rem !important;
         max-width: 100% !important;
-    }}
-
-    .app-title {{
-        font-size: 2rem !important;
-        font-weight: 900 !important;
-        margin: 0 !important;
-        line-height: 1.1 !important;
-    }}
-    .app-subtitle {{
-        font-size: 0.85rem !important;
-        font-weight: 700 !important;
-        margin-top: 2px !important;
-        display: block;
     }}
 
     input::placeholder, textarea::placeholder {{
@@ -589,6 +584,29 @@ st.markdown(f"""
         overflow: hidden;
     }}
 
+    .product-card, .pop-card-box {{
+        border: 1px solid {border_color};
+        border-radius: 14px;
+        padding: 12px;
+        margin-bottom: 14px;
+        position: relative;
+    }}
+
+    .product-title, .pop-card-title {{
+        font-weight: 800;
+        font-size: 1rem;
+        margin-top: 6px;
+        margin-bottom: 4px;
+    }}
+
+    .product-price {
+        color: {BTN_GENERAL};
+        font-weight: 900;
+        font-size: 1.05rem;
+        margin-top: 4px;
+        margin-bottom: 8px;
+    }
+
     {theme_specific_css}
 </style>
 """, unsafe_allow_html=True)
@@ -682,18 +700,14 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# 4. ENCABEZADO Y BÚSQUEDA
+# 4. ENCABEZADO (LOGO PROTAGONISTA SIN TEXTO DE TÍTULO)
 # ==========================================
 col_title, col_cart_btn = st.columns([3, 1])
 
 with col_title:
     st.markdown(f"""
     <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="{LOGO_URL}" style="width: 52px; height: 52px; object-fit: contain; background: transparent;" onerror="this.style.display='none'" />
-        <div>
-            <h1 class="app-title">Frimex</h1>
-            <span class="app-subtitle">Catálogo y pedidos en línea</span>
-        </div>
+        <img src="{LOGO_URL}" style="width: 95px; height: 95px; object-fit: contain; background: transparent;" onerror="this.style.display='none'" />
     </div>
     """, unsafe_allow_html=True)
 
@@ -728,7 +742,7 @@ if st.session_state.nav_view == "catalogo":
 
     st.markdown(f"""
     <div class="banner-container" style="background: {card_bg};">
-        <img src="{banner_to_show}" class="desktop-banner-img" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
+        <img src="{banner_to_show}" class="desktop-banner-img" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
     </div>
     """, unsafe_allow_html=True)
 
@@ -743,11 +757,11 @@ if st.session_state.nav_view == "catalogo":
                 with pop_cols[idx % len(pop_cols)]:
                     pid = p.get("id")
                     st.markdown(f"""
-                    <div class="pop-card-box">
+                    <div class="pop-card-box" style="background-color: {card_bg};">
                         <div class="popular-badge">🔥 Lo más pedido</div>
                         <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 15px;" onerror="this.src='{DEFAULT_PRODUCT_IMG}';" />
-                        <div class="pop-card-title">{p.get('name')}</div>
-                        <div style="color: {BTN_GENERAL}; font-weight: 900; font-size: 0.95rem;">${p.get('price'):.2f} MXN</div>
+                        <div class="pop-card-title" style="color: {text_color};">{p.get('name')}</div>
+                        <div style="color: {BTN_GENERAL}; font-weight: 900; font-size: 0.95rem;">${float(p.get('price', 0)):.2f} MXN</div>
                     </div>
                     """, unsafe_allow_html=True)
                     if st.button("Agregar +", key=f"pop_add_{pid}_{idx}", use_container_width=True):
@@ -811,7 +825,7 @@ if st.session_state.nav_view == "catalogo":
                     pid = representative.get("id")
                     
                     with cols[j]:
-                        st.markdown(f'<div class="product-card" style="background-color: {card_bg}; border: 1px solid {border_color};">', unsafe_allow_html=True)
+                        st.markdown(f'<div class="product-card" style="background-color: {card_bg};">', unsafe_allow_html=True)
                         
                         img_src = str(representative.get("image", "")).strip()
                         if not img_src or img_src.lower() == "nan" or "placeholder" in img_src:
@@ -822,10 +836,10 @@ if st.session_state.nav_view == "catalogo":
                         except:
                             st.image(DEFAULT_PRODUCT_IMG, use_container_width=True)
                         
-                        st.markdown(f'<div class="product-title" style="margin-top: 8px;">{base_name}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="product-title" style="color: {text_color};">{base_name}</div>', unsafe_allow_html=True)
                         desc_text = str(representative.get("description", "")).strip()
                         if desc_text and desc_text.lower() != "nan":
-                            st.markdown(f'<div class="product-desc" style="color: {sub_text_color};">{desc_text}</div>', unsafe_allow_html=True)
+                            st.markdown(f'<div class="product-desc" style="color: {sub_text_color}; font-size: 0.85rem; margin-bottom: 6px;">{desc_text}</div>', unsafe_allow_html=True)
                         
                         prices = [float(it.get("price", 0)) for it in items_group]
                         st.markdown(f'<div class="product-price">${prices[0]:.2f} MXN</div>', unsafe_allow_html=True)
@@ -921,7 +935,7 @@ elif st.session_state.nav_view == "carrito":
         if sugg_id:
             sugg_prod = next((p for p in st.session_state.products if str(p.get("id")) == str(sugg_id)), None)
             if sugg_prod and str(sugg_id) not in st.session_state.cart:
-                st.info(f"💡 **¿Te hace falta algo más?** ¡Acompaña tu pedido con unos deliciosos **{sugg_prod.get('name')}** por solo **${sugg_prod.get('price'):.2f} MXN**!")
+                st.info(f"💡 **¿Te hace falta algo más?** ¡Acompaña tu pedido con unos deliciosos **{sugg_prod.get('name')}** por solo **${float(sugg_prod.get('price', 0)):.2f} MXN**!")
                 if st.button(f"Agregar {sugg_prod.get('name')} al carrito", key="add_sugg_btn"):
                     add_to_cart(str(sugg_id))
                     st.rerun()
@@ -1136,7 +1150,7 @@ elif st.session_state.nav_view == "admin":
                 p_id = str(prod.get("id"))
                 p_name = str(prod.get("name"))
                 is_currently_pop = p_id in current_pop_ids
-                if st.checkbox(f"{p_name} (${prod.get('price', 0)} MXN)", value=is_currently_pop, key=f"check_pop_{p_id}"):
+                if st.checkbox(f"{p_name} (${float(prod.get('price', 0)):.2f} MXN)", value=is_currently_pop, key=f"check_pop_{p_id}"):
                     selected_populares_new.append({
                         "id": p_id,
                         "name": p_name,
