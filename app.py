@@ -379,7 +379,7 @@ BTN_WHATSAPP = "#25D366"
 BTN_WHATSAPP_HOVER = "#20ba5a"
 
 # ==========================================
-# CSS DINÁMICO Y ELIMINACIÓN DE ELEMENTOS EXTERNOS
+# CSS DINÁMICO Y BLOQUEO AGRESIVO DE BOTONES EXTERNOS
 # ==========================================
 if st.session_state.auto_dark_mode:
     theme_specific_css = """
@@ -388,7 +388,7 @@ if st.session_state.auto_dark_mode:
             color: #f1f5f9 !important;
         }
         .sticky-header {
-            background-color: #121212 !important;
+            background-color: #1a1a1a !important;
             border-bottom: 1px solid #334155 !important;
         }
         .app-title { color: #f8fafc !important; }
@@ -421,7 +421,7 @@ else:
             color: #1e293b !important;
         }
         .sticky-header {
-            background-color: #f8fafc !important;
+            background-color: #ffffff !important;
             border-bottom: 1px solid #e2e8f0 !important;
         }
         .app-title { color: #1e293b !important; }
@@ -453,14 +453,15 @@ st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
-    /* BLOQUEO TOTAL DE BOTONES EXTERNOS Y EXTENSIONES INYECTADAS */
+    /* OCULTAR COMPLETAMENTE BOTONES FLOTANTES EXTERNOS (G-HUB, PINTEREST, ETC.) */
     body > div[style*="position: fixed"], 
     body > iframe, 
     div[class*="viewerBadge"], 
     div[class*="assistive"],
     div:has(> a[href*="pinterest"]),
     div:has(> button[title*="Share"]),
-    div:has(> button[title*="G-Hub"]) {{
+    div:has(> button[title*="G-Hub"]),
+    header[data-testid="stHeader"] ~ div div[style*="position: fixed"] {{
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -507,27 +508,27 @@ st.markdown(f"""
         max-width: 100% !important;
     }}
 
-    /* BARRA SUPERIOR FIJA Y LOGOTIPO PROTAGONISTA COMPLETO */
+    /* BARRA SUPERIOR FIJA (STICKY HEADER) CON LOGOTIPO ASEGURADO */
     .sticky-header {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 90px;
+        height: 85px;
         z-index: 99998;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 8px 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }}
 
     .sticky-logo {{
-        max-height: 72px;
+        max-height: 65px;
         width: auto;
         object-fit: contain;
-        background: transparent;
-        display: block;
+        display: block !important;
+        visibility: visible !important;
     }}
 
     input::placeholder, textarea::placeholder {{
@@ -765,7 +766,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# 4. BARRA DE NAVEGACIÓN FIJA CON LOGO PROTAGONISTA
+# 4. BARRA DE NAVEGACIÓN FIJA CON LOGOTIPO PROTAGONISTA
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header">
@@ -773,12 +774,11 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Botón superior derecho para acceso rápido al carrito con icono OUTLINED puro (sin emojis)
+# Botón superior derecho para acceso rápido al carrito con icono OUTLINE puro (Material Symbols)
 col_spacer, col_top_cart = st.columns([4, 1])
 with col_top_cart:
-    cart_label_html = f'<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 20px; margin-right: 4px;">shopping_cart</span> Carrito ({total_items}) - ${total_cart_amount:.2f}' if total_items > 0 else '<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 20px; margin-right: 4px;">shopping_cart</span> Carrito'
-    
-    if st.button(f"Carrito ({total_items})" if total_items > 0 else "Carrito", use_container_width=True, key="header_top_cart_btn"):
+    cart_btn_text = f"Carrito ({total_items}) - ${total_cart_amount:.2f}" if total_items > 0 else "Carrito"
+    if st.button(cart_btn_text, use_container_width=True, key="header_top_cart_btn"):
         st.session_state.show_variants_modal = False
         if st.session_state.nav_view != "carrito":
             go_to_cart()
