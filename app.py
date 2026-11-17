@@ -33,7 +33,10 @@ def safe_float(val, default=0.0):
     try:
         if val is None:
             return default
-        return float(val)
+        if isinstance(val, (int, float)):
+            return float(val)
+        cleaned = str(val).replace("$", "").replace("MXN", "").strip()
+        return float(cleaned)
     except:
         return default
 
