@@ -28,6 +28,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Función auxiliar robusta para evitar errores con precios nulos
+def safe_float(val, default=0.0):
+    try:
+        if val is None:
+            return default
+        return float(val)
+    except:
+        return default
+
 # ==========================================
 # GESTIÓN DE MODO OSCURO / CLARO
 # ==========================================
@@ -200,14 +209,13 @@ def fetch_loyverse_products():
         if items_res.status_code == 200:
             raw_items = items_res.json().get("items", [])
             
-            # FILTRO ESTRICTO: Únicamente productos de la sección "Frimex Venta en Ruta" o que contengan "venta en ruta"
+            # FILTRO ESTRICTO: Únicamente productos de la sección "Frimex Venta en Ruta"
             route_items = []
             for item in raw_items:
                 cat_name = str(item.get("category_name", "")).lower()
                 if "venta en ruta" in cat_name or "frimex venta en ruta" in cat_name:
                     route_items.append(item)
             
-            # Si no encuentra coincidencia exacta, respaldamos con ruta genérica para evitar vacíos
             if not route_items:
                 for item in raw_items:
                     cat_name = str(item.get("category_name", "")).lower()
@@ -233,17 +241,13 @@ def fetch_loyverse_products():
                 
                 if variants:
                     for var in variants:
-                        price = 0.0
                         price_val = var.get("price")
                         if price_val is None and "store_prices" in var:
                             store_prices = var.get("store_prices", {})
                             if store_prices:
                                 price_val = list(store_prices.values())[0]
-                        try:
-                            price = float(price_val or 0.0)
-                        except:
-                            price = 0.0
-
+                        
+                        price = safe_float(price_val, 0.0)
                         var_name = var.get("variant_name", "")
                         display_name = f"{item_name} ({var_name})" if var_name and var_name != "Default" else item_name
 
@@ -279,7 +283,7 @@ def load_saved_products():
                             item["id"] = item_id if item_id.strip() != "" else f"auto_{idx}"
                             item["name"] = str(item.get("name", "Sin nombre"))
                             item["category"] = str(item.get("category", "Individual"))
-                            item["price"] = float(item.get("price", 0.0))
+                            item["price"] = safe_float(item.get("price"), 0.0)
                             item["description"] = str(item.get("description", "")) if pd.notna(item.get("description")) else ""
                             img_val = str(item.get("image", "")).strip()
                             
@@ -642,7 +646,7 @@ for k in keys_to_delete:
 total_items = sum(st.session_state.cart.values())
 
 total_cart_amount = sum(
-    float(next((p.get("price", 0) for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty
+    safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty
     for pid, qty in st.session_state.cart.items()
 )
 
@@ -658,7 +662,7 @@ def variants_modal_dialog(base_name, variants_list):
     for idx, var in enumerate(variants_list):
         v_id = str(var.get("id"))
         v_name = var.get("name")
-        v_price = float(var.get("price", 0))
+        v_price = safe_float(var.get("price"), 0.0)
         
         v_img = str(var.get("image", "")).strip()
         if not v_img or v_img.lower() == "nan" or "placeholder" in v_img:
@@ -700,7 +704,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# 4. ENCABEZADO (LOGO PROTAGONISTA SIN TEXTO DE TÍTULO)
+# 4. ENCABEZADO (LOGO PROTAGONISTA)
 # ==========================================
 col_title, col_cart_btn = st.columns([3, 1])
 
@@ -756,12 +760,13 @@ if st.session_state.nav_view == "catalogo":
             for idx, p in enumerate(pop_list):
                 with pop_cols[idx % len(pop_cols)]:
                     pid = p.get("id")
+                    p_price = safe_float(p.get("price"), 0.0)
                     st.markdown(f"""
                     <div class="pop-card-box" style="background-color: {card_bg};">
                         <div class="popular-badge">🔥 Lo más pedido</div>
                         <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 15px;" onerror="this.src='{DEFAULT_PRODUCT_IMG}';" />
                         <div class="pop-card-title" style="color: {text_color};">{p.get('name')}</div>
-                        <div style="color: {BTN_GENERAL}; font-weight: 900; font-size: 0.95rem;">${float(p.get('price', 0)):.2f} MXN</div>
+                        <div style="color: {BTN_GENERAL}; font-weight: 900; font-size: 0.95rem;">${p_price:.2f} MXN</div>
                     </div>
                     """, unsafe_allow_html=True)
                     if st.button("Agregar +", key=f"pop_add_{pid}_{idx}", use_container_width=True):
@@ -841,7 +846,7 @@ if st.session_state.nav_view == "catalogo":
                         if desc_text and desc_text.lower() != "nan":
                             st.markdown(f'<div class="product-desc" style="color: {sub_text_color}; font-size: 0.85rem; margin-bottom: 6px;">{desc_text}</div>', unsafe_allow_html=True)
                         
-                        prices = [float(it.get("price", 0)) for it in items_group]
+                        prices = [safe_float(it.get("price"), 0.0) for it in items_group]
                         st.markdown(f'<div class="product-price">${prices[0]:.2f} MXN</div>', unsafe_allow_html=True)
                         
                         st.write("")
@@ -908,14 +913,15 @@ elif st.session_state.nav_view == "carrito":
         for item_id, qty in list(st.session_state.cart.items()):
             p = next((item for item in st.session_state.products if str(item.get("id")) == str(item_id)), None)
             if p:
-                subtotal = float(p.get("price", 0)) * qty
+                p_price = safe_float(p.get("price"), 0.0)
+                subtotal = p_price * qty
                 total_price += subtotal
                 order_summary.append(f"- {qty}x {p.get('name')} - ${subtotal:.2f} MXN")
                 
                 col_c1, col_c2 = st.columns([3, 1], vertical_alignment="center")
                 with col_c1:
                     st.markdown(f"**{p.get('name')}**")
-                    st.caption(f"{qty} x ${float(p.get('price', 0)):.2f} = ${subtotal:.2f}")
+                    st.caption(f"{qty} x ${p_price:.2f} = ${subtotal:.2f}")
                 with col_c2:
                     if st.button(":material/delete: Quitar", key=f"del_cart_{item_id}", use_container_width=True):
                         del st.session_state.cart[item_id]
@@ -935,7 +941,8 @@ elif st.session_state.nav_view == "carrito":
         if sugg_id:
             sugg_prod = next((p for p in st.session_state.products if str(p.get("id")) == str(sugg_id)), None)
             if sugg_prod and str(sugg_id) not in st.session_state.cart:
-                st.info(f"💡 **¿Te hace falta algo más?** ¡Acompaña tu pedido con unos deliciosos **{sugg_prod.get('name')}** por solo **${float(sugg_prod.get('price', 0)):.2f} MXN**!")
+                sugg_price = safe_float(sugg_prod.get("price"), 0.0)
+                st.info(f"💡 **¿Te hace falta algo más?** ¡Acompaña tu pedido con unos deliciosos **{sugg_prod.get('name')}** por solo **${sugg_price:.2f} MXN**!")
                 if st.button(f"Agregar {sugg_prod.get('name')} al carrito", key="add_sugg_btn"):
                     add_to_cart(str(sugg_id))
                     st.rerun()
@@ -997,7 +1004,7 @@ elif st.session_state.nav_view == "carrito":
         if current_notes_val.strip():
             numbers_in_notes = re.findall(r'\d+(?:\.\d+)?', current_notes_val)
             if numbers_in_notes:
-                amounts = [float(n) for n in numbers_in_notes]
+                amounts = [safe_float(n) for n in numbers_in_notes]
                 valid_cash = [amt for amt in amounts if amt >= total_price]
                 if valid_cash:
                     cash_given = valid_cash[0]
@@ -1097,7 +1104,7 @@ elif st.session_state.nav_view == "admin":
                                 "id": r_id if r_id.strip() != "" and r_id != "nan" else f"excel_{idx}",
                                 "name": str(row.get("name", "Producto")),
                                 "category": str(row.get("category", "Individual")),
-                                "price": float(row.get("price", 0.0)),
+                                "price": safe_float(row.get("price"), 0.0),
                                 "description": desc_val,
                                 "image": img_val
                             })
@@ -1132,7 +1139,7 @@ elif st.session_state.nav_view == "admin":
                         "id": prod_id,
                         "name": str(row.get("name", "Nuevo producto")),
                         "category": str(row.get("category", "Individual")),
-                        "price": float(row.get("price", 0.0)),
+                        "price": safe_float(row.get("price"), 0.0),
                         "description": prod_desc,
                         "image": prod_img
                     })
@@ -1149,12 +1156,13 @@ elif st.session_state.nav_view == "admin":
             for prod in st.session_state.products:
                 p_id = str(prod.get("id"))
                 p_name = str(prod.get("name"))
+                p_price = safe_float(prod.get("price"), 0.0)
                 is_currently_pop = p_id in current_pop_ids
-                if st.checkbox(f"{p_name} (${float(prod.get('price', 0)):.2f} MXN)", value=is_currently_pop, key=f"check_pop_{p_id}"):
+                if st.checkbox(f"{p_name} (${p_price:.2f} MXN)", value=is_currently_pop, key=f"check_pop_{p_id}"):
                     selected_populares_new.append({
                         "id": p_id,
                         "name": p_name,
-                        "price": prod.get("price"),
+                        "price": p_price,
                         "image": prod.get("image", DEFAULT_PRODUCT_IMG)
                     })
             if st.button("Guardar Populares"):
