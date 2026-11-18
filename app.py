@@ -20,7 +20,7 @@ UPLOAD_DIR = "uploaded_images"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
-# 1. Configuración de la página
+# 1. Configuración de la página en modo wide para aprovechar todo el ancho
 st.set_page_config(
     page_title="Frimex",
     page_icon=LOGO_URL,
@@ -298,11 +298,11 @@ else:
 HEADER_RED = "#DC2626"          # Rojo vivo corporativo para el sticky header
 BTN_SOFT_RED = "#E11D48"        # Rojo suave para botones generales
 BTN_SOFT_RED_HOVER = "#BE123C"
-BTN_CART_FAB = "#EF4444"        # Rojo fuerte para FAB
+FAB_STRONG_RED = "#B91C1C"      # Rojo intenso para el FAB con icono outline
 PRICE_ORANGE = "#F97316"        # Naranja vibrante para precios grandes
 
 # ==========================================
-# CSS: STICKY HEADER INSPIRADO EN LA REFERENCIA, BUSCADOR INTEGRADO, ICONOS OUTLINE Y FAB
+# CSS: ANCHO COMPLETO, STICKY HEADER CON BUSCADOR E ICONOS OUTLINE
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -334,14 +334,16 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* Ajuste de padding superior para dejar espacio al sticky header extendido */
+    /* ELIMINAR ESPACIOS LATERALES: Ancho completo fluido */
     .block-container {{
-        padding-top: 105px !important;
+        padding-top: 115px !important;
         padding-bottom: 5.5rem !important;
-        max-width: 1200px !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 100% !important;
     }}
 
-    /* STICKY HEADER INSPIRADO EN LA IMAGEN DE REFERENCIA */
+    /* STICKY HEADER INSPIRADO EN LA REFERENCIA (LOGO IZQ, BUSCADOR CENTRO/ANCHO, CARRITO DER) */
     .sticky-header-container {{
         position: fixed;
         top: 0;
@@ -349,9 +351,13 @@ st.markdown(f"""
         width: 100%;
         background-color: {HEADER_RED} !important;
         z-index: 999999 !important;
-        padding: 10px 20px 12px 20px;
+        padding: 12px 24px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-        border-bottom: 2px solid #b91c1c;
+        border-bottom: 2px solid #991b1b;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
     }}
 
     .sticky-logo {{
@@ -372,6 +378,7 @@ st.markdown(f"""
         height: 48px;
         position: relative;
         cursor: pointer;
+        flex-shrink: 0;
     }}
     .cart-badge-count {{
         position: absolute;
@@ -424,7 +431,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) EN ROJO FUERTE CON TOTAL */
+    /* BOTÓN FLOTANTE (FAB) EN ROJO INTENSO CON ICONO OUTLINE Y SIN EMOJIS */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 22px !important;
@@ -434,19 +441,19 @@ st.markdown(f"""
         width: auto !important;
     }}
     div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
-        background: linear-gradient(135deg, #EF4444 0%, {BTN_CART_FAB} 100%) !important;
+        background: linear-gradient(135deg, #EF4444 0%, {FAB_STRONG_RED} 100%) !important;
         color: #ffffff !important;
         padding: 14px 26px !important;
         border-radius: 50px !important;
         font-weight: 800 !important;
         font-size: 1rem !important;
-        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5) !important;
+        box-shadow: 0 6px 20px rgba(185, 28, 28, 0.5) !important;
         border: none !important;
         height: 52px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
+        gap: 10px !important;
         white-space: nowrap !important;
     }}
     div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
@@ -564,42 +571,31 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER AVANZADO (LOGO A LA IZQUIERDA, CARRITO CON BADGE A LA DERECHA)
+# STICKY HEADER CON LOGO, BUSCADOR INTEGRADO Y CARRITO FUNCIONAL
 # ==========================================
-st.markdown(f"""
-<div class="sticky-header-container" id="stickyHeader">
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto;">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
-        </div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <a href="javascript:void(0);" onclick="window.parent.document.querySelector('button[key=\\'header_cart_trigger\\']')?.click();" style="text-decoration: none;">
-                <div class="cart-badge-wrapper">
-                    <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
-                    <span class="cart-badge-count">{total_items}</span>
-                </div>
-            </a>
-        </div>
+h_col1, h_col2, h_col3 = st.columns([2, 6, 1], vertical_alignment="center")
+
+with h_col1:
+    st.markdown(f"""
+    <div style="display: flex; align-items: center;">
+        <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# Botón fantasma invisible para manejar el clic del carrito desde el header
-if st.button("Trigger Cart", key="header_cart_trigger", help="Ir al carrito"):
-    st.session_state.show_variants_modal = False
-    st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
-    st.rerun()
-
-# Barra de búsqueda integrada justo debajo del logo
-search_col1, search_col2 = st.columns([6, 1])
-with search_col1:
+with h_col2:
     search_query = st.text_input("Buscar productos", placeholder="¿Qué estás buscando hoy?", label_visibility="collapsed", key="main_search_input")
 
-with search_col2:
-    if st.session_state.nav_view == "carrito":
-        if st.button("Catálogo", use_container_width=True):
-            st.session_state.nav_view = "catalogo"
-            st.rerun()
+with h_col3:
+    if st.button("🛒", key="header_cart_icon_btn", help="Ir al Carrito"):
+        st.session_state.show_variants_modal = False
+        st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
+        st.rerun()
+
+# Barra fija visual superior (Sticky Header Container CSS)
+st.markdown(f"""
+<div class="sticky-header-container" style="position: fixed; top: 0; left: 0; width: 100%; background-color: {HEADER_RED}; z-index: 99998; padding: 10px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.25);">
+</div>
+""", unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # BANNER PRINCIPAL
@@ -608,17 +604,17 @@ if st.session_state.nav_view == "catalogo":
         banner_to_show = DEFAULT_BANNER
 
     st.markdown(f"""
-    <div style="border: 1px solid {border_color}; border-radius: 16px; padding: 6px; margin-top: 8px; margin-bottom: 14px; background: {card_bg}; text-align: center; width: 100%; overflow: hidden;">
-        <img src="{banner_to_show}" style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
+    <div style="border: 1px solid {border_color}; border-radius: 16px; padding: 6px; margin-top: 10px; margin-bottom: 16px; background: {card_bg}; text-align: center; width: 100%; overflow: hidden;">
+        <img src="{banner_to_show}" style="width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown(f'<div style="background: linear-gradient(135deg, {BTN_SOFT_RED} 0%, #F43F5E 100%); color: white; padding: 10px 14px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 14px; font-size: 0.92rem;"><span class="material-symbols-outlined" style="vertical-align: -5px; margin-right: 6px; font-size: 20px;">local_shipping</span> ¡Envíos directos en ruta Frimex! Pide fácil y rápido</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background: linear-gradient(135deg, {BTN_SOFT_RED} 0%, #F43F5E 100%); color: white; padding: 12px 16px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;"><span class="material-symbols-outlined" style="vertical-align: -5px; margin-right: 6px; font-size: 20px;">local_shipping</span> ¡Envíos directos en ruta Frimex! Pide fácil y rápido</div>', unsafe_allow_html=True)
 
     # POPULARES
     popular_ids = [str(p.get("id")) for p in st.session_state.popular_items]
     if popular_ids and not search_query:
-        st.markdown(f"<h4 style='margin-bottom: 10px; color: {text_color};'><span class='material-symbols-outlined' style='font-size: 22px; color: {BTN_SOFT_RED}; vertical-align: bottom; margin-right: 4px;'>local_fire_department</span> Lo más pedido</h4>", unsafe_allow_html=True)
+        st.markdown(f"<h4 style='margin-bottom: 12px; color: {text_color};'><span class='material-symbols-outlined' style='font-size: 22px; color: {BTN_SOFT_RED}; vertical-align: bottom; margin-right: 6px;'>local_fire_department</span> Lo más pedido</h4>", unsafe_allow_html=True)
         pop_list = [p for p in st.session_state.products if str(p.get("id")) in popular_ids]
         if pop_list:
             pop_cols = st.columns(min(len(pop_list), 3))
@@ -629,15 +625,15 @@ if st.session_state.nav_view == "catalogo":
                     st.markdown(f"""
                     <div class="pop-card-box">
                         <div style="background: {BTN_SOFT_RED}; color: white; font-size: 0.68rem; font-weight: 800; padding: 3px 10px; border-radius: 20px; position: absolute; top: 10px; right: 10px;">Popular</div>
-                        <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 12px;" />
-                        <div style="font-weight: 800; font-size: 1rem; margin-top: 8px; color: {text_color};">{p.get('name')}</div>
+                        <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-top: 12px;" />
+                        <div style="font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: {text_color};">{p.get('name')}</div>
                         <span class="price-tag">${p_price:.2f} MXN</span>
                     </div>
                     """, unsafe_allow_html=True)
                     if st.button("Agregar +", key=f"pop_add_{pid}_{idx}", use_container_width=True):
                         add_to_cart(pid)
                         st.rerun()
-            st.markdown("<hr style='margin: 12px 0; border-color: " + border_color + ";'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 16px 0; border-color: " + border_color + ";'>", unsafe_allow_html=True)
 
     # CATEGORÍAS
     cats = ["Todo", "Individual", "Para compartir"]
@@ -699,10 +695,10 @@ if st.session_state.nav_view == "catalogo":
                             img_src = DEFAULT_PRODUCT_IMG
                         
                         st.image(img_src, use_container_width=True)
-                        st.markdown(f'<div style="font-weight: 800; font-size: 1.02rem; margin-top: 8px; color: {text_color};">{base_name}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div style="font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: {text_color};">{base_name}</div>', unsafe_allow_html=True)
                         desc_text = str(representative.get("description", "")).strip()
                         if desc_text and desc_text.lower() != "nan":
-                            st.markdown(f'<div style="color: {sub_text_color}; font-size: 0.84rem; margin-top: 2px;">{desc_text}</div>', unsafe_allow_html=True)
+                            st.markdown(f'<div style="color: {sub_text_color}; font-size: 0.85rem; margin-top: 2px;">{desc_text}</div>', unsafe_allow_html=True)
                         
                         prices = [safe_float(it.get("price"), 0.0) for it in items_group]
                         st.markdown(f'<span class="price-tag">${prices[0]:.2f} MXN</span>', unsafe_allow_html=True)
@@ -734,9 +730,9 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE INFERIOR (FAB) EN ROJO FUERTE CON CANTIDAD Y PRECIO TOTAL
+    # BOTÓN FLOTANTE INFERIOR (FAB) EN ROJO INTENSO CON ICONO OUTLINE Y SIN EMOJIS
     if total_items > 0:
-        if st.button(f"🛒 Ver Carrito ({total_items}) • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
+        if st.button("Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
@@ -786,10 +782,10 @@ elif st.session_state.nav_view == "carrito":
                         
         st.write("---")
         st.markdown(f"""
-        <div style="background: {card_bg}; border: 2px solid {PRICE_ORANGE}; border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 16px;">
-            <span class="material-symbols-outlined" style="font-size: 26px; color: {PRICE_ORANGE}; vertical-align: middle; margin-right: 4px;">receipt_long</span>
-            <span style="font-size: 0.95rem; font-weight: 700; color: {sub_text_color}; display: inline-block;">TOTAL DEL PEDIDO:</span>
-            <span style="font-size: 1.7rem; font-weight: 900; color: {PRICE_ORANGE}; display: block; margin-top: 4px;">${total_price:.2f} MXN</span>
+        <div style="background: {card_bg}; border: 2px solid {PRICE_ORANGE}; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;">
+            <span class="material-symbols-outlined" style="font-size: 28px; color: {PRICE_ORANGE}; vertical-align: middle; margin-right: 6px;">receipt_long</span>
+            <span style="font-size: 1rem; font-weight: 700; color: {sub_text_color}; display: inline-block;">TOTAL DEL PEDIDO:</span>
+            <span style="font-size: 1.8rem; font-weight: 900; color: {PRICE_ORANGE}; display: block; margin-top: 4px;">${total_price:.2f} MXN</span>
         </div>
         """, unsafe_allow_html=True)
 
