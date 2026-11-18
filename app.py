@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, BUSCADOR BLANCO CON CONTORNO ROJO Y FAB
+# CSS: STICKY HEADER, BUSCADOR BLANCO Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -710,8 +710,8 @@ if st.session_state.nav_view == "catalogo":
             else:
                 if name_raw not in grouped_dict:
                     grouped_dict[name_raw] = []
-                if not any(str(it.get("id")) == str(p.get("id")) for it in grouped_dict[base_name]):
-                    grouped_dict[base_name].append(p)
+                if not any(str(it.get("id")) == str(p.get("id")) for it in grouped_dict[name_raw]):
+                    grouped_dict[name_raw].append(p)
 
         group_items_list = sorted(list(grouped_dict.items()), key=lambda x: 0 if len(x[1]) > 1 else 1)
         
