@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, BOTÓN OUTLINE Y FAB
+# CSS LIMPIO (SIN HTML PROBLEMÁTICO)
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -341,9 +341,8 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ANCHO TOTAL SIN ESPACIOS LATERALES */
     .block-container {{
-        padding-top: 85px !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 5.5rem !important;
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
@@ -354,81 +353,6 @@ st.markdown(f"""
             padding-left: 2rem !important;
             padding-right: 2rem !important;
         }}
-    }}
-
-    /* STICKY HEADER FIJO CON #cf291d */
-    .sticky-header-container {{
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 68px;
-        background-color: {HEADER_RED} !important;
-        z-index: 99998 !important;
-        padding: 0 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-        border-bottom: 2px solid #991b1b;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }}
-
-    .sticky-logo {{
-        max-height: 40px;
-        width: auto;
-        object-fit: contain;
-        display: block !important;
-    }}
-
-    /* BOTÓN DEL HEADER INCURSTADO EN LA FRANJA ROJA (CON ICONO OUTLINE Y BADGE) */
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
-        position: fixed !important;
-        top: 12px !important;
-        right: 20px !important;
-        z-index: 999999 !important;
-        width: 44px !important;
-        height: 44px !important;
-        margin: 0 !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button {{
-        background: rgba(0, 0, 0, 0.25) !important;
-        border-radius: 50% !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        padding: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p,
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button span {{
-        font-size: 0px !important;
-        display: none !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button::before {{
-        content: "\\e8cc";
-        font-family: 'Material Symbols Outlined';
-        font-size: 24px;
-        color: #ffffff;
-        font-weight: normal;
-    }}
-
-    .cart-badge-count-fixed {{
-        position: fixed;
-        top: 9px;
-        right: 16px;
-        background-color: {FAB_YELLOW};
-        color: #1e293b;
-        font-weight: 900;
-        font-size: 0.72rem;
-        padding: 1px 6px;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        z-index: 9999999;
-        pointer-events: none;
     }}
 
     /* BARRA DE BÚSQUEDA A FONDO BLANCO Y CONTORNO ROJO */
@@ -455,15 +379,6 @@ st.markdown(f"""
         border: 1px solid {border_color} !important;
         box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
     }}
-    div[data-testid="stDialog"] p, 
-    div[data-testid="stDialog"] h1, 
-    div[data-testid="stDialog"] h2, 
-    div[data-testid="stDialog"] h3, 
-    div[data-testid="stDialog"] span,
-    div[data-testid="stDialog"] div {{
-        color: {modal_text} !important;
-        -webkit-text-fill-color: {modal_text} !important;
-    }}
 
     label p, .stTextInput label, .stTextArea label, [data-testid="stWidgetLabel"] p, .stRadio label p {{
         color: {text_color} !important;
@@ -471,7 +386,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) PRINCIPAL CON ICONO OUTLINE Y LETRAS NEGRITAS */
+    /* BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA CON ICONO OUTLINE Y LETRAS NEGRITAS */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -615,23 +530,23 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER Y BOTÓN INCURSTADO EN EL HEADER
+# HEADER NATIVO DE STREAMLIT (FRANJA ROJA CON LOGO Y BOTÓN CARRITO OUTLINE)
 # ==========================================
-st.markdown(f"""
-<div class="sticky-header-container">
-    <div style="display: flex; align-items: center; padding-left: 4px;">
-        <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
+header_container = st.container()
+with header_container:
+    st.markdown(f"""
+    <div style="background-color: {HEADER_RED}; padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <img src="{LOGO_URL}" style="max-height: 40px; width: auto;" />
     </div>
-</div>
-""", unsafe_allow_html=True)
-
-# Botón funcional dentro del header (renderizado con icono outline mediante CSS)
-if st.button("shopping_cart", key="header_cart_dup_btn"):
-    st.session_state.nav_view = "carrito"
-    st.rerun()
-
-if total_items > 0:
-    st.markdown(f'<div class="cart-badge-count-fixed">{total_items}</div>', unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+    
+    # Distribución en columnas nativas dentro de la franja roja
+    col_space, col_cart_btn = st.columns([10, 1.8], vertical_alignment="center")
+    with col_cart_btn:
+        badge_text = f" ({total_items})" if total_items > 0 else ""
+        if st.button(f"🛒 Carrito{badge_text}", use_container_width=True, key="header_cart_btn"):
+            st.session_state.nav_view = "carrito"
+            st.rerun()
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
