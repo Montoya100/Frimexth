@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILO EXACTO DEL BOTÓN CIRCULAR ROJO CON CONTADOR AMARILLO
+# CSS: BOTÓN CIRCULAR PERFECTO Y CONTADOR EXACTO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -376,23 +376,30 @@ st.markdown(f"""
         }}
     }}
 
-    /* ESTILIZACIÓN DEL BOTÓN DE CARRITO CIRCULAR ROJO (COMO LA IMAGEN) */
+    /* FIJAMOS EL CONTENEDOR DEL BOTÓN A 48x48 PARA EVITAR DEFORMACIONES */
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) {{
-        margin: 0 !important;
-        padding: 0 !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        margin-left: auto !important;
+        margin-right: 0 !important;
     }}
+
+    /* ESTILIZACIÓN EXACTA DEL BOTÓN CIRCULAR ROJO CON ÍCONO */
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button {{
         background-color: {BTN_RED} !important;
         color: #ffffff !important;
         width: 48px !important;
         height: 48px !important;
         min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
         border-radius: 50% !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        border: 2px solid rgba(255, 255, 255, 0.35) !important;
         box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
         position: relative !important;
     }}
@@ -411,7 +418,7 @@ st.markdown(f"""
         color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DE CONTADOR CON NÚMERO NEGRO EXACTA A LA IMAGEN */
+    /* INSIGNIA AMARILLA DE CONTADOR CON NÚMERO NEGRO */
     .header-badge-yellow {{
         position: absolute;
         top: -6px;
@@ -599,7 +606,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER NATIVO INTEGRADO DE LADO A LADO CON EL BOTÓN CIRCULAR
+# HEADER NATIVO INTEGRADO DE LADO A LADO
 # ==========================================
 col_logo, col_cart_btn = st.columns([8, 1.5], vertical_alignment="center")
 with col_logo:
@@ -611,7 +618,7 @@ with col_logo:
 
 with col_cart_btn:
     st.markdown(f"""
-    <div style="background-color: {HEADER_RED}; padding: 12px 10px; margin: -1.5rem -0.75rem 0 -0.75rem !important; display: flex; justify-content: flex-end; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+    <div style="background-color: {HEADER_RED}; padding: 12px 10px; margin: -1.5rem -0.75rem 0 -0.75rem !important; display: flex; justify-content: flex-end; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.18); position: relative;">
     """, unsafe_allow_html=True)
     
     if total_items > 0:
@@ -1070,19 +1077,4 @@ elif st.session_state.nav_view == "admin":
             if st.button("Aplicar y Guardar Tema"):
                 st.session_state.dark_mode = dark_toggle
                 save_dark_mode_setting(dark_toggle)
-                st.success("¡Tema actualizado!")
-                st.rerun()
-        
-        st.write("---")
-        if st.button("Cerrar Sesión Admin", use_container_width=True):
-            st.session_state.admin_authenticated = False
-            st.session_state.nav_view = "catalogo"
-            st.rerun()
-
-# PIE DE PÁGINA
-st.write("---")
-col_foot1, col_foot_admin, col_foot2 = st.columns(3)
-with col_foot_admin:
-    if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
-        st.session_state.nav_view = "admin"
-        st.rerun()
+                st.
