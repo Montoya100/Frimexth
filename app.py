@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ELIMINAR MÁRGENES Y ACOPLAR HEADER PERFECTO
+# CSS: DISEÑO LIMPIO Y ESTABLE
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -340,9 +340,8 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* QUITAR MÁRGENES SUPERIORES DE STREAMLIT */
     .block-container {{
-        padding-top: 0rem !important;
+        padding-top: 0.5rem !important;
         padding-bottom: 6rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
@@ -355,40 +354,35 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR PEGADA EXACTAMENTE AL BORDE */
+    /* FRANJA ROJA SUPERIOR NATIVA Y ESTABLE */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        margin-top: -6rem !important;
+        margin-top: -0.6rem !important;
         margin-bottom: 1.5rem !important;
-        padding: 14px 28px !important;
+        padding: 12px 24px !important;
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
-        z-index: 999;
+        z-index: 99;
     }}
 
     .frimex-unified-header img {{
-        max-height: 52px !important;
+        max-height: 50px !important;
         width: auto !important;
         object-fit: contain !important;
     }}
 
-    /* CARRITO CIRCULAR EN EL HEADER */
-    .header-cart-container {{
-        position: relative;
-        display: inline-block;
-    }}
-
+    /* BOTÓN CIRCULAR DE CARRITO EN HEADER */
     .header-cart-circle {{
         background-color: {DARK_CIRCLE_RED} !important;
-        width: 46px;
-        height: 46px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -396,6 +390,7 @@ st.markdown(f"""
         box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         cursor: pointer;
         text-decoration: none;
+        position: relative;
         transition: transform 0.2s ease, background-color 0.2s ease;
     }}
 
@@ -425,7 +420,6 @@ st.markdown(f"""
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         z-index: 40;
-        pointer-events: none;
     }}
 
     /* BOTÓN FLOTANTE (FAB) INFERIOR */
@@ -547,7 +541,7 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
-# Detectar si el usuario hizo clic en el icono del carrito del header mediante query_params
+# Detectar navegación mediante query_params de manera limpia
 query_params = st.query_params
 if query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
     st.session_state.nav_view = "carrito"
@@ -606,19 +600,17 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (CON LA SINTAXIS CORRECTA PARA QUE NO SE VEA COMO TEXTO)
+# HEADER VISUAL UNIFICADO (HTML SEGURO SIN TEXTO PLANO)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
 header_html = f"""
 <div class="frimex-unified-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <div class="header-cart-container">
+    <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
         {badge_html}
-        <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
-            <span class="material-symbols-outlined">shopping_cart</span>
-        </a>
-    </div>
+        <span class="material-symbols-outlined">shopping_cart</span>
+    </a>
 </div>
 """
 st.markdown(header_html, unsafe_allow_html=True)
