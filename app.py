@@ -362,46 +362,51 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    .header-cart-circle {{
+    /* ESTILO PARA EL BOTÓN NATIVO DEL HEADER (INCORPORANDO LA LÓGICA DEL FAB) */
+    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
+        margin: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
+    }}
+    
+    button[kind="secondary"]:has(span:contains("shopping_cart")),
+    div.frimex-sticky-header div[data-testid="stButton"] button {{
         background-color: {DARK_CIRCLE_RED} !important;
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-        cursor: pointer;
-        text-decoration: none;
-        position: relative;
-        transition: transform 0.2s ease;
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
+        border: none !important;
+        padding: 0 !important;
+        transition: transform 0.2s ease !important;
     }}
-
-    .header-cart-circle:hover {{
-        transform: scale(1.05);
-    }}
-
-    .header-cart-circle .material-symbols-outlined {{
-        font-size: 22px;
-        color: #ffffff;
+    
+    button[kind="secondary"]:has(span:contains("shopping_cart")):hover,
+    div.frimex-sticky-header div[data-testid="stButton"] button:hover {{
+        transform: scale(1.05) !important;
+        background-color: {BTN_RED_HOVER} !important;
     }}
 
     .header-badge-exact {{
         position: absolute;
-        top: -4px;
-        right: -4px;
+        top: 4px;
+        right: 4px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
         font-weight: 900;
-        font-size: 0.75rem;
-        width: 20px;
-        height: 20px;
+        font-size: 0.70rem;
+        width: 18px;
+        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         z-index: 40;
+        pointer-events: none;
     }}
 
     /* BOTÓN FLOTANTE (FAB) INFERIOR */
@@ -523,13 +528,6 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
-# Detectar navegación limpia mediante query_params sin perder el estado del carrito
-query_params = st.query_params
-if query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
-    st.session_state.nav_view = "carrito"
-    st.query_params.clear()
-    st.rerun()
-
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
 # ==========================================
@@ -582,24 +580,37 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE (SEGURO Y SEPARADO)
+# STICKY HEADER PERMANENTE (CON BOTÓN NATIVO ESTILO FAB)
 # ==========================================
+st.markdown(f"""
+<div class="frimex-sticky-header">
+    <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+""", unsafe_allow_html=True)
+
 if total_items > 0:
-    st.markdown(f"""
-    <div class="frimex-sticky-header">
-        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-        <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
-            <div class="header-badge-exact">{total_items}</div>
-            <span class="material-symbols-outlined">shopping_cart</span>
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown(f"""
-    <div class="frimex-sticky-header">
-        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    </div>
-    """, unsafe_allow_html=True)
+    # Usamos un contenedor auxiliar en el header para ubicar el botón nativo exactamente a la derecha
+    header_cols = st.columns([10, 1])
+    # Como el header usa CSS fixed por encima de todo, inyectamos el botón de forma limpia mediante Streamlit nativo
+    with st.container():
+        # Contenedor flotante derecho para el botón del carrito
+        pass
+
+# Renderizado real del header mediante HTML seguro + Botón nativo de Streamlit para control de estado sin vaciar carrito
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Barra superior flotante real con botón nativo de Streamlit integrado al flujo de estado
+st.markdown(f"""
+<div style="position: fixed; top: 8px; right: 24px; z-index: 1000000; display: flex; align-items: center;">
+""", unsafe_allow_html=True)
+
+if total_items > 0:
+    if st.button("🛒", key="header_cart_btn", help="Ver Carrito"):
+        st.session_state.nav_view = "carrito"
+        st.rerun()
+    st.markdown(f'<div class="header-badge-exact">{total_items}</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
