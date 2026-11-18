@@ -380,22 +380,32 @@ st.markdown(f"""
         display: block !important;
     }}
 
-    /* POSICIONAMIENTO PERFECTO DEL BOTÓN DEL CARRITO DENTRO DEL HEADER */
-    div[data-testid="stHorizontalBlock"]:has(button[key="header_cart_dup_btn"]) {{
-        position: fixed !important;
-        top: 12px !important;
-        left: 0 !important;
-        width: 100% !important;
+    /* CONTENEDOR FIJO PARA EL HEADER SUPERIOR (LOGO E ICONO CARRITO) */
+    .header-native-overlay {{
+        position: fixed;
+        top: 10px;
+        left: 0;
+        width: 100%;
+        height: 48px;
         z-index: 99999 !important;
-        padding: 0 20px !important;
-        pointer-events: none !important;
+        pointer-events: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
     }}
-    div[data-testid="stHorizontalBlock"]:has(button[key="header_cart_dup_btn"]) > div {{
-        pointer-events: auto !important;
+    .header-native-overlay > * {{
+        pointer-events: auto;
     }}
 
+    /* BOTÓN CIRCULAR CON ICONO OUTLINE REAL EN EL HEADER */
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
+        width: 44px !important;
+        height: 44px !important;
+        margin: 0 !important;
+    }}
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button {{
-        background: rgba(0, 0, 0, 0.25) !important;
+        background: rgba(0, 0, 0, 0.22) !important;
         border-radius: 50% !important;
         width: 44px !important;
         height: 44px !important;
@@ -406,7 +416,6 @@ st.markdown(f"""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        float: right !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p {{
         font-size: 0px !important;
@@ -420,7 +429,7 @@ st.markdown(f"""
 
     .cart-badge-count-fixed {{
         position: fixed;
-        top: 10px;
+        top: 8px;
         right: 16px;
         background-color: {FAB_YELLOW};
         color: #1e293b;
@@ -621,19 +630,18 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
 # STICKY HEADER Y BOTÓN DUPLICADO DE CARRITO
 # ==========================================
 st.markdown(f"""
-<div class="sticky-header-container">
-    <div style="display: flex; align-items: center; padding-left: 5px;">
-        <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
-    </div>
+<div class="sticky-header-container"></div>
+<div class="header-native-overlay">
+    <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
 </div>
 """, unsafe_allow_html=True)
 
-# Botón incrustado en el header de forma limpia
-_, col_dup = st.columns([11, 1])
-with col_dup:
-    if st.button("🛒", key="header_cart_dup_btn"):
-        st.session_state.nav_view = "carrito"
-        st.rerun()
+# Botón incrustado en el header mediante overlay flotante superior derecho
+st.markdown('<div style="position: fixed; top: 12px; right: 20px; z-index: 999999;">', unsafe_allow_html=True)
+if st.button("🛒", key="header_cart_dup_btn"):
+    st.session_state.nav_view = "carrito"
+    st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
 
 if total_items > 0:
     st.markdown(f'<div class="cart-badge-count-fixed">{total_items}</div>', unsafe_allow_html=True)
