@@ -286,8 +286,8 @@ if st.session_state.dark_mode:
     border_color = "#2d3748"
     input_bg = "#1e1e1e"
     input_text = "#ffffff"
-    modal_bg = "#1e1e1e"
-    modal_text = "#f3f4f6"
+    modal_bg = "#ffffff"       # Forzado a blanco para lectura de textos negros
+    modal_text = "#000000"     # Forzado a negro
 else:
     bg_color = "#f8fafc"
     card_bg = "#ffffff"
@@ -297,18 +297,18 @@ else:
     input_bg = "#ffffff"
     input_text = "#0f172a"
     modal_bg = "#ffffff"
-    modal_text = "#0f172a"
+    modal_text = "#000000"
 
 HEADER_RED = "#cf291d"          
 BTN_RED = "#b0271a"             
 BTN_RED_HOVER = "#8f1f14"
 DARK_CIRCLE_RED = "#7a160e"     
-PRICE_BLACK = "#000000" if not st.session_state.dark_mode else "#ffffff"        
+PRICE_BLACK = "#000000"        
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER PERMANENTE (SIN FANTASMA)
+# CSS: STICKY HEADER Y MODAL CON TEXTOS NEGROS
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -362,6 +362,7 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
+    /* CARRITO DEL HEADER DESVINCULADO (INACTIVO AL CLIC) */
     .header-cart-circle {{
         background-color: {DARK_CIRCLE_RED} !important;
         width: 42px;
@@ -371,14 +372,8 @@ st.markdown(f"""
         align-items: center;
         justify-content: center;
         box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-        cursor: pointer;
-        text-decoration: none;
         position: relative;
-        transition: transform 0.2s ease;
-    }}
-
-    .header-cart-circle:hover {{
-        transform: scale(1.05);
+        pointer-events: none !important; /* Desvinculado: no hace nada al hacer clic */
     }}
 
     .header-cart-circle .material-symbols-outlined {{
@@ -402,9 +397,27 @@ st.markdown(f"""
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         z-index: 40;
+        pointer-events: none !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) INFERIOR - INTACTO */
+    /* FORZAR TEXTOS NEGROS EN LOS MODALES DE OPCIONES */
+    div[data-testid="stDialog"] > div {{
+        background-color: {modal_bg} !important;
+        color: #000000 !important;
+        border-radius: 16px !important;
+        border: 1px solid {border_color} !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
+    }}
+    div[data-testid="stDialog"] p, 
+    div[data-testid="stDialog"] span, 
+    div[data-testid="stDialog"] div, 
+    div[data-testid="stDialog"] h3, 
+    div[data-testid="stDialog"] label {{
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }}
+
+    /* BOTÓN FLOTANTE (FAB) INFERIOR - INTACTO Y FUNCIONANDO */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -461,14 +474,6 @@ st.markdown(f"""
         border-radius: 30px !important;
     }}
 
-    div[data-testid="stDialog"] > div {{
-        background-color: {modal_bg} !important;
-        color: {modal_text} !important;
-        border-radius: 16px !important;
-        border: 1px solid {border_color} !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
-    }}
-
     label p, .stTextInput label, .stTextArea label, [data-testid="stWidgetLabel"] p, .stRadio label p {{
         color: {text_color} !important;
         -webkit-text-fill-color: {text_color} !important;
@@ -523,19 +528,13 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
-# Manejo seguro mediante query_params para que el header funcione bien
-if st.query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
-    st.session_state.nav_view = "carrito"
-    st.query_params.clear()
-    st.rerun()
-
 # ==========================================
-# MODAL DE VARIANTES CONDICIONAL
+# MODAL DE VARIANTES CONDICIONAL (TEXTOS NEGROS)
 # ==========================================
 @st.dialog("Seleccionar Presentación")
 def variants_modal_dialog(base_name, variants_list):
     st.markdown(f"<h3 style='color: {BTN_RED} !important; margin-bottom: 2px; text-align: center; font-size: 1.3rem;'>{base_name}</h3>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color: {sub_text_color} !important; font-size: 0.85rem; font-weight: 600; text-align: center; margin-bottom: 10px;'>Escoge la opción que deseas agregar:</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color: #000000 !important; font-size: 0.85rem; font-weight: 600; text-align: center; margin-bottom: 10px;'>Escoge la opción que deseas agregar:</p>", unsafe_allow_html=True)
     st.markdown(f"<hr style='margin: 4px 0 12px 0; border-color: {border_color};'>", unsafe_allow_html=True)
     
     for idx, var in enumerate(variants_list):
@@ -549,12 +548,12 @@ def variants_modal_dialog(base_name, variants_list):
         qty_in_cart = st.session_state.cart.get(v_id, 0)
         
         st.markdown(f"""
-        <div style="background: {bg_color}; border: 1px solid {border_color}; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;">
+        <div style="background: #f1f5f9; border: 1px solid {border_color}; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                 <img src="{v_img}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;" onerror="this.src='{DEFAULT_PRODUCT_IMG}';" />
                 <div style="flex-grow: 1;">
-                    <span style="color: {modal_text} !important; font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2;">{v_name}</span>
-                    <span style="color: {PRICE_BLACK} !important; font-weight: 900; font-size: 1.35rem;">${v_price:.2f} MXN</span>
+                    <span style="color: #000000 !important; font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2;">{v_name}</span>
+                    <span style="color: #000000 !important; font-weight: 900; font-size: 1.35rem;">${v_price:.2f} MXN</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -565,7 +564,7 @@ def variants_modal_dialog(base_name, variants_list):
                 remove_from_cart(v_id)
                 st.rerun()
         with col_n:
-            st.markdown(f"<div style='font-size: 1.15rem; font-weight: 900; text-align: center; color: {modal_text} !important;'>{qty_in_cart}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size: 1.15rem; font-weight: 900; text-align: center; color: #000000 !important;'>{qty_in_cart}</div>", unsafe_allow_html=True)
         with col_p:
             if st.button("+", key=f"m_plus_{v_id}_{idx}", use_container_width=True):
                 add_to_cart(v_id)
@@ -581,16 +580,16 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE (ORIGINAL Y LIMPIO)
+# STICKY HEADER CON CARRITO DESVINCULADO (INACTIVO)
 # ==========================================
 if total_items > 0:
     st.markdown(f"""
     <div class="frimex-sticky-header">
         <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-        <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+        <div class="header-cart-circle" title="Carrito">
             <div class="header-badge-exact">{total_items}</div>
             <span class="material-symbols-outlined">shopping_cart</span>
-        </a>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 else:
@@ -733,7 +732,7 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) INFERIOR - ¡INTACTO Y FUNCIONANDO!
+    # BOTÓN FLOTANTE (FAB) INFERIOR - 100% INTACTO Y FUNCIONAL
     if total_items > 0:
         if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
