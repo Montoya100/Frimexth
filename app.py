@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: FRANJA ROJA SUPERIOR UNIFICADA Y BOTÓN CIRCULAR
+# CSS: ESTILO EXACTO DEL ICONO SOLICITADO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -370,29 +370,29 @@ st.markdown(f"""
         box-sizing: border-box !important;
     }}
 
-    /* BOTÓN CIRCULAR DE CARRITO EN EL HEADER */
+    /* ESTILO EXACTO DEL BOTÓN CIRCULAR CON CARRITO BLANCO Y FONDO ROJO */
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
-        width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-height: 48px !important;
         margin: 0 !important;
         padding: 0 !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
-        background-color: {BTN_RED} !important;
+        background-color: {HEADER_RED} !important;
         color: #ffffff !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        max-width: 44px !important;
-        max-height: 44px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
         border-radius: 50% !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border: 2px solid rgba(255, 255, 255, 0.4) !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+        border: none !important;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.2) !important;
         position: relative !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button:hover {{
@@ -406,25 +406,28 @@ st.markdown(f"""
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
-        font-size: 22px;
+        font-size: 26px;
         color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DE CONTADOR EN EL HEADER */
-    .header-badge-yellow {{
+    /* INSIGNIA AMARILLA CIRCULAR EXACTA CON NÚMERO NEGRO */
+    .header-badge-exact {{
         position: absolute;
-        top: -5px;
-        right: -5px;
+        top: -2px;
+        right: -2px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
         font-weight: 900;
-        font-size: 0.7rem;
-        padding: 1px 6px;
-        border-radius: 10px;
+        font-size: 0.75rem;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         z-index: 20;
         pointer-events: none;
-        line-height: 1.1;
     }}
 
     /* ESTILOS GENERALES Y FORMULARIOS */
@@ -557,7 +560,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL (FRANJA ROJA DE LADO A LADO)
+# HEADER VISUAL EXACTO
 # ==========================================
 col_logo_h, col_cart_h = st.columns([8, 1.5], vertical_alignment="center")
 
@@ -574,7 +577,7 @@ with col_cart_h:
     """, unsafe_allow_html=True)
     
     if total_items > 0:
-        st.markdown(f'<div class="header-badge-yellow">{total_items}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="header-badge-exact">{total_items}</div>', unsafe_allow_html=True)
         
     if st.button("", key="header_cart_btn", use_container_width=False):
         st.session_state.nav_view = "carrito"
