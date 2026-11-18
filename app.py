@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, ICONOS OUTLINE Y FAB
+# CSS: STICKY HEADER, BOTÓN OUTLINE Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -374,13 +374,13 @@ st.markdown(f"""
     }}
 
     .sticky-logo {{
-        max-height: 44px;
+        max-height: 40px;
         width: auto;
         object-fit: contain;
         display: block !important;
     }}
 
-    /* BOTÓN SUPERIOR EN EL HEADER (CIRCULAR CON ICONO OUTLINE Y BADGE AMARILLO) */
+    /* BOTÓN DEL HEADER INCURSTADO EN LA FRANJA ROJA (CON ICONO OUTLINE Y BADGE) */
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
         position: fixed !important;
         top: 12px !important;
@@ -388,9 +388,10 @@ st.markdown(f"""
         z-index: 999999 !important;
         width: 44px !important;
         height: 44px !important;
+        margin: 0 !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button {{
-        background: rgba(0, 0, 0, 0.22) !important;
+        background: rgba(0, 0, 0, 0.25) !important;
         border-radius: 50% !important;
         width: 44px !important;
         height: 44px !important;
@@ -402,14 +403,17 @@ st.markdown(f"""
         align-items: center !important;
         justify-content: center !important;
     }}
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p {{
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p,
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button span {{
         font-size: 0px !important;
+        display: none !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
         font-size: 24px;
         color: #ffffff;
+        font-weight: normal;
     }}
 
     .cart-badge-count-fixed {{
@@ -611,18 +615,18 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER Y BOTÓN DUPLICADO DE CARRITO
+# STICKY HEADER Y BOTÓN INCURSTADO EN EL HEADER
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header-container">
-    <div style="display: flex; align-items: center;">
+    <div style="display: flex; align-items: center; padding-left: 4px;">
         <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Botón duplicado dentro del header con icono outline y redirección segura
-if st.button("🛒", key="header_cart_dup_btn"):
+# Botón funcional dentro del header (renderizado con icono outline mediante CSS)
+if st.button("shopping_cart", key="header_cart_dup_btn"):
     st.session_state.nav_view = "carrito"
     st.rerun()
 
@@ -1087,6 +1091,6 @@ elif st.session_state.nav_view == "admin":
 st.write("---")
 col_foot1, col_foot_admin, col_foot2 = st.columns(3)
 with col_foot_admin:
-    if st.button("Admin", use_keyword=True, use_container_width=True, key="admin_footer_btn"):
+    if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
         st.session_state.nav_view = "admin"
         st.rerun()
