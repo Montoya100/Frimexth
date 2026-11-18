@@ -22,7 +22,7 @@ if not os.path.exists(UPLOAD_DIR):
 
 # 1. Configuración de la página en modo wide
 st.set_page_config(
-    page_title="Frimex",
+    page_title="Frimex - Página Frimex",
     page_icon=LOGO_URL,
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: DISEÑO LIMPIO DEL HEADER Y BOTÓN OUTLINE
+# CSS: HEADER DE ANCHO COMPLETO Y BOTÓN CIRCULAR
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -341,7 +341,7 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ESPACIADO SUPERIOR PARA EL CONTENIDO */
+    /* ESPACIADO SUPERIOR */
     .block-container {{
         padding-top: 1.5rem !important;
         padding-bottom: 5.5rem !important;
@@ -356,9 +356,29 @@ st.markdown(f"""
         }}
     }}
 
-    /* ESTILIZACIÓN DEL BOTÓN DE CARRITO DENTRO DEL HEADER ROJO */
+    /* CONTENEDOR PRINCIPAL DEL HEADER (FRANJA ROJA DE LADO A LADO) */
+    .frimex-header-container {{
+        background-color: {HEADER_RED} !important;
+        width: 100% !important;
+        padding: 12px 20px !important;
+        margin: -1.5rem -0.75rem 1.5rem -0.75rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
+        box-sizing: border-box !important;
+    }}
+    @media (min-width: 768px) {{
+        .frimex-header-container {{
+            margin: -1.5rem -2rem 1.5rem -2rem !important;
+            width: calc(100% + 4rem) !important;
+            padding: 14px 32px !important;
+        }}
+    }}
+
+    /* ESTILIZACIÓN DEL BOTÓN DE CARRITO CIRCULAR DENTRO DEL HEADER */
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button {{
-        background-color: rgba(0, 0, 0, 0.25) !important;
+        background-color: rgba(0, 0, 0, 0.28) !important;
         color: #ffffff !important;
         width: 48px !important;
         height: 48px !important;
@@ -370,7 +390,6 @@ st.markdown(f"""
         justify-content: center !important;
         border: none !important;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
-        margin-left: auto !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button p,
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button span:not(.material-symbols-outlined) {{
@@ -383,23 +402,23 @@ st.markdown(f"""
         color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DE CONTADOR FLOTANTE */
+    /* INSIGNIA AMARILLA DE CONTADOR CON NÚMERO NEGRO */
     .header-badge-yellow {{
         position: absolute;
         top: 6px;
-        right: 12px;
+        right: 16px;
         background-color: {FAB_YELLOW};
-        color: #1e293b;
+        color: #000000 !important;
         font-weight: 900;
-        font-size: 0.7rem;
-        padding: 1px 6px;
-        border-radius: 10px;
+        font-size: 0.75rem;
+        padding: 1px 7px;
+        border-radius: 12px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         z-index: 10;
         pointer-events: none;
     }}
 
-    /* BARRA DE BÚSQUEDA A FONDO BLANCO Y CONTORNO ROJO */
+    /* BARRA DE BÚSQUEDA Y OTROS ELEMENTOS */
     div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="select"] {{
         background-color: #ffffff !important;
         border: 2px solid {HEADER_RED} !important;
@@ -415,7 +434,6 @@ st.markdown(f"""
         border-radius: 30px !important;
     }}
 
-    /* MODAL CON CONTRASTE CORRECTO */
     div[data-testid="stDialog"] > div {{
         background-color: {modal_bg} !important;
         color: {modal_text} !important;
@@ -430,7 +448,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) PRINCIPAL CON ICONO OUTLINE Y LETRAS NEGRITAS */
+    /* BOTÓN FLOTANTE (FAB) PRINCIPAL */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -471,7 +489,6 @@ st.markdown(f"""
         margin-right: 4px;
     }}
 
-    /* BOTONES GENERALES CON EL ROJO CORPORATIVO #b0271a */
     button, .stButton > button {{
         background-color: {BTN_RED} !important;
         color: #ffffff !important;
@@ -486,7 +503,6 @@ st.markdown(f"""
         transform: translateY(-1px) !important;
     }}
 
-    /* TARJETAS DE PRODUCTO */
     .product-card, .pop-card-box {{
         background-color: {card_bg};
         border: 1px solid {border_color};
@@ -497,7 +513,6 @@ st.markdown(f"""
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }}
 
-    /* PRECIOS EN NEGRO PROFUNDO Y GIGANTES */
     .price-tag {{
         color: {PRICE_BLACK} !important;
         font-weight: 900 !important;
@@ -574,24 +589,22 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER NATIVO INTEGRADO (FRANJA ROJA #cf291d)
+# HEADER NATIVO INTEGRADO DE LADO A LADO
 # ==========================================
-header_bg_box = st.container()
-with header_bg_box:
-    st.markdown(f"""
-    <div style="background-color: {HEADER_RED}; padding: 10px 16px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.18); position: relative;">
-        <img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+st.markdown(f"""
+<div class="frimex-header-container">
+    <img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+    <div style="position: relative; display: inline-block;">
+        {'<div class="header-badge-yellow">' + str(total_items) + '</div>' if total_items > 0 else ''}
     </div>
-    """, unsafe_allow_html=True)
-    
-    # Superponemos el botón y el contador mediante columnas alineadas exactamente dentro de la franja roja
-    col_dummy, col_btn = st.columns([10, 1.4], vertical_alignment="center")
-    with col_btn:
-        if total_items > 0:
-            st.markdown(f'<div class="header-badge-yellow">{total_items}</div>', unsafe_allow_html=True)
-        if st.button("", key="header_cart_outline_btn", use_container_width=True):
-            st.session_state.nav_view = "carrito"
-            st.rerun()
+</div>
+""", unsafe_allow_html=True)
+
+_, col_btn = st.columns([10, 1.2], vertical_alignment="center")
+with col_btn:
+    if st.button("", key="header_cart_outline_btn", use_container_width=True):
+        st.session_state.nav_view = "carrito"
+        st.rerun()
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
@@ -726,7 +739,7 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA CON TEXTO Y MONTO EN NEGRITAS
+    # BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA
     if total_items > 0:
         if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
