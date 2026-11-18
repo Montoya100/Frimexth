@@ -362,48 +362,34 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* ESTILO PARA EL BOTÓN DEL CARRITO EN EL HEADER (IDÉNTICO AL Círculo Original) */
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
-        position: fixed !important;
-        top: 10px !important;
-        right: 24px !important;
-        z-index: 9999999 !important;
-        width: auto !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
+    .header-cart-circle {{
         background-color: {DARK_CIRCLE_RED} !important;
-        width: 42px !important;
-        height: 42px !important;
-        border-radius: 50% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
-        border: none !important;
-        padding: 0 !important;
-        transition: transform 0.2s ease !important;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        text-decoration: none;
+        position: relative;
+        transition: transform 0.2s ease;
     }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button:hover {{
-        transform: scale(1.05) !important;
-        background-color: {BTN_RED_HOVER} !important;
+
+    .header-cart-circle:hover {{
+        transform: scale(1.05);
     }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button p,
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button span {{
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-        margin: 0 !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button::before {{
-        content: "\\e8cc";
-        font-family: 'Material Symbols Outlined';
+
+    .header-cart-circle .material-symbols-outlined {{
         font-size: 22px;
-        color: #ffffff !important;
+        color: #ffffff;
     }}
 
     .header-badge-exact {{
-        position: fixed;
-        top: 6px;
-        right: 20px;
+        position: absolute;
+        top: -4px;
+        right: -4px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
         font-weight: 900;
@@ -415,8 +401,7 @@ st.markdown(f"""
         justify-content: center;
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        z-index: 10000000;
-        pointer-events: none;
+        z-index: 40;
     }}
 
     /* BOTÓN FLOTANTE (FAB) INFERIOR */
@@ -538,6 +523,13 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
+# Detectar navegación limpia mediante query_params sin perder el estado del carrito
+query_params = st.query_params
+if query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
+    st.session_state.nav_view = "carrito"
+    st.query_params.clear()
+    st.rerun()
+
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
 # ==========================================
@@ -590,19 +582,24 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE CON ACCESO NATIVO AL CARRITO
+# STICKY HEADER PERMANENTE (ORIGINAL Y LIMPIO)
 # ==========================================
-st.markdown(f"""
-<div class="frimex-sticky-header">
-    <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-</div>
-""", unsafe_allow_html=True)
-
 if total_items > 0:
-    if st.button("", key="header_cart_btn", help="Ver Carrito"):
-        st.session_state.nav_view = "carrito"
-        st.rerun()
-    st.markdown(f'<div class="header-badge-exact">{total_items}</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="frimex-sticky-header">
+        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+        <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+            <div class="header-badge-exact">{total_items}</div>
+            <span class="material-symbols-outlined">shopping_cart</span>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown(f"""
+    <div class="frimex-sticky-header">
+        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+    </div>
+    """, unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
