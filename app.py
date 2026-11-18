@@ -582,20 +582,26 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE Y SEGURO (CON BADGE CONDICIONAL ESTRICTO)
+# STICKY HEADER PERMANENTE Y SEGURO (CORREGIDO SIN CÓDIGO PLANO)
 # ==========================================
 if total_items > 0:
-    badge_html = f'<div class="header-badge-exact">{total_items}</div>'
+    cart_link_html = f"""
+    <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+        <div class="header-badge-exact">{total_items}</div>
+        <span class="material-symbols-outlined">shopping_cart</span>
+    </a>
+    """
 else:
-    badge_html = ''
+    cart_link_html = """
+    <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+        <span class="material-symbols-outlined">shopping_cart</span>
+    </a>
+    """
 
 header_html = f"""
 <div class="frimex-sticky-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
-        {badge_html}
-        <span class="material-symbols-outlined">shopping_cart</span>
-    </a>
+    {cart_link_html}
 </div>
 """
 st.markdown(header_html, unsafe_allow_html=True)
