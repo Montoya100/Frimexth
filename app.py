@@ -1,4 +1,4 @@
-Import streamlit as st
+import streamlit as st
 import pandas as pd
 import urllib.parse
 import requests
@@ -302,7 +302,6 @@ else:
 HEADER_RED = "#cf291d"          
 BTN_RED = "#b0271a"             
 BTN_RED_HOVER = "#8f1f14"
-DARK_CIRCLE_RED = "#7a160e"     
 PRICE_BLACK = "#000000" if not st.session_state.dark_mode else "#ffffff"        
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
@@ -354,18 +353,18 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR UNIFICADA (FLEXBOX REAL) */
+    /* FRANJA ROJA SUPERIOR CON LOGO A LA IZQUIERDA */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        padding: 10px 24px !important;
+        padding: 12px 24px !important;
         margin-bottom: 1.5rem !important;
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: flex-start !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
     }}
@@ -374,72 +373,6 @@ st.markdown(f"""
         max-height: 40px !important;
         width: auto !important;
         object-fit: contain !important;
-    }}
-
-    /* BOTÓN DE CARRITO ESTILIZADO COMO CÍRCULO EN EL HEADER */
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
-        width: 48px !important;
-        height: 48px !important;
-        min-height: 48px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        position: relative !important;
-    }}
-
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
-        background-color: {DARK_CIRCLE_RED} !important;
-        color: transparent !important;
-        width: 48px !important;
-        height: 48px !important;
-        min-height: 48px !important;
-        max-width: 48px !important;
-        max-height: 48px !important;
-        border-radius: 50% !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border: none !important;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
-        cursor: pointer !important;
-        transition: transform 0.2s ease !important;
-    }}
-
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button:hover {{
-        background-color: #5d100a !important;
-        transform: scale(1.05) !important;
-    }}
-
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button p,
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button span:not(.material-symbols-outlined) {{
-        display: none !important;
-    }}
-
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button::before {{
-        content: "\\e8cc";
-        font-family: 'Material Symbols Outlined';
-        font-size: 24px;
-        color: #ffffff;
-    }}
-
-    /* INSIGNIA AMARILLA CON NÚMERO NEGRO */
-    .header-badge-exact {{
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        background-color: {FAB_YELLOW};
-        color: #000000 !important;
-        font-weight: 900;
-        font-size: 0.75rem;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        z-index: 40;
-        pointer-events: none;
     }}
 
     /* BOTÓN FLOTANTE (FAB) INFERIOR */
@@ -613,36 +546,13 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (LOGO + CARRITO)
+# HEADER VISUAL LIMPIO (SOLO LOGO)
 # ==========================================
-badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
-
 st.markdown(f"""
 <div class="frimex-unified-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <div style="width: 48px; height: 48px; position: relative; display: flex; align-items: center; justify-content: center;">
-        {badge_html}
-    </div>
 </div>
 """, unsafe_allow_html=True)
-
-# Superponemos el botón de Streamlit exactamente sobre el espacio reservado a la derecha en el header
-st.markdown("""
-<style>
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {
-        position: absolute !important;
-        top: 12px !important;
-        right: 24px !important;
-        z-index: 50 !important;
-        width: 48px !important;
-        height: 48px !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-if st.button("", key="header_cart_btn", use_container_width=False):
-    st.session_state.nav_view = "carrito"
-    st.rerun()
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
