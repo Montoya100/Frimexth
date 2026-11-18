@@ -1,4 +1,4 @@
-import streamlit as st
+Import streamlit as st
 import pandas as pd
 import urllib.parse
 import requests
@@ -61,7 +61,7 @@ def save_dark_mode_setting(enabled):
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = load_dark_mode_setting()
 
-# Inicialización de Estados
+# Inicialización estricta de Estados
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILOS PARA HEADER Y FAB
+# CSS: DISEÑO ROBUSTO PARA HEADER Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -354,7 +354,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR UNIFICADA */
+    /* FRANJA ROJA SUPERIOR UNIFICADA (FLEXBOX REAL) */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
@@ -368,8 +368,6 @@ st.markdown(f"""
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
-        min-height: 60px !important;
-        z-index: 40 !important;
     }}
 
     .frimex-unified-header img {{
@@ -378,17 +376,14 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* CÍRCULO ROJO OSCURO DEL HEADER (CARRITO) */
+    /* BOTÓN DE CARRITO ESTILIZADO COMO CÍRCULO EN EL HEADER */
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
         width: 48px !important;
         height: 48px !important;
         min-height: 48px !important;
         margin: 0 !important;
         padding: 0 !important;
-        position: absolute !important;
-        top: 8px !important;
-        right: 20px !important;
-        z-index: 100 !important;
+        position: relative !important;
     }}
 
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
@@ -424,69 +419,68 @@ st.markdown(f"""
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
         font-size: 24px;
-        color: #ffffff !important;
-        display: block !important;
+        color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DEL HEADER CON NÚMERO NEGRO */
+    /* INSIGNIA AMARILLA CON NÚMERO NEGRO */
     .header-badge-exact {{
-        position: fixed !important;
-        top: 8px !important;
-        right: 16px !important;
-        background-color: {FAB_YELLOW} !important;
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background-color: {FAB_YELLOW};
         color: #000000 !important;
-        font-weight: 900 !important;
-        font-size: 0.75rem !important;
-        width: 20px !important;
-        height: 20px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border-radius: 50% !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-        z-index: 110 !important;
-        pointer-events: none !important;
+        font-weight: 900;
+        font-size: 0.75rem;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        z-index: 40;
+        pointer-events: none;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) INFERIOR AMARILLO (INTACTO) */
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) {{
+    /* BOTÓN FLOTANTE (FAB) INFERIOR */
+    div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
+        left: 20px !important;
+        right: auto !important;
         z-index: 9999999 !important;
         width: auto !important;
     }}
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button {{
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
         background: {FAB_YELLOW} !important;
         color: #1e293b !important;
-        padding: 12px 28px !important;
+        padding: 12px 22px !important;
         border-radius: 50px !important;
         font-weight: 900 !important;
         font-size: 1rem !important;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
-        height: 52px !important;
+        height: 50px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 10px !important;
+        gap: 8px !important;
         white-space: nowrap !important;
     }}
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button p,
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button span {{
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
         color: #1e293b !important;
         -webkit-text-fill-color: #1e293b !important;
         font-size: 1rem !important;
         font-weight: 900 !important;
         margin: 0 !important;
     }}
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button::before {{
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
         font-size: 22px;
         vertical-align: -4px;
-        margin-right: 2px;
+        margin-right: 4px;
     }}
 
     /* ESTILOS GENERALES Y FORMULARIOS */
@@ -619,16 +613,31 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (LOGO + CARRITO SUPERIOR)
+# HEADER VISUAL UNIFICADO (LOGO + CARRITO)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
 st.markdown(f"""
 <div class="frimex-unified-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <div></div>
+    <div style="width: 48px; height: 48px; position: relative; display: flex; align-items: center; justify-content: center;">
+        {badge_html}
+    </div>
 </div>
-{badge_html}
+""", unsafe_allow_html=True)
+
+# Superponemos el botón de Streamlit exactamente sobre el espacio reservado a la derecha en el header
+st.markdown("""
+<style>
+    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {
+        position: absolute !important;
+        top: 12px !important;
+        right: 24px !important;
+        z-index: 50 !important;
+        width: 48px !important;
+        height: 48px !important;
+    }
+</style>
 """, unsafe_allow_html=True)
 
 if st.button("", key="header_cart_btn", use_container_width=False):
@@ -770,7 +779,7 @@ if st.session_state.nav_view == "catalogo":
 
     # BOTÓN FLOTANTE (FAB) INFERIOR
     if total_items > 0:
-        if st.button(f"Ver Carrito • ${total_amount:.2f}", key="native_floating_fab"):
+        if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
@@ -893,7 +902,7 @@ elif st.session_state.nav_view == "carrito":
                 if valid_cash:
                     cash_given = valid_cash[0]
                     change = cash_given - total_price
-                    change_text = f"Paga con: ${cash_given:.2f} MXN\nCambio:${change:.2f} MXN\n"
+                    change_text = f"Paga con: ${cash_given:.2f} MXN\nCambio: ${change:.2f} MXN\n"
 
         msg_header = "NUEVO PEDIDO FRIMEX\n"
         msg_date = f"Fecha: {order_date}\n"
@@ -969,4 +978,130 @@ elif st.session_state.nav_view == "admin":
             df_current = pd.DataFrame(current_sorted_products)
             column_config = {
                 "id": None,
-                "category": st.column_config.SelectboxColumn("
+                "category": st.column_config.SelectboxColumn("Categoría", options=["Individual", "Para compartir"], required=True)
+            }
+            edited_df = st.data_editor(df_current, num_rows="dynamic", key="editor_admin_table", column_config=column_config, hide_index=True, use_container_width=True)
+            
+            if st.button("Guardar Cambios de Productos"):
+                updated_list = []
+                for idx, row in edited_df.iterrows():
+                    raw_id = row.get("id")
+                    prod_id = str(raw_id).strip() if pd.notna(raw_id) and str(raw_id).strip() != "" else f"prod_{int(datetime.now().timestamp())}_{idx}"
+                    raw_img = str(row.get("image", "")).strip()
+                    prod_img = raw_img if raw_img != "" and raw_img.lower() != "nan" and "placeholder" not in raw_img else DEFAULT_PRODUCT_IMG
+                    raw_desc = row.get("description")
+                    prod_desc = str(raw_desc).strip() if pd.notna(raw_desc) and str(raw_desc).strip() != "nan" else ""
+                    
+                    updated_list.append({
+                        "id": prod_id,
+                        "name": str(row.get("name", "Nuevo producto")),
+                        "category": str(row.get("category", "Individual")),
+                        "price": safe_float(row.get("price"), 0.0),
+                        "description": prod_desc,
+                        "image": prod_img
+                    })
+                updated_list = sorted(updated_list, key=lambda x: str(x.get("name", "")).lower())
+                st.session_state.products = updated_list
+                save_products_to_file(updated_list)
+                st.success("¡Productos guardados correctamente!")
+                st.rerun()
+
+        with tab_pop:
+            st.markdown("### Seleccionar productos Populares")
+            current_pop_ids = [str(p.get("id")) for p in st.session_state.popular_items]
+            selected_populares_new = []
+            for prod in st.session_state.products:
+                p_id = str(prod.get("id"))
+                p_name = str(prod.get("name"))
+                p_price = safe_float(prod.get("price"), 0.0)
+                is_currently_pop = p_id in current_pop_ids
+                if st.checkbox(f"{p_name} (${p_price:.2f} MXN)", value=is_currently_pop, key=f"check_pop_{p_id}"):
+                    selected_populares_new.append({
+                        "id": p_id,
+                        "name": p_name,
+                        "price": p_price,
+                        "image": prod.get("image", DEFAULT_PRODUCT_IMG)
+                    })
+            if st.button("Guardar Populares"):
+                st.session_state.popular_items = selected_populares_new
+                save_populares_to_file(selected_populares_new)
+                st.success("¡Populares actualizados con éxito!")
+                st.rerun()
+
+        with tab_sugg:
+            st.markdown("### Producto Gancho Sugerido en el Carrito")
+            prod_options = {p.get("name"): p.get("id") for p in st.session_state.products}
+            current_sugg_id = st.session_state.cart_suggestion.get("id")
+            current_sugg_name = next((name for name, pid in prod_options.items() if str(pid) == str(current_sugg_id)), list(prod_options.keys())[0] if prod_options else "")
+            selected_sugg_name = st.selectbox("Producto sugerido", options=list(prod_options.keys()), index=list(prod_options.keys()).index(current_sugg_name) if current_sugg_name in prod_options else 0)
+            
+            if st.button("Guardar Sugerencia de Carrito"):
+                chosen_id = prod_options.get(selected_sugg_name)
+                st.session_state.cart_suggestion = {"id": chosen_id}
+                save_suggestion_to_file(st.session_state.cart_suggestion)
+                st.success("¡Sugerencia gancho guardada correctamente!")
+                st.rerun()
+
+        with tab_banner:
+            st.markdown("### Imagen del Banner Principal")
+            new_banner_url = st.text_input("URL de la imagen del banner", value=st.session_state.banner_url)
+            if st.button("Guardar Banner"):
+                if new_banner_url.strip():
+                    st.session_state.banner_url = new_banner_url.strip()
+                    with open(BANNER_FILE, "w", encoding="utf-8") as f:
+                        json.dump({"url": new_banner_url.strip()}, f, ensure_ascii=False, indent=4)
+                    st.success("¡Banner actualizado con éxito!")
+                    st.rerun()
+
+        with tab_upload:
+            st.markdown("### Subir Imágenes al Servidor")
+            uploaded_file = st.file_uploader("Elige una imagen", type=["png", "jpg", "jpeg", "webp"])
+            if uploaded_file is not None:
+                file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+                with open(file_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                st.success(f"¡Subida con éxito: `{uploaded_file.name}`!")
+                st.image(file_path, width=200)
+                st.text_input("Copia esta ruta:", value=f"/{UPLOAD_DIR}/{uploaded_file.name}")
+
+        with tab_trivia:
+            st.markdown("### Administrar Preguntas de la Trivia")
+            df_trivia = pd.DataFrame(st.session_state.trivia_questions_db)
+            edited_trivia_df = st.data_editor(df_trivia, num_rows="dynamic", key="editor_trivia_table", use_container_width=True)
+            if st.button("Guardar Preguntas de Trivia"):
+                updated_trivia_list = []
+                for _, row in edited_trivia_df.iterrows():
+                    p_text = str(row.get("pregunta", "")).strip()
+                    o_text = str(row.get("opciones", "")).strip()
+                    r_text = str(row.get("respuesta", "")).strip()
+                    if p_text and o_text and r_text:
+                        updated_trivia_list.append({"pregunta": p_text, "opciones": o_text, "respuesta": r_text})
+                if updated_trivia_list:
+                    st.session_state.trivia_questions_db = updated_trivia_list
+                    with open(TRIVIA_FILE, "w", encoding="utf-8") as f:
+                        json.dump(updated_trivia_list, f, ensure_ascii=False, indent=4)
+                    st.success("¡Preguntas guardadas con éxito!")
+                    st.rerun()
+
+        with tab_theme:
+            st.markdown("### Control de Apariencia (Modo Claro / Oscuro)")
+            dark_toggle = st.toggle("Activar Modo Oscuro", value=st.session_state.dark_mode)
+            if st.button("Aplicar y Guardar Tema"):
+                st.session_state.dark_mode = dark_toggle
+                save_dark_mode_setting(dark_toggle)
+                st.success("¡Tema actualizado!")
+                st.rerun()
+        
+        st.write("---")
+        if st.button("Cerrar Sesión Admin", use_container_width=True):
+            st.session_state.admin_authenticated = False
+            st.session_state.nav_view = "catalogo"
+            st.rerun()
+
+# PIE DE PÁGINA
+st.write("---")
+col_foot1, col_foot_admin, col_foot2 = st.columns(3)
+with col_foot_admin:
+    if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
+        st.session_state.nav_view = "admin"
+        st.rerun()
