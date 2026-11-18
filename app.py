@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, BUSCADOR BLANCO Y FAB
+# CSS: STICKY HEADER, ICONOS OUTLINE Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -380,7 +380,7 @@ st.markdown(f"""
         display: block !important;
     }}
 
-    /* BOTÓN DUPLICADO EN EL HEADER (CIRCULAR CON ICONO OUTLINE Y BADGE AMARILLO) */
+    /* BOTÓN SUPERIOR EN EL HEADER (CIRCULAR CON ICONO OUTLINE Y BADGE AMARILLO) */
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
         position: fixed !important;
         top: 12px !important;
@@ -427,7 +427,7 @@ st.markdown(f"""
         pointer-events: none;
     }}
 
-    /* FORZAR BARRA DE BÚSQUEDA A FONDO BLANCO, TEXTO OSCURO Y CONTORNO ROJO */
+    /* BARRA DE BÚSQUEDA A FONDO BLANCO Y CONTORNO ROJO */
     div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="select"] {{
         background-color: #ffffff !important;
         border: 2px solid {HEADER_RED} !important;
@@ -467,7 +467,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL Y LETRAS NEGRITAS */
+    /* BOTÓN FLOTANTE (FAB) PRINCIPAL CON ICONO OUTLINE Y LETRAS NEGRITAS */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -621,7 +621,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Botón nativo duplicado dentro del header (con icono outline por CSS)
+# Botón duplicado dentro del header con icono outline y redirección segura
 if st.button("🛒", key="header_cart_dup_btn"):
     st.session_state.nav_view = "carrito"
     st.rerun()
