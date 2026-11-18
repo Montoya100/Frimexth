@@ -277,17 +277,17 @@ if "popular_items" not in st.session_state:
         {"id": "p1", "name": "Pistaches Salados (90g)", "price": 35.0, "image": DEFAULT_PRODUCT_IMG}
     ]
 
-text_color = "#f1f5f9" if st.session_state.auto_dark_mode else "#1e293b"
-sub_text_color = "#94a3b8" if st.session_state.auto_dark_mode else "#64748b"
-card_bg = "#1e293b" if st.session_state.auto_dark_mode else "#ffffff"
-border_color = "#334155" if st.session_state.auto_dark_mode else "#e2e8f0"
+text_color = "#1e293b"
+sub_text_color = "#64748b"
+card_bg = "#ffffff"
+border_color = "#e2e8f0"
 
 BTN_GENERAL = "#DC2626"
 BTN_GENERAL_HOVER = "#B91C1C"
 BTN_CART_FAB = "#EF4444"
 
 # ==========================================
-# CSS: STICKY HEADER ROJO, BUSCADOR BLANCO Y BLOQUEO DE YITH/G-HUB
+# CSS: STICKY HEADER ROJO, CAMPOS BLANCOS CON TEXTO NEGRO, FAB FLOTANTE Y BLOQUEO DE YITH/G-HUB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -315,7 +315,7 @@ st.markdown(f"""
     }}
 
     .stApp, body, html, [data-testid="stAppViewContainer"] {{
-        background-color: {"#121212" if st.session_state.auto_dark_mode else "#f8fafc"} !important;
+        background-color: #f8fafc !important;
         color: {text_color} !important;
     }}
 
@@ -350,8 +350,11 @@ st.markdown(f"""
         visibility: visible !important;
     }}
 
-    /* BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO */
-    input[type="text"], div[data-baseweb="input"] {{
+    /* CAMPOS DE TEXTO E INPUTS BLANCOS CON TEXTO NEGRO CLARO Y CONTRASTE */
+    input[type="text"], textarea, select, 
+    div[data-baseweb="input"], div[data-baseweb="base-input"], 
+    div[data-baseweb="textarea"], div[data-baseweb="select"],
+    [data-baseweb="input"] > div, [data-baseweb="base-input"] > div {{
         background-color: #ffffff !important;
         color: #1e293b !important;
         -webkit-text-fill-color: #1e293b !important;
@@ -359,8 +362,50 @@ st.markdown(f"""
         border-radius: 12px !important;
     }}
 
-    /* BOTONES Y ACCIONES */
-    button, .stButton > button, div[data-testid="stButton"] > button {{
+    label p, .stTextInput label, .stTextArea label, [data-testid="stWidgetLabel"] p, .stRadio label p {{
+        color: #1e293b !important;
+        -webkit-text-fill-color: #1e293b !important;
+        font-weight: 700 !important;
+    }}
+
+    /* BOTÓN FLOTANTE (FAB) FIJO INFERIOR IZQUIERDO */
+    div[data-testid="stButton"]:has(button[kind="primary"]) {{
+        position: fixed !important;
+        bottom: 22px !important;
+        left: 22px !important;
+        right: auto !important;
+        transform: none !important;
+        z-index: 9999999 !important;
+        width: auto !important;
+    }}
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
+        background: linear-gradient(135deg, {BTN_CART_FAB} 0%, #B91C1C) !important;
+        color: #ffffff !important;
+        padding: 12px 24px !important;
+        border-radius: 50px !important;
+        font-weight: 800 !important;
+        font-size: 0.95rem !important;
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.6) !important;
+        border: none !important;
+        height: 48px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        white-space: nowrap !important;
+    }}
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+
+    /* BOTONES Y ACCIONES GENERALES */
+    button, .stButton > button {{
         background-color: {BTN_GENERAL} !important;
         color: #ffffff !important;
         border: none !important;
@@ -457,7 +502,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Controles superiores: Icono Outline en blanco integrado con columnas para el carrito
+# Controles superiores: Icono Outline en blanco puro mediante columnas separadas sin código plano
 col_spacer, col_cart = st.columns([4, 1])
 with col_cart:
     icon_col, btn_col = st.columns([1, 3], vertical_alignment="center")
@@ -476,7 +521,7 @@ if st.session_state.nav_view == "catalogo":
     search_query = st.text_input("Buscar productos...", placeholder="Buscar productos...", label_visibility="collapsed")
     st.write("---")
     
-    # BANNER PRINCIPAL RESTAURADO
+    # BANNER PRINCIPAL
     banner_to_show = str(st.session_state.banner_url).strip()
     if not banner_to_show or banner_to_show.lower() == "nan":
         banner_to_show = DEFAULT_BANNER
@@ -608,8 +653,9 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
+    # BOTÓN FLOTANTE INFERIOR (FAB) CUANDO HAY ARTÍCULOS EN EL CARRITO
     if total_items > 0:
-        if st.button("Ver Carrito", type="primary", key="native_floating_fab"):
+        if st.button(f"Ver Carrito ({total_items})", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
