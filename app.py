@@ -703,15 +703,13 @@ if st.session_state.nav_view == "catalogo":
             name_raw = str(p.get("name", "Producto")).strip()
             if "(" in name_raw and ")" in name_raw:
                 base_name = name_raw.split("(")[0].strip()
-                if base_name not in grouped_dict:
-                    grouped_dict[base_name] = []
-                if not any(str(it.get("id")) == str(p.get("id")) for it in grouped_dict[base_name]):
-                    grouped_dict[base_name].append(p)
             else:
-                if name_raw not in grouped_dict:
-                    grouped_dict[name_raw] = []
-                if not any(str(it.get("id")) == str(p.get("id")) for it in grouped_dict[base_name]):
-                    grouped_dict[base_name].append(p)
+                base_name = name_raw
+                
+            if base_name not in grouped_dict:
+                grouped_dict[base_name] = []
+            if not any(str(it.get("id")) == str(p.get("id")) for it in grouped_dict[base_name]):
+                grouped_dict[base_name].append(p)
 
         group_items_list = sorted(list(grouped_dict.items()), key=lambda x: 0 if len(x[1]) > 1 else 1)
         
