@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER Y ANCLAJE PERFECTO DEL BOTÓN FANTASMA
+# CSS: STICKY HEADER PERMANENTE (SIN FANTASMA)
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -351,9 +351,9 @@ st.markdown(f"""
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
-        box-shadow: c 4px 14px rgba(0,0,0,0.25) !important;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important;
         box-sizing: border-box !important;
-        z-index: 99999 !important;
+        z-index: 999999 !important;
     }}
 
     .frimex-sticky-header img {{
@@ -362,71 +362,49 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* CAPA VISUAL DEL CARRITO EN EL HEADER (NO BLOQUEA CLICS) */
-    .header-cart-display {{
-        position: fixed !important;
-        top: 10px !important;
-        right: 24px !important;
+    .header-cart-circle {{
         background-color: {DARK_CIRCLE_RED} !important;
-        width: 42px !important;
-        height: 42px !important;
-        border-radius: 50% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
-        z-index: 999998 !important;
-        pointer-events: none !important;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        text-decoration: none;
+        position: relative;
+        transition: transform 0.2s ease;
     }}
 
-    .header-cart-display .material-symbols-outlined {{
-        font-size: 22px !important;
-        color: #ffffff !important;
+    .header-cart-circle:hover {{
+        transform: scale(1.05);
+    }}
+
+    .header-cart-circle .material-symbols-outlined {{
+        font-size: 22px;
+        color: #ffffff;
     }}
 
     .header-badge-exact {{
-        position: fixed !important;
-        top: 6px !important;
-        right: 20px !important;
-        background-color: {FAB_YELLOW} !important;
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background-color: {FAB_YELLOW};
         color: #000000 !important;
-        font-weight: 900 !important;
-        font-size: 0.75rem !important;
-        width: 20px !important;
-        height: 20px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border-radius: 50% !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-        z-index: 9999999 !important;
-        pointer-events: none !important;
+        font-weight: 900;
+        font-size: 0.75rem;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        z-index: 40;
     }}
 
-    /* ANCLAJE EXACTO Y FIJO DEL BOTÓN NATIVO FANTASMA (ENCIMA DE TODO) */
-    div[data-testid="stButton"]:has(button[key="ghost_header_cart_btn"]) {{
-        position: fixed !important;
-        top: 10px !important;
-        right: 24px !important;
-        z-index: 10000000 !important;
-        width: 42px !important;
-        height: 42px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="ghost_header_cart_btn"]) > button {{
-        background-color: transparent !important;
-        width: 42px !important;
-        height: 42px !important;
-        min-height: 42px !important;
-        border-radius: 50% !important;
-        border: none !important;
-        padding: 0 !important;
-        opacity: 0 !important; /* 100% invisible pero funcional */
-        cursor: pointer !important;
-    }}
-
-    /* BOTÓN FLOTANTE (FAB) INFERIOR */
+    /* BOTÓN FLOTANTE (FAB) INFERIOR - INTACTO */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -545,6 +523,12 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
+# Manejo seguro mediante query_params para que el header funcione bien
+if st.query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
+    st.session_state.nav_view = "carrito"
+    st.query_params.clear()
+    st.rerun()
+
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
 # ==========================================
@@ -597,27 +581,24 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# RENDERIZADO DEL STICKY HEADER Y EL BOTÓN FANTASMA
+# STICKY HEADER PERMANENTE (ORIGINAL Y LIMPIO)
 # ==========================================
-st.markdown(f"""
-<div class="frimex-sticky-header">
-    <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-</div>
-""", unsafe_allow_html=True)
-
 if total_items > 0:
-    # Capa visual del carrito y badge
     st.markdown(f"""
-    <div class="header-cart-display">
-        <span class="material-symbols-outlined">shopping_cart</span>
+    <div class="frimex-sticky-header">
+        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+        <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+            <div class="header-badge-exact">{total_items}</div>
+            <span class="material-symbols-outlined">shopping_cart</span>
+        </a>
     </div>
-    <div class="header-badge-exact">{total_items}</div>
     """, unsafe_allow_html=True)
-    
-    # Botón nativo fantasma posicionado exactamente encima para capturar el clic y retener el estado
-    if st.button("", key="ghost_header_cart_btn", help="Ver Carrito"):
-        st.session_state.nav_view = "carrito"
-        st.rerun()
+else:
+    st.markdown(f"""
+    <div class="frimex-sticky-header">
+        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+    </div>
+    """, unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
@@ -752,7 +733,7 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) INFERIOR
+    # BOTÓN FLOTANTE (FAB) INFERIOR - ¡INTACTO Y FUNCIONANDO!
     if total_items > 0:
         if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
