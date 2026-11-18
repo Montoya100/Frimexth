@@ -302,13 +302,13 @@ else:
 HEADER_RED = "#cf291d"          
 BTN_RED = "#b0271a"             
 BTN_RED_HOVER = "#8f1f14"
-DARK_CIRCLE_RED = "#7a160e"     # Rojo oscuro para el círculo del carrito en el header
+DARK_CIRCLE_RED = "#7a160e"     
 PRICE_BLACK = "#000000" if not st.session_state.dark_mode else "#ffffff"        
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: DISEÑO PARA HEADER Y BOTÓN FLOTANTE (FAB)
+# CSS: ESTILOS PARA HEADER UNIFICADO Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
