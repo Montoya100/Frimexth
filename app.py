@@ -523,12 +523,10 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
-# Detectar navegación limpia mediante query_params sin perder el estado del carrito
-query_params = st.query_params
-if query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
+# Captura segura del parámetro de navegación SIN borrar el estado del carrito
+if st.query_params.get("view") == "carrito":
     st.session_state.nav_view = "carrito"
     st.query_params.clear()
-    st.rerun()
 
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
