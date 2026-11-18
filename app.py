@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, ICONO OUTLINE Y FAB
+# CSS: STICKY HEADER Y BOTÓN OUTLINE PERFECTO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -374,13 +374,13 @@ st.markdown(f"""
     }}
 
     .sticky-logo {{
-        max-height: 44px;
+        max-height: 42px;
         width: auto;
         object-fit: contain;
         display: block !important;
     }}
 
-    /* BOTÓN SUPERIOR DENTRO DEL HEADER (CIRCULAR CON ICONO OUTLINE Y BADGE AMARILLO) */
+    /* BOTÓN SUPERIOR EXACTAMENTE DENTRO DE LA FRANJA ROJA */
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
         position: fixed !important;
         top: 12px !important;
@@ -388,9 +388,10 @@ st.markdown(f"""
         z-index: 999999 !important;
         width: 44px !important;
         height: 44px !important;
+        margin: 0 !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button {{
-        background: rgba(0, 0, 0, 0.22) !important;
+        background: rgba(0, 0, 0, 0.25) !important;
         border-radius: 50% !important;
         width: 44px !important;
         height: 44px !important;
@@ -402,14 +403,19 @@ st.markdown(f"""
         align-items: center !important;
         justify-content: center !important;
     }}
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p {{
+    /* Ocultar cualquier texto residual del botón ("cart", etc.) */
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p,
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button span:not(.material-symbols-outlined) {{
         font-size: 0px !important;
+        display: none !important;
     }}
+    /* Inyectar icono outline real de Material Symbols */
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
         font-size: 24px;
         color: #ffffff;
+        font-weight: normal;
     }}
 
     .cart-badge-count-fixed {{
@@ -611,18 +617,18 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER Y BOTÓN SUPERIOR DE CARRITO
+# STICKY HEADER Y BOTÓN INCURSTADO EN LA FRANJA ROJA
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header-container">
-    <div style="display: flex; align-items: center;">
+    <div style="display: flex; align-items: center; padding-left: 4px;">
         <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Botón posicionado exactamente dentro de la franja roja superior del header (con icono outline real vía CSS)
-if st.button("cart", key="header_cart_dup_btn"):
+# Botón funcional dentro del header (oculto en texto y estilizado como icono outline perfecto mediante CSS)
+if st.button("", key="header_cart_dup_btn"):
     st.session_state.nav_view = "carrito"
     st.rerun()
 
