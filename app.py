@@ -68,6 +68,14 @@ if "cart" not in st.session_state:
 if "nav_view" not in st.session_state:
     st.session_state.nav_view = "catalogo"
 
+# CAPTURAR CLIC DEL CARRITO DESDE LA URL (QUERY PARAMS)
+query_params = st.query_params
+if "view" in query_params:
+    target_view = query_params["view"]
+    if target_view in ["catalogo", "carrito", "admin"] and st.session_state.nav_view != target_view:
+        st.session_state.nav_view = target_view
+        st.rerun()
+
 if "selected_cat" not in st.session_state:
     st.session_state.selected_cat = "Todo"
 
@@ -308,7 +316,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: HEADER FLEXBOX PURO (EVITA APILAMIENTO MÓVIL)
+# CSS: HEADER FLEXBOX PURO Y ENLACE DIRECTO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -354,7 +362,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR CON FLEXBOX (MANTIENE TODO EN UNA SOLA LÍNEA EN MÓVIL) */
+    /* FRANJA ROJA SUPERIOR CON FLEXBOX */
     .frimex-flex-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
@@ -376,24 +384,8 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* BOTÓN DE ACCIÓN PARA EL CARRITO EN EL HEADER (INVISIBLE PERO FUNCIONAL SOBRE EL CÍRCULO) */
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        z-index: 30 !important;
-        opacity: 0 !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
-        width: 100% !important;
-        height: 100% !important;
-        cursor: pointer !important;
-    }}
-
-    /* CONTENEDOR DEL CÍRCULO ROJO OSCURO */
-    .cart-icon-wrapper {{
+    /* CONTENEDOR DEL CÍRCULO ROJO OSCURO CON ENLACE FUNCIONAL */
+    .cart-link-wrapper {{
         position: relative !important;
         background-color: {DARK_CIRCLE_RED} !important;
         width: 48px !important;
@@ -403,12 +395,14 @@ st.markdown(f"""
         align-items: center !important;
         justify-content: center !important;
         box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
+        text-decoration: none !important;
         cursor: pointer !important;
     }}
 
-    .cart-icon-wrapper:hover {{
+    .cart-link-wrapper:hover {{
         transform: scale(1.05);
         transition: transform 0.2s ease;
+        background-color: #5d100a !important;
     }}
 
     /* INSIGNIA AMARILLA CON NÚMERO NEGRO */
@@ -561,26 +555,20 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL FLEXBOX (NO SE ROMPE EN MÓVIL)
+# HEADER VISUAL LIMPIO Y FUNCIONAL (SIN BOTONES EXTRA ABAJO)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
+target_cart_url = "?view=carrito"
 
 st.markdown(f"""
 <div class="frimex-flex-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <div style="position: relative;">
-        <div class="cart-icon-wrapper">
-            <span class="material-symbols-outlined" style="color: #ffffff; font-size: 24px;">shopping_cart</span>
-            {badge_html}
-        </div>
-    </div>
+    <a href="{target_cart_url}" class="cart-link-wrapper" title="Ver Carrito">
+        <span class="material-symbols-outlined" style="color: #ffffff; font-size: 24px;">shopping_cart</span>
+        {badge_html}
+    </a>
 </div>
 """, unsafe_allow_html=True)
-
-# Botón interactivo invisible posicionado exactamente sobre el círculo del carrito
-if st.button("", key="header_cart_btn", use_container_width=False):
-    st.session_state.nav_view = "carrito"
-    st.rerun()
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
@@ -717,6 +705,7 @@ if st.session_state.nav_view == "catalogo":
 
 elif st.session_state.nav_view == "carrito":
     if st.button("← Volver al Catálogo", use_container_width=False):
+        st.query_params.clear()
         st.session_state.nav_view = "catalogo"
         st.rerun()
         
@@ -726,6 +715,7 @@ elif st.session_state.nav_view == "carrito":
     if st.session_state.get("order_sent", False):
         st.success("¡Muchas gracias por tu compra! Tu pedido ha sido enviado con éxito a través de WhatsApp.")
         if st.button("Hacer un nuevo pedido", type="primary", use_container_width=True):
+            st.query_params.clear()
             st.session_state.order_sent = False
             st.session_state.cart = {}
             st.session_state.trivia_answered = False
@@ -884,6 +874,7 @@ elif st.session_state.nav_view == "carrito":
 
 elif st.session_state.nav_view == "admin":
     if st.button("← Volver al Catálogo", use_container_width=False):
+        st.query_params.clear()
         st.session_state.nav_view = "catalogo"
         st.rerun()
 
@@ -1026,6 +1017,7 @@ elif st.session_state.nav_view == "admin":
         
         st.write("---")
         if st.button("Cerrar Sesión Admin", use_container_width=True):
+            st.query_params.clear()
             st.session_state.admin_authenticated = False
             st.session_state.nav_view = "catalogo"
             st.rerun()
@@ -1035,5 +1027,6 @@ st.write("---")
 col_foot1, col_foot_admin, col_foot2 = st.columns(3)
 with col_foot_admin:
     if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
+        st.query_params.clear()
         st.session_state.nav_view = "admin"
         st.rerun()
