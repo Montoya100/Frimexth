@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: DISEÑO VISIBLE Y ACOPLADO ARRIBA
+# CSS: ELIMINAR MÁRGENES Y ACOPLAR HEADER PERFECTO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -340,8 +340,9 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
+    /* QUITAR MÁRGENES SUPERIORES DE STREAMLIT */
     .block-container {{
-        padding-top: 1rem !important;
+        padding-top: 0rem !important;
         padding-bottom: 6rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
@@ -354,15 +355,15 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR BIEN UBICADA */
+    /* FRANJA ROJA SUPERIOR PEGADA EXACTAMENTE AL BORDE */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        margin-top: -1rem !important;
+        margin-top: -6rem !important;
         margin-bottom: 1.5rem !important;
-        padding: 12px 24px !important;
+        padding: 14px 28px !important;
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
@@ -373,7 +374,7 @@ st.markdown(f"""
     }}
 
     .frimex-unified-header img {{
-        max-height: 40px !important;
+        max-height: 52px !important;
         width: auto !important;
         object-fit: contain !important;
     }}
@@ -386,8 +387,8 @@ st.markdown(f"""
 
     .header-cart-circle {{
         background-color: {DARK_CIRCLE_RED} !important;
-        width: 44px;
-        height: 44px;
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -404,7 +405,7 @@ st.markdown(f"""
     }}
 
     .header-cart-circle .material-symbols-outlined {{
-        font-size: 22px;
+        font-size: 24px;
         color: #ffffff;
     }}
 
@@ -605,7 +606,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (LIMPIO Y SEGURO)
+# HEADER VISUAL UNIFICADO (CON LA SINTAXIS CORRECTA PARA QUE NO SE VEA COMO TEXTO)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
