@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: DISEÑO RESPONSIVO PARA HEADER Y CARRITO HTML
+# CSS: FRANJA SUPERIOR PEGADA ARRIBA Y CARRITO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -354,20 +354,22 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR UNIFICADA (FLEXBOX REAL) */
+    /* FRANJA ROJA SUPERIOR ABSOLUTA (PEGADA AL BORDE SUPERIOR) */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        padding: 10px 24px !important;
+        margin-top: -6rem !important;
         margin-bottom: 1.5rem !important;
+        padding: 12px 24px !important;
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
+        z-index: 999;
     }}
 
     .frimex-unified-header img {{
@@ -603,11 +605,11 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (LOGO + CARRITO HTML FUNCIONAL)
+# HEADER VISUAL UNIFICADO (LOGO + CARRITO HTML SEGURO)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
-st.markdown(f"""
+header_html = f"""
 <div class="frimex-unified-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
     <div class="header-cart-container">
@@ -617,7 +619,8 @@ st.markdown(f"""
         </a>
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""
+st.markdown(header_html, unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
