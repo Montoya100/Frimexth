@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: HEADER DE ANCHO COMPLETO Y BOTÓN CIRCULAR PERFECTO
+# CSS: ESTILOS LIMPIOS PARA EL HEADER Y BOTÓN DEL CARRITO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -341,12 +341,12 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ESPACIADO SUPERIOR Y MÁRGENES */
+    /* PADDING ESTÁNDAR PARA QUE NADA QUEDE CORTADO */
     .block-container {{
-        padding-top: 0rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 5.5rem !important;
-        padding-left: 0.75rem !important;
-        padding-right: 0.75rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
         max-width: 100% !important;
     }}
     @media (min-width: 768px) {{
@@ -356,22 +356,19 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA DE HEADER DE LADO A LADO SIN CORTES */
-    .frimex-full-header {{
+    /* FRANJA ROJA DEL HEADER */
+    .frimex-header-bar {{
         background-color: {HEADER_RED} !important;
-        width: 100vw !important;
-        position: relative !important;
-        left: calc(-50vw + 50%) !important;
-        padding: 12px 24px !important;
-        margin-bottom: 1.5rem !important;
+        padding: 12px 20px !important;
+        border-radius: 12px;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
-        box-sizing: border-box !important;
+        margin-bottom: 1.5rem !important;
     }}
 
-    /* CONTENEDOR EXACTO DEL BOTÓN DE CARRITO EN EL HEADER */
+    /* BOTÓN CIRCULAR DE CARRITO EN EL HEADER */
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) {{
         width: 48px !important;
         height: 48px !important;
@@ -392,7 +389,7 @@ st.markdown(f"""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border: 2px solid rgba(255, 255, 255, 0.35) !important;
+        border: 2px solid rgba(255, 255, 255, 0.4) !important;
         box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
         position: relative !important;
     }}
@@ -411,7 +408,7 @@ st.markdown(f"""
         color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DE CONTADOR CON NÚMERO NEGRO */
+    /* BURBUJA AMARILLA DE CONTADOR */
     .header-badge-yellow {{
         position: absolute;
         top: -6px;
@@ -428,7 +425,7 @@ st.markdown(f"""
         line-height: 1.2;
     }}
 
-    /* BARRA DE BÚSQUEDA Y OTROS ELEMENTOS */
+    /* ESTILOS GENERALES */
     div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="select"] {{
         background-color: #ffffff !important;
         border: 2px solid {HEADER_RED} !important;
@@ -599,32 +596,23 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER NATIVO INTEGRADO DE LADO A LADO SIN CORTES
+# HEADER LIMPIO Y SEGURO DENTRO DE LA FRANJA ROJA
 # ==========================================
-logo_html = f'<img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display=\'none\'" />'
+st.markdown(f"""
+<div class="frimex-header-bar">
+    <img src="{LOGO_URL}" style="max-height: 40px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+""", unsafe_allow_html=True)
 
-# Renderizamos la franja roja completa mediante HTML contenedor
-col_left_h, col_right_h = st.columns([8, 1.5], vertical_alignment="center")
-with col_left_h:
-    st.markdown(f"""
-    <div class="frimex-full-header">
-        {logo_html}
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_right_h:
-    st.markdown(f"""
-    <div class="frimex-full-header" style="justify-content: flex-end !important;">
-    """, unsafe_allow_html=True)
-    
+# Contenedor para el botón derecho dentro del header
+col_h1, col_h2 = st.columns([8, 1.5], vertical_alignment="center")
+with col_h2:
     if total_items > 0:
         st.markdown(f'<div class="header-badge-yellow">{total_items}</div>', unsafe_allow_html=True)
-        
     if st.button("", key="header_cart_outline_btn", use_container_width=False):
         st.session_state.nav_view = "carrito"
         st.rerun()
-        
-    st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
