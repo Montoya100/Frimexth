@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ANCHO COMPLETO, BUSCADOR BLANCO CON CONTORNO ROJO Y PRECIOS NEGROS GIGANTES
+# CSS: STICKY HEADER INTEGRADO, BUSCADOR BLANCO CON CONTORNO ROJO Y FAB CON ICONO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -356,7 +356,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* STICKY HEADER CON #cf291d */
+    /* STICKY HEADER FIJO CON #cf291d QUE CONTIENE LOGO Y CARRITO */
     .sticky-header-container {{
         position: fixed;
         top: 0;
@@ -365,7 +365,7 @@ st.markdown(f"""
         height: 68px;
         background-color: {HEADER_RED} !important;
         z-index: 99998 !important;
-        padding: 0 16px;
+        padding: 0 20px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.25);
         border-bottom: 2px solid #991b1b;
         display: flex;
@@ -380,7 +380,7 @@ st.markdown(f"""
         display: block !important;
     }}
 
-    /* INSIGNIA DE CARRITO EN EL HEADER */
+    /* INSIGNIA DE CARRITO DENTRO DEL HEADER */
     .cart-badge-wrapper {{
         display: inline-flex;
         align-items: center;
@@ -405,15 +405,15 @@ st.markdown(f"""
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }}
 
-    /* BARRA DE BÚSQUEDA BLANCA CON TEXTO NEGRO Y CONTORNO ROJO (#cf291d) */
+    /* BARRA DE BÚSQUEDA FORZADA A BLANCO CON TEXTO NEGRO Y CONTORNO ROJO (#cf291d) */
     div[data-baseweb="input"], div[data-baseweb="base-input"] {{
-        background-color: {input_bg} !important;
+        background-color: #ffffff !important;
         border: 2px solid {HEADER_RED} !important;
         border-radius: 30px !important;
     }}
     input[type="text"] {{
-        color: {input_text} !important;
-        -webkit-text-fill-color: {input_text} !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
     }}
 
     /* MODAL CON CONTRASTE CORRECTO */
@@ -440,7 +440,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL DE CARRITO */
+    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE VECTORIAL REAL */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -472,6 +472,14 @@ st.markdown(f"""
         font-size: 1rem !important;
         font-weight: 900 !important;
         margin: 0 !important;
+    }}
+    /* Inyección segura del icono outline en el FAB */
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button::before {{
+        content: "\\e8cc";
+        font-family: 'Material Symbols Outlined';
+        font-size: 22px;
+        vertical-align: -4px;
+        margin-right: 4px;
     }}
 
     /* BOTONES GENERALES CON #b0271a */
@@ -526,13 +534,13 @@ total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
 # ==========================================
-# MANEJO DE NAVEGACIÓN Y CARRITO (PERSISTENTE MEDIANTE CALLBACKS)
+# MANEJO DE NAVEGACIÓN Y CARRITO (PERSISTENTE)
 # ==========================================
-def go_to_cart_callback():
+params = st.query_params
+if "goto" in params and params["goto"] == "carrito":
     st.session_state.nav_view = "carrito"
-
-def go_to_catalog_callback():
-    st.session_state.nav_view = "catalogo"
+    st.query_params.clear()
+    st.rerun()
 
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
@@ -586,60 +594,21 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER NORMAL Y CARRITO FUNCIONAL (CON CALLBACKS ESTABLES)
+# STICKY HEADER INTEGRADO (LOGO IZQ, CARRITO DER DENTRO DE LA FRANJA ROJA)
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header-container">
     <div style="display: flex; align-items: center;">
         <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
-</div>
-""", unsafe_allow_html=True)
-
-# Botón invisible superpuesto en el header para cambiar a la vista de carrito sin perder estado
-st.markdown(f"""
-<div style="position: fixed; top: 12px; right: 16px; z-index: 99999;">
-""", unsafe_allow_html=True)
-if st.button("🛒", key="header_cart_icon_top", help="Ver Carrito"):
-    st.session_state.nav_view = "carrito"
-    st.rerun()
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown(f"""
-<style>
-    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) {{
-        position: fixed !important;
-        top: 10px !important;
-        right: 16px !important;
-        z-index: 999999 !important;
-        width: 44px !important;
-        height: 44px !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) > button {{
-        background: rgba(0, 0, 0, 0.22) !important;
-        border-radius: 50% !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        padding: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) > button p {{
-        font-size: 0px !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) > button::before {{
-        content: "\\e8cc";
-        font-family: 'Material Symbols Outlined';
-        font-size: 24px;
-        color: #ffffff;
-        position: absolute;
-        top: 10px;
-        left: 10px;
-    }}
-</style>
-<div style="position: fixed; top: 15px; right: 54px; z-index: 999999; pointer-events: none;">
-    <span class="cart-badge-count">{total_items}</span>
+    <div>
+        <a href="?goto=carrito" target="_self" style="text-decoration: none;">
+            <div class="cart-badge-wrapper">
+                <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
+                <span class="cart-badge-count">{total_items}</span>
+            </div>
+        </a>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -778,22 +747,11 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) CON ICONO OUTLINE VECTORIAL REAL (SIN TEXTO PLANO)
+    # BOTÓN FLOTANTE (FAB) CON ICONO OUTLINE VECTORIAL REAL
     if total_items > 0:
         if st.button("Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
-        st.markdown(f"""
-        <style>
-            div[data-testid="stButton"]:has(button[key="native_floating_fab"]) button::before {{
-                content: "\\e8cc";
-                font-family: 'Material Symbols Outlined';
-                font-size: 20px;
-                vertical-align: -3px;
-                margin-right: 6px;
-            }}
-        </style>
-        """, unsafe_allow_html=True)
 
 elif st.session_state.nav_view == "carrito":
     if st.button("← Volver al Catálogo", use_container_width=False):
@@ -945,10 +903,13 @@ elif st.session_state.nav_view == "carrito":
                     color: #ffffff !important;
                     -webkit-text-fill-color: #ffffff !important;
                 }}
+                div[data-testid="stButton"]:has(button[kind="primary"]) > button::before {{
+                    content: "\\e0ca" !important;
+                }}
             </style>
             """, unsafe_allow_html=True)
 
-            if st.button("💬 Enviar pedido por WhatsApp", type="primary", use_container_width=True, key="whatsapp_fab_btn"):
+            if st.button("Enviar pedido por WhatsApp", type="primary", use_container_width=True, key="whatsapp_fab_btn"):
                 st.markdown(f'<meta http-equiv="refresh" content="0;url={whatsapp_url}">', unsafe_allow_html=True)
                 st.session_state.order_sent = True
                 st.rerun()
