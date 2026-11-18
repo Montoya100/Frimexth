@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: FRANJA SUPERIOR PEGADA ARRIBA Y CARRITO
+# CSS: DISEÑO VISIBLE Y ACOPLADO ARRIBA
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -341,7 +341,7 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 0rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 6rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
@@ -354,13 +354,13 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR ABSOLUTA (PEGADA AL BORDE SUPERIOR) */
+    /* FRANJA ROJA SUPERIOR BIEN UBICADA */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        margin-top: -6rem !important;
+        margin-top: -1rem !important;
         margin-bottom: 1.5rem !important;
         padding: 12px 24px !important;
         display: flex !important;
@@ -378,7 +378,7 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* CARRITO CIRCULAR EN EL HEADER CON HTML PURO */
+    /* CARRITO CIRCULAR EN EL HEADER */
     .header-cart-container {{
         position: relative;
         display: inline-block;
@@ -605,7 +605,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (LOGO + CARRITO HTML SEGURO)
+# HEADER VISUAL UNIFICADO (LIMPIO Y SEGURO)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
