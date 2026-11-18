@@ -20,7 +20,7 @@ UPLOAD_DIR = "uploaded_images"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
-# 1. Configuración de la página en modo wide para aprovechar todo el ancho
+# 1. Configuración de la página en modo wide
 st.set_page_config(
     page_title="Frimex",
     page_icon=LOGO_URL,
@@ -41,7 +41,7 @@ def safe_float(val, default=0.0):
         return default
 
 # ==========================================
-# GESTIÓN DE MODO OSCURO / CLARO (CLARO POR DEFECTO)
+# GESTIÓN DE MODO OSCURO / CLARO
 # ==========================================
 def load_dark_mode_setting():
     if os.path.exists(THEME_FILE):
@@ -278,7 +278,7 @@ if "popular_items" not in st.session_state:
     ]
 
 # ==========================================
-# PALETAS DE COLORES (MODO CLARO POR DEFECTO / OSCURO OPCIONAL)
+# PALETAS DE COLORES
 # ==========================================
 if st.session_state.dark_mode:
     bg_color = "#121212"
@@ -299,10 +299,10 @@ HEADER_RED = "#DC2626"          # Rojo vivo corporativo para el sticky header
 BTN_SOFT_RED = "#E11D48"        # Rojo suave para botones generales
 BTN_SOFT_RED_HOVER = "#BE123C"
 FAB_STRONG_RED = "#B91C1C"      # Rojo intenso para el FAB con icono outline
-PRICE_ORANGE = "#F97316"        # Naranja vibrante para precios grandes
+PRICE_ORANGE = "#F97316"        # Naranja vibrante para precios
 
 # ==========================================
-# CSS: ANCHO COMPLETO, STICKY HEADER CON BUSCADOR E ICONOS OUTLINE
+# CSS: DISEÑO ANCHO FLUIDO, STICKY HEADER ROJO Y FAB A LA IZQUIERDA
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -334,56 +334,55 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ELIMINAR ESPACIOS LATERALES: Ancho completo fluido */
+    /* APROVECHAR TODO EL ANCHO DE LA PANTALLA WEB SIN ESPACIOS LATERALES */
     .block-container {{
-        padding-top: 115px !important;
+        padding-top: 95px !important;
         padding-bottom: 5.5rem !important;
         padding-left: 2rem !important;
         padding-right: 2rem !important;
         max-width: 100% !important;
     }}
 
-    /* STICKY HEADER INSPIRADO EN LA REFERENCIA (LOGO IZQ, BUSCADOR CENTRO/ANCHO, CARRITO DER) */
+    /* STICKY HEADER ROJO COMPLETO */
     .sticky-header-container {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
+        height: 76px;
         background-color: {HEADER_RED} !important;
-        z-index: 999999 !important;
-        padding: 12px 24px;
+        z-index: 99998 !important;
+        padding: 0 24px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.25);
         border-bottom: 2px solid #991b1b;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 20px;
     }}
 
     .sticky-logo {{
-        max-height: 48px;
+        max-height: 50px;
         width: auto;
         object-fit: contain;
         display: block !important;
     }}
 
-    /* Estilo del badge de carrito inspirado en la referencia */
+    /* INSIGNIA DE CARRITO EN EL HEADER */
     .cart-badge-wrapper {{
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background-color: rgba(0, 0, 0, 0.22);
+        background-color: rgba(0, 0, 0, 0.2);
         border-radius: 50%;
-        width: 48px;
-        height: 48px;
+        width: 46px;
+        height: 46px;
         position: relative;
         cursor: pointer;
-        flex-shrink: 0;
     }}
     .cart-badge-count {{
         position: absolute;
-        top: -2px;
-        right: -4px;
+        top: -3px;
+        right: -3px;
         background-color: #facc15;
         color: #1e293b;
         font-weight: 900;
@@ -393,7 +392,7 @@ st.markdown(f"""
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }}
 
-    /* MODAL ESTILIZADO Y LEGIBLE ACORDE AL TEMA */
+    /* MODAL DE VARIANTES */
     div[data-testid="stDialog"] > div {{
         background-color: {card_bg} !important;
         color: {text_color} !important;
@@ -401,16 +400,8 @@ st.markdown(f"""
         border: 1px solid {border_color} !important;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
     }}
-    div[data-testid="stDialog"] p, 
-    div[data-testid="stDialog"] h1, 
-    div[data-testid="stDialog"] h2, 
-    div[data-testid="stDialog"] h3, 
-    div[data-testid="stDialog"] span,
-    div[data-testid="stDialog"] div {{
-        color: {text_color} !important;
-    }}
 
-    /* CAMPOS DE TEXTO E INPUTS (Buscador limpio estilo referencia) */
+    /* CAMPOS E INPUTS */
     input[type="text"], input[type="password"], textarea, select, 
     div[data-baseweb="input"], div[data-baseweb="base-input"], 
     div[data-baseweb="textarea"], div[data-baseweb="select"],
@@ -431,12 +422,12 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) EN ROJO INTENSO CON ICONO OUTLINE Y SIN EMOJIS */
+    /* BOTÓN FLOTANTE (FAB) MOVIDO A LA IZQUIERDA CON ROJO INTENSO E ICONO OUTLINE */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 22px !important;
-        right: 22px !important;
-        left: auto !important;
+        left: 22px !important;
+        right: auto !important;
         z-index: 9999999 !important;
         width: auto !important;
     }}
@@ -465,7 +456,7 @@ st.markdown(f"""
         margin: 0 !important;
     }}
 
-    /* BOTONES GENERALES EN ROJO SUAVE */
+    /* BOTONES GENERALES */
     button, .stButton > button {{
         background-color: {BTN_SOFT_RED} !important;
         color: #ffffff !important;
@@ -479,11 +470,8 @@ st.markdown(f"""
         background-color: {BTN_SOFT_RED_HOVER} !important;
         transform: translateY(-1px) !important;
     }}
-    button p, .stButton > button p {{
-        color: #ffffff !important;
-    }}
 
-    /* TARJETAS DE PRODUCTO */
+    /* TARJETAS */
     .product-card, .pop-card-box {{
         background-color: {card_bg};
         border: 1px solid {border_color};
@@ -494,7 +482,7 @@ st.markdown(f"""
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }}
 
-    /* PRECIOS EN NARANJA Y MÁS GRANDES */
+    /* PRECIOS EN NARANJA */
     .price-tag {{
         color: {PRICE_ORANGE} !important;
         font-weight: 900 !important;
@@ -571,29 +559,38 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER CON LOGO, BUSCADOR INTEGRADO Y CARRITO FUNCIONAL
+# STICKY HEADER REAL (LOGO IZQ, BUSCADOR CENTRO, CARRITO DER CON BADGE)
 # ==========================================
-h_col1, h_col2, h_col3 = st.columns([2, 6, 1], vertical_alignment="center")
-
-with h_col1:
-    st.markdown(f"""
-    <div style="display: flex; align-items: center;">
+st.markdown(f"""
+<div class="sticky-header-container">
+    <div style="display: flex; align-items: center; gap: 12px;">
         <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
-    """, unsafe_allow_html=True)
+    <div style="flex-grow: 1; max-width: 600px; margin: 0 20px;">
+</div>
+""", unsafe_allow_html=True)
 
-with h_col2:
-    search_query = st.text_input("Buscar productos", placeholder="¿Qué estás buscando hoy?", label_visibility="collapsed", key="main_search_input")
-
-with h_col3:
+# Controles interactivos dentro del Sticky Header real mediante columnas de Streamlit
+hdr_c1, hdr_c2, hdr_c3 = st.columns([2, 7, 1], vertical_alignment="center")
+with hdr_c1:
+    st.write("") # Espacio para alinear con el logo fijo
+with hdr_c2:
+    search_query = st.text_input("Buscar", placeholder="¿Qué estás buscando hoy?", label_visibility="collapsed", key="main_search_input")
+with hdr_c3:
     if st.button("🛒", key="header_cart_icon_btn", help="Ir al Carrito"):
         st.session_state.show_variants_modal = False
         st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
         st.rerun()
 
-# Barra fija visual superior (Sticky Header Container CSS)
+# Insignia flotante HTML superpuesta en la esquina superior derecha para el carrito
 st.markdown(f"""
-<div class="sticky-header-container" style="position: fixed; top: 0; left: 0; width: 100%; background-color: {HEADER_RED}; z-index: 99998; padding: 10px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.25);">
+<div style="position: fixed; top: 14px; right: 24px; z-index: 99999;">
+    <a href="javascript:void(0);" onclick="window.parent.document.querySelector('button[key=\\'header_cart_icon_btn\\']')?.click();" style="text-decoration: none;">
+        <div class="cart-badge-wrapper">
+            <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
+            <span class="cart-badge-count">{total_items}</span>
+        </div>
+    </a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -605,7 +602,7 @@ if st.session_state.nav_view == "catalogo":
 
     st.markdown(f"""
     <div style="border: 1px solid {border_color}; border-radius: 16px; padding: 6px; margin-top: 10px; margin-bottom: 16px; background: {card_bg}; text-align: center; width: 100%; overflow: hidden;">
-        <img src="{banner_to_show}" style="width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
+        <img src="{banner_to_show}" style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
     </div>
     """, unsafe_allow_html=True)
 
@@ -625,7 +622,7 @@ if st.session_state.nav_view == "catalogo":
                     st.markdown(f"""
                     <div class="pop-card-box">
                         <div style="background: {BTN_SOFT_RED}; color: white; font-size: 0.68rem; font-weight: 800; padding: 3px 10px; border-radius: 20px; position: absolute; top: 10px; right: 10px;">Popular</div>
-                        <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-top: 12px;" />
+                        <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 115px; object-fit: cover; border-radius: 8px; margin-top: 12px;" />
                         <div style="font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: {text_color};">{p.get('name')}</div>
                         <span class="price-tag">${p_price:.2f} MXN</span>
                     </div>
@@ -730,7 +727,7 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE INFERIOR (FAB) EN ROJO INTENSO CON ICONO OUTLINE Y SIN EMOJIS
+    # BOTÓN FLOTANTE (FAB) A LA IZQUIERDA CON ICONO OUTLINE Y TOTAL DINÁMICO
     if total_items > 0:
         if st.button("Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
