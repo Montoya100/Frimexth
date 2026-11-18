@@ -63,7 +63,7 @@ def save_dark_mode_setting(enabled):
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = load_dark_mode_setting()
 
-# 2. Inicialización estricta de Estados y Persistencia del Carrito
+# 2. Inicialización estricta de Estados
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, ICONO OUTLINE Y FAB
+# CSS: STICKY HEADER, BOTÓN OUTLINE Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -621,8 +621,8 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Botón nativo posicionado exactamente dentro de la franja roja del header
-if st.button("🛒", key="header_cart_dup_btn"):
+# Botón nativo posicionado exactamente dentro de la franja roja del header con icono outline
+if st.button("x", key="header_cart_dup_btn"):
     st.session_state.nav_view = "carrito"
     st.rerun()
 
