@@ -63,7 +63,7 @@ def save_dark_mode_setting(enabled):
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = load_dark_mode_setting()
 
-# 2. Inicialización estricta de Estados (Protección del Carrito)
+# 2. Inicialización estricta de Estados
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: FRANJA ROJA SUPERIOR Y BOTÓN DE CARRITO CIRCULAR
+# CSS: FRANJA ROJA SUPERIOR UNIFICADA Y BOTÓN CIRCULAR
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -355,13 +355,13 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA DEL HEADER */
-    .frimex-header-container {{
+    /* FRANJA ROJA CORPORATIVA DEL HEADER */
+    .frimex-header-bar {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        padding: 12px 20px !important;
+        padding: 10px 24px !important;
         margin-bottom: 1.5rem !important;
         display: flex !important;
         align-items: center !important;
@@ -372,27 +372,27 @@ st.markdown(f"""
 
     /* BOTÓN CIRCULAR DE CARRITO EN EL HEADER */
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
-        width: 46px !important;
-        height: 46px !important;
-        min-height: 46px !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
         margin: 0 !important;
         padding: 0 !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
         background-color: {BTN_RED} !important;
         color: #ffffff !important;
-        width: 46px !important;
-        height: 46px !important;
-        min-height: 46px !important;
-        max-width: 46px !important;
-        max-height: 46px !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        max-width: 44px !important;
+        max-height: 44px !important;
         border-radius: 50% !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         border: 2px solid rgba(255, 255, 255, 0.4) !important;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
         position: relative !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button:hover {{
@@ -406,25 +406,25 @@ st.markdown(f"""
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
-        font-size: 24px;
+        font-size: 22px;
         color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DE CONTADOR */
+    /* INSIGNIA AMARILLA DE CONTADOR EN EL HEADER */
     .header-badge-yellow {{
         position: absolute;
-        top: -6px;
-        right: -6px;
+        top: -5px;
+        right: -5px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
         font-weight: 900;
-        font-size: 0.75rem;
-        padding: 1px 7px;
-        border-radius: 12px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+        font-size: 0.7rem;
+        padding: 1px 6px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         z-index: 20;
         pointer-events: none;
-        line-height: 1.2;
+        line-height: 1.1;
     }}
 
     /* ESTILOS GENERALES Y FORMULARIOS */
@@ -455,47 +455,6 @@ st.markdown(f"""
         color: {text_color} !important;
         -webkit-text-fill-color: {text_color} !important;
         font-weight: 700 !important;
-    }}
-
-    /* BOTÓN FLOTANTE (FAB) INFERIOR */
-    div[data-testid="stButton"]:has(button[kind="primary"]) {{
-        position: fixed !important;
-        bottom: 20px !important;
-        left: 20px !important;
-        right: auto !important;
-        z-index: 9999999 !important;
-        width: auto !important;
-    }}
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
-        background: {FAB_YELLOW} !important;
-        color: #1e293b !important;
-        padding: 12px 22px !important;
-        border-radius: 50px !important;
-        font-weight: 900 !important;
-        font-size: 1rem !important;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
-        border: none !important;
-        height: 50px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        white-space: nowrap !important;
-    }}
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
-        color: #1e293b !important;
-        -webkit-text-fill-color: #1e293b !important;
-        font-size: 1rem !important;
-        font-weight: 900 !important;
-        margin: 0 !important;
-    }}
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button::before {{
-        content: "\\e8cc";
-        font-family: 'Material Symbols Outlined';
-        font-size: 22px;
-        vertical-align: -4px;
-        margin-right: 4px;
     }}
 
     button, .stButton > button {{
@@ -598,21 +557,20 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER NATIVO INTEGRADO (FRANJA ROJA DE LADO A LADO)
+# HEADER VISUAL (FRANJA ROJA DE LADO A LADO)
 # ==========================================
-logo_html = f'<img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display=\'none\'" />'
+col_logo_h, col_cart_h = st.columns([8, 1.5], vertical_alignment="center")
 
-col_left_h, col_right_h = st.columns([8, 1.5], vertical_alignment="center")
-with col_left_h:
+with col_logo_h:
     st.markdown(f"""
-    <div class="frimex-header-container">
-        {logo_html}
+    <div class="frimex-header-bar">
+        <img src="{LOGO_URL}" style="max-height: 38px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
     </div>
     """, unsafe_allow_html=True)
 
-with col_right_h:
+with col_cart_h:
     st.markdown(f"""
-    <div class="frimex-header-container" style="justify-content: flex-end !important;">
+    <div class="frimex-header-bar" style="justify-content: flex-end !important;">
     """, unsafe_allow_html=True)
     
     if total_items > 0:
@@ -756,12 +714,6 @@ if st.session_state.nav_view == "catalogo":
                                         add_to_cart(pid)
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
-
-    # BOTÓN FLOTANTE (FAB) INFERIOR
-    if total_items > 0:
-        if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
-            st.session_state.nav_view = "carrito"
-            st.rerun()
 
 elif st.session_state.nav_view == "carrito":
     if st.button("← Volver al Catálogo", use_container_width=False):
