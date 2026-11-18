@@ -765,7 +765,7 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA CON TEXTO COMPLETO Y MONTO
+    # BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA CON TEXTO Y MONTO
     if total_items > 0:
         if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
