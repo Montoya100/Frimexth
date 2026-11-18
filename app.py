@@ -1087,6 +1087,6 @@ elif st.session_state.nav_view == "admin":
 st.write("---")
 col_foot1, col_foot_admin, col_foot2 = st.columns(3)
 with col_foot_admin:
-    if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
+    if st.button("Admin", use_keyword=True, use_container_width=True, key="admin_footer_btn"):
         st.session_state.nav_view = "admin"
         st.rerun()
