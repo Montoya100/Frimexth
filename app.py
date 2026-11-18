@@ -1033,7 +1033,7 @@ elif st.session_state.nav_view == "admin":
             uploaded_file = st.file_uploader("Elige una imagen", type=["png", "jpg", "jpeg", "webp"])
             if uploaded_file is not None:
                 file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
-                with open(file_path, "wb":) as f:
+                with open(file_path, "wb") as f:
                     f.write(uploaded_file.getbuffer())
                 st.success(f"¡Subida con éxito: `{uploaded_file.name}`!")
                 st.image(file_path, width=200)
