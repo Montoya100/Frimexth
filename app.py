@@ -308,38 +308,25 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ELIMINACIÓN TOTAL DE MÁRGENES BLANCOS
+# CSS: ESTILOS LIMPIOS Y SEGUROS
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
-    /* OCULTAR ELEMENTOS NATIVOS DE STREAMLIT */
     header[data-testid="stHeader"], 
-    div[data-testid="stToolbar"], 
-    #MainMenu {{
+    div[data-testid="stToolbar"] {{
         display: none !important;
         visibility: hidden !important;
     }}
 
-    body > div[style*="position: fixed"], 
-    body > iframe, 
-    div[class*="viewerBadge"], 
-    div[class*="assistive"] {{
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }}
-
-    .stApp, body, html, [data-testid="stAppViewContainer"], [data-testid="stMain"] {{
+    .stApp, body, html, [data-testid="stAppViewContainer"] {{
         background-color: {bg_color} !important;
         color: {text_color} !important;
     }}
 
-    /* ELIMINAR EL MARGEN SUPERIOR BLANCO DEL CONTENEDOR PRINCIPAL */
     .block-container {{
-        padding-top: 0rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 6rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
@@ -352,26 +339,23 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR ABSOLUTA Y PEGADA ARRIBA */
+    /* FRANJA ROJA SUPERIOR UNIFICADA */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
-        width: 100vw !important;
-        position: relative !important;
-        left: calc(-50vw + 50%) !important;
-        margin-top: -6rem !important;
+        width: 100% !important;
+        padding: 12px 20px !important;
         margin-bottom: 1.5rem !important;
-        padding: 12px 24px !important;
+        border-radius: 12px;
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
-        z-index: 999;
     }}
 
     .frimex-unified-header img {{
-        max-height: 44px !important;
+        max-height: 45px !important;
         width: auto !important;
         object-fit: contain !important;
     }}
@@ -389,11 +373,10 @@ st.markdown(f"""
         cursor: pointer;
         text-decoration: none;
         position: relative;
-        transition: transform 0.2s ease, background-color 0.2s ease;
+        transition: transform 0.2s ease;
     }}
 
     .header-cart-circle:hover {{
-        background-color: #5d100a !important;
         transform: scale(1.05);
     }}
 
@@ -598,7 +581,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (HTML DINÁMICO SEGURO)
+# HEADER VISUAL UNIFICADO SEGURO
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
