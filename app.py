@@ -286,7 +286,8 @@ if st.session_state.dark_mode:
     text_color = "#f3f4f6"
     sub_text_color = "#9ca3af"
     border_color = "#2d3748"
-    input_bg = "#262626"
+    input_bg = "#1e1e1e"
+    input_text = "#ffffff"
     modal_bg = "#1e1e1e"
     modal_text = "#f3f4f6"
 else:
@@ -296,18 +297,19 @@ else:
     sub_text_color = "#64748b"
     border_color = "#e2e8f0"
     input_bg = "#ffffff"
+    input_text = "#0f172a"
     modal_bg = "#ffffff"
     modal_text = "#0f172a"
 
 HEADER_RED = "#cf291d"          
 BTN_RED = "#b0271a"             
 BTN_RED_HOVER = "#8f1f14"
-PRICE_BLUE = "#1e3a8a"          # Azul oscuro fuerte y grande para precios
+PRICE_BLACK = "#000000" if not st.session_state.dark_mode else "#ffffff"        
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ANCHO COMPLETO, CONTORNO ROJO EN BUSCADOR Y PRECIOS GRANDES AZULES
+# CSS: ANCHO COMPLETO, BUSCADOR BLANCO CON CONTORNO ROJO Y PRECIOS NEGROS GIGANTES
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -403,11 +405,15 @@ st.markdown(f"""
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }}
 
-    /* BARRA DE BÚSQUEDA CON CONTORNO ROJO (#cf291d) */
+    /* BARRA DE BÚSQUEDA BLANCA CON TEXTO NEGRO Y CONTORNO ROJO (#cf291d) */
     div[data-baseweb="input"], div[data-baseweb="base-input"] {{
+        background-color: {input_bg} !important;
         border: 2px solid {HEADER_RED} !important;
         border-radius: 30px !important;
-        background-color: {input_bg} !important;
+    }}
+    input[type="text"] {{
+        color: {input_text} !important;
+        -webkit-text-fill-color: {input_text} !important;
     }}
 
     /* MODAL CON CONTRASTE CORRECTO */
@@ -434,7 +440,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO */
+    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL DE CARRITO */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -494,11 +500,11 @@ st.markdown(f"""
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }}
 
-    /* PRECIOS EN AZUL OSCURO FUERTE Y MÁS GRANDES */
+    /* PRECIOS EN NEGRO PROFUNDO Y GIGANTES (+25% MÁS GRANDES) */
     .price-tag {{
-        color: {PRICE_BLUE} !important;
+        color: {PRICE_BLACK} !important;
         font-weight: 900 !important;
-        font-size: 1.35rem !important;
+        font-size: 1.7rem !important;
         margin-top: 6px;
         margin-bottom: 8px;
         display: block;
@@ -520,13 +526,13 @@ total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
 # ==========================================
-# MANEJO DE NAVEGACIÓN Y CARRITO (PERSISTENTE SIN REINICIOS)
+# MANEJO DE NAVEGACIÓN Y CARRITO (PERSISTENTE MEDIANTE CALLBACKS)
 # ==========================================
-params = st.query_params
-if "goto" in params and params["goto"] == "carrito":
+def go_to_cart_callback():
     st.session_state.nav_view = "carrito"
-    st.query_params.clear()
-    st.rerun()
+
+def go_to_catalog_callback():
+    st.session_state.nav_view = "catalogo"
 
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
@@ -553,7 +559,7 @@ def variants_modal_dialog(base_name, variants_list):
                 <img src="{v_img}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;" onerror="this.src='{DEFAULT_PRODUCT_IMG}';" />
                 <div style="flex-grow: 1;">
                     <span style="color: {modal_text} !important; font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2;">{v_name}</span>
-                    <span style="color: {PRICE_BLUE} !important; font-weight: 900; font-size: 1.15rem;">${v_price:.2f} MXN</span>
+                    <span style="color: {PRICE_BLACK} !important; font-weight: 900; font-size: 1.35rem;">${v_price:.2f} MXN</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -580,7 +586,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER NORMAL Y CARRITO FUNCIONAL (CONSERVANDO ESTADO)
+# STICKY HEADER NORMAL Y CARRITO FUNCIONAL (CON CALLBACKS ESTABLES)
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header-container">
@@ -590,15 +596,50 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Insignia flotante interactiva para el carrito del header
+# Botón invisible superpuesto en el header para cambiar a la vista de carrito sin perder estado
 st.markdown(f"""
 <div style="position: fixed; top: 12px; right: 16px; z-index: 99999;">
-    <a href="?goto=carrito" target="_self" style="text-decoration: none;">
-        <div class="cart-badge-wrapper">
-            <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
-            <span class="cart-badge-count">{total_items}</span>
-        </div>
-    </a>
+""", unsafe_allow_html=True)
+if st.button("🛒", key="header_cart_icon_top", help="Ver Carrito"):
+    st.session_state.nav_view = "carrito"
+    st.rerun()
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown(f"""
+<style>
+    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) {{
+        position: fixed !important;
+        top: 10px !important;
+        right: 16px !important;
+        z-index: 999999 !important;
+        width: 44px !important;
+        height: 44px !important;
+    }}
+    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) > button {{
+        background: rgba(0, 0, 0, 0.22) !important;
+        border-radius: 50% !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) > button p {{
+        font-size: 0px !important;
+    }}
+    div[data-testid="stButton"]:has(button[key="header_cart_icon_top"]) > button::before {{
+        content: "\\e8cc";
+        font-family: 'Material Symbols Outlined';
+        font-size: 24px;
+        color: #ffffff;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }}
+</style>
+<div style="position: fixed; top: 15px; right: 54px; z-index: 999999; pointer-events: none;">
+    <span class="cart-badge-count">{total_items}</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -742,7 +783,6 @@ if st.session_state.nav_view == "catalogo":
         if st.button("Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
-        # Inserción limpia del icono outline mediante contenedor estilizado
         st.markdown(f"""
         <style>
             div[data-testid="stButton"]:has(button[key="native_floating_fab"]) button::before {{
@@ -801,10 +841,10 @@ elif st.session_state.nav_view == "carrito":
                         
         st.write("---")
         st.markdown(f"""
-        <div style="background: {card_bg}; border: 2px solid {PRICE_BLUE}; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;">
-            <span class="material-symbols-outlined" style="font-size: 28px; color: {PRICE_BLUE}; vertical-align: middle; margin-right: 6px;">receipt_long</span>
+        <div style="background: {card_bg}; border: 2px solid {PRICE_BLACK}; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;">
+            <span class="material-symbols-outlined" style="font-size: 28px; color: {PRICE_BLACK}; vertical-align: middle; margin-right: 6px;">receipt_long</span>
             <span style="font-size: 1rem; font-weight: 700; color: {sub_text_color}; display: inline-block;">TOTAL DEL PEDIDO:</span>
-            <span style="font-size: 1.8rem; font-weight: 900; color: {PRICE_BLUE}; display: block; margin-top: 4px;">${total_price:.2f} MXN</span>
+            <span style="font-size: 1.8rem; font-weight: 900; color: {PRICE_BLACK}; display: block; margin-top: 4px;">${total_price:.2f} MXN</span>
         </div>
         """, unsafe_allow_html=True)
 
