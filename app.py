@@ -449,25 +449,25 @@ st.markdown(f"""
     div[data-testid="stButton"]:has(button[key="native_floating_fab"]) {{
         position: fixed !important;
         bottom: 20px !important;
-        left: 20px !important;
-        right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         z-index: 9999999 !important;
         width: auto !important;
     }}
     div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button {{
         background: {FAB_YELLOW} !important;
         color: #1e293b !important;
-        padding: 12px 22px !important;
+        padding: 12px 28px !important;
         border-radius: 50px !important;
         font-weight: 900 !important;
         font-size: 1rem !important;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
-        height: 50px !important;
+        height: 52px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
+        gap: 10px !important;
         white-space: nowrap !important;
     }}
     div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button p,
@@ -483,7 +483,7 @@ st.markdown(f"""
         font-family: 'Material Symbols Outlined';
         font-size: 22px;
         vertical-align: -4px;
-        margin-right: 4px;
+        margin-right: 2px;
     }}
 
     /* ESTILOS GENERALES Y FORMULARIOS */
