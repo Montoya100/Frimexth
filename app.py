@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import urllib.parse
-import requests
 import json
 import os
 import random
@@ -101,7 +100,6 @@ if "customer_notes" not in st.session_state:
 if "order_sent" not in st.session_state:
     st.session_state.order_sent = False
 
-LOYVERSE_TOKEN = "0c1c93162c4441099be4862722f079b9"
 WHATSAPP_PHONE = "522381174698"
 
 # ==========================================
@@ -140,7 +138,7 @@ if "trivia_questions_db" not in st.session_state:
     st.session_state.trivia_questions_db = load_saved_trivia()
 
 # ==========================================
-# LIGAS Y ARCHIVOS DE RESPALDO
+# LIGAS Y ARCHIVOS DE RESPALDO Y PERSISTENCIA
 # ==========================================
 DEFAULT_BANNER = "https://raw.githubusercontent.com/Montoya100/Frimexth/main/banner.png"
 DEFAULT_PRODUCT_IMG = "https://raw.githubusercontent.com/Montoya100/Frimexth/main/image.jpg"
@@ -175,63 +173,6 @@ def load_saved_suggestion():
 if "cart_suggestion" not in st.session_state:
     st.session_state.cart_suggestion = load_saved_suggestion()
 
-@st.cache_data(ttl=60)
-def fetch_loyverse_products():
-    headers = {
-        "Authorization": f"Bearer {LOYVERSE_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    products_list = []
-    try:
-        items_res = requests.get("https://api.loyverse.com/v1.0/items", headers=headers, timeout=5)
-        if items_res.status_code == 200:
-            raw_items = items_res.json().get("items", [])
-            route_items = [i for i in raw_items if "venta en ruta" in str(i.get("category_name", "")).lower() or "frimex" in str(i.get("category_name", "")).lower()]
-            if not route_items:
-                route_items = raw_items
-
-            for item in route_items:
-                cat_name = item.get("category_name", "Individual")
-                cat_lower = str(cat_name).lower()
-                category_mapped = "Para compartir" if "compartir" in cat_lower or "familiar" in cat_lower or "fritura" in cat_lower else "Individual"
-                
-                variants = item.get("variants", [])
-                item_name = item.get("item_name", "Producto")
-                desc = item.get("description", "")
-                base_item_price = safe_float(item.get("price"), 0.0)
-                
-                if variants:
-                    for var in variants:
-                        price = safe_float(var.get("price", base_item_price), 0.0)
-                        var_name = var.get("variant_name", "")
-                        display_name = f"{item_name} ({var_name})" if var_name and var_name != "Default" else item_name
-                        products_list.append({
-                            "id": str(var.get("variant_id", item.get("id"))),
-                            "name": display_name,
-                            "category": category_mapped,
-                            "price": price,
-                            "description": desc,
-                            "image": DEFAULT_PRODUCT_IMG
-                        })
-                else:
-                    products_list.append({
-                        "id": str(item.get("id")),
-                        "name": item_name,
-                        "category": category_mapped,
-                        "price": base_item_price,
-                        "description": desc,
-                        "image": DEFAULT_PRODUCT_IMG
-                    })
-    except:
-        pass
-
-    if not products_list:
-        products_list = [
-            {"id": "p1", "name": "Pistaches Salados (90g)", "category": "Individual", "price": 35.0, "description": "Pistaches tostados con sal de mar.", "image": DEFAULT_PRODUCT_IMG},
-            {"id": "p2", "name": "Fritura (Con Chile)", "category": "Para compartir", "price": 25.0, "description": "Crujientes frituras artesanales.", "image": DEFAULT_PRODUCT_IMG}
-        ]
-    return products_list
-
 def load_saved_products():
     if os.path.exists(DATA_FILE):
         try:
@@ -241,7 +182,11 @@ def load_saved_products():
                     return data
         except:
             pass
-    initial = fetch_loyverse_products()
+    # Base inicial por defecto si el archivo no existe aún
+    initial = [
+        {"id": "p1", "name": "Pistaches Salados (90g)", "category": "Individual", "price": 35.0, "description": "Pistaches tostados con sal de mar.", "image": DEFAULT_PRODUCT_IMG},
+        {"id": "p2", "name": "Fritura (Con Chile)", "category": "Para compartir", "price": 25.0, "description": "Crujientes frituras artesanales.", "image": DEFAULT_PRODUCT_IMG}
+    ]
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(initial, f, ensure_ascii=False, indent=4)
     return initial
@@ -286,8 +231,8 @@ if st.session_state.dark_mode:
     border_color = "#2d3748"
     input_bg = "#1e1e1e"
     input_text = "#ffffff"
-    modal_bg = "#ffffff"       # Forzado a blanco para lectura de textos negros
-    modal_text = "#000000"     # Forzado a negro
+    modal_bg = "#ffffff"
+    modal_text = "#000000"
 else:
     bg_color = "#f8fafc"
     card_bg = "#ffffff"
@@ -308,7 +253,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER Y MODAL CON TEXTOS NEGROS
+# CSS: STICKY HEADER Y MODALES
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -373,7 +318,7 @@ st.markdown(f"""
         justify-content: center;
         box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         position: relative;
-        pointer-events: none !important; /* Desvinculado: no hace nada al hacer clic */
+        pointer-events: none !important;
     }}
 
     .header-cart-circle .material-symbols-outlined {{
@@ -417,7 +362,7 @@ st.markdown(f"""
         -webkit-text-fill-color: #000000 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) INFERIOR - INTACTO Y FUNCIONANDO */
+    /* BOTÓN FLOTANTE (FAB) INFERIOR - INTACTO */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -580,7 +525,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER CON CARRITO DESVINCULADO (INACTIVO)
+# STICKY HEADER PERMANENTE
 # ==========================================
 if total_items > 0:
     st.markdown(f"""
@@ -924,11 +869,50 @@ elif st.session_state.nav_view == "admin":
     else:
         st.success("¡Acceso concedido!")
         tab_prod, tab_pop, tab_sugg, tab_banner, tab_upload, tab_trivia, tab_theme = st.tabs([
-            "Productos", "Populares", "Sugerencia Carrito", "Banner", "Subir", "Trivia", "Apariencia"
+            "Productos (Carga CSV/Excel)", "Populares", "Sugerencia Carrito", "Banner", "Subir", "Trivia", "Apariencia"
         ])
         
         with tab_prod:
-            st.markdown("### Inventario de Productos")
+            st.markdown("### Inventario Permanente y Carga de Archivos (CSV / Excel)")
+            st.info("Sube tu archivo CSV o Excel con columnas como: `id`, `name`, `category`, `price`, `description`, `image`. También puedes editar los productos directamente en la tabla de abajo y guardar los cambios de forma permanente.")
+            
+            uploaded_catalog = st.file_uploader("Cargar Catálogo (CSV, XLSX)", type=["csv", "xlsx", "xls"])
+            if uploaded_catalog is not None:
+                try:
+                    if uploaded_catalog.name.endswith('.csv'):
+                        df_uploaded = pd.read_csv(uploaded_catalog)
+                    else:
+                        df_uploaded = pd.read_excel(uploaded_catalog)
+                    
+                    new_imported_list = []
+                    for idx, row in df_uploaded.iterrows():
+                        r_id = str(row.get("id", f"prod_imp_{idx}")).strip()
+                        r_name = str(row.get("name", "Producto")).strip()
+                        r_cat = str(row.get("category", "Individual")).strip()
+                        r_price = safe_float(row.get("price", 0.0), 0.0)
+                        r_desc = str(row.get("description", "")).strip()
+                        r_img = str(row.get("image", DEFAULT_PRODUCT_IMG)).strip()
+                        if not r_img or r_img.lower() == "nan":
+                            r_img = DEFAULT_PRODUCT_IMG
+                            
+                        new_imported_list.append({
+                            "id": r_id,
+                            "name": r_name,
+                            "category": r_cat if r_cat in ["Individual", "Para compartir"] else "Individual",
+                            "price": r_price,
+                            "description": r_desc if r_desc.lower() != "nan" else "",
+                            "image": r_img
+                        })
+                    if new_imported_list:
+                        st.session_state.products = new_imported_list
+                        save_products_to_file(new_imported_list)
+                        st.success(f"¡Se han importado y guardado permanentemente {len(new_imported_list)} productos desde tu archivo!")
+                        st.rerun()
+                except Exception as e:
+                    st.error(f"Error al procesar el archivo: {e}")
+
+            st.markdown("---")
+            st.markdown("#### Editar Inventario Actual")
             current_sorted_products = sorted(st.session_state.products, key=lambda x: str(x.get("name", "")).lower())
             df_current = pd.DataFrame(current_sorted_products)
             column_config = {
@@ -937,7 +921,7 @@ elif st.session_state.nav_view == "admin":
             }
             edited_df = st.data_editor(df_current, num_rows="dynamic", key="editor_admin_table", column_config=column_config, hide_index=True, use_container_width=True)
             
-            if st.button("Guardar Cambios de Productos"):
+            if st.button("Guardar Cambios de Productos Permanentemente"):
                 updated_list = []
                 for idx, row in edited_df.iterrows():
                     raw_id = row.get("id")
@@ -958,7 +942,7 @@ elif st.session_state.nav_view == "admin":
                 updated_list = sorted(updated_list, key=lambda x: str(x.get("name", "")).lower())
                 st.session_state.products = updated_list
                 save_products_to_file(updated_list)
-                st.success("¡Productos guardados correctamente!")
+                st.success("¡Productos guardados y persistidos correctamente!")
                 st.rerun()
 
         with tab_pop:
