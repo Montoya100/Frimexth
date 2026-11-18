@@ -259,28 +259,36 @@ BTN_GENERAL_HOVER = "#B91C1C"
 BTN_CART_FAB = "#EF4444"
 
 # ==========================================
-# CSS ESTRICTO: OCULTAR BOTONES EXTERNOS Y FORZAR LOGO VISIBLE
+# CSS ESTRICTO: ELIMINAR HEADER NATIVO, YITH Y BOTONES EXTERNOS
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
-    /* BLOQUEO TOTAL E INMUTABLE DE BOTONES EXTERNOS (G-HUB, PINTEREST, ETC.) */
+    /* ELIMINAR HEADER NATIVO DE STREAMLIT QUE TAPA EL LOGO */
+    header[data-testid="stHeader"] {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
+
+    /* BLOQUEO TOTAL DE ELEMENTOS YITH Y BOTONES EXTERNOS (G-HUB, PINTEREST, ETC.) */
     body > div[style*="position: fixed"], 
     body > iframe, 
     div[class*="viewerBadge"], 
     div[class*="assistive"],
+    div[class*="yith"],
+    div[id*="yith"],
+    button[class*="yith"],
     div:has(> a[href*="pinterest"]),
     div:has(> button[title*="Share"]),
-    div:has(> button[title*="G-Hub"]),
-    header[data-testid="stHeader"] ~ div div[style*="position: fixed"] {{
+    div:has(> button[title*="G-Hub"]) {{
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
     }}
 
-    .stApp, body, html, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
+    .stApp, body, html, [data-testid="stAppViewContainer"] {{
         background-color: {"#121212" if st.session_state.auto_dark_mode else "#f8fafc"} !important;
         color: {text_color} !important;
     }}
@@ -291,25 +299,25 @@ st.markdown(f"""
         max-width: 100% !important;
     }}
 
-    /* BARRA SUPERIOR FIJA CON CONTRASTE SÓLIDO PARA EL LOGO */
+    /* BARRA SUPERIOR FIJA ABSOLUTA Y CON MÁXIMO Z-INDEX */
     .sticky-header {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 85px;
-        z-index: 99998;
+        height: 90px;
+        z-index: 999999 !important;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 8px 20px;
-        background-color: {"#1a1a1a" if st.session_state.auto_dark_mode else "#ffffff"} !important;
+        background-color: {"#121212" if st.session_state.auto_dark_mode else "#ffffff"} !important;
         border-bottom: 2px solid {BTN_GENERAL} !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }}
 
     .sticky-logo {{
-        height: 65px;
+        max-height: 72px;
         width: auto;
         object-fit: contain;
         display: block !important;
@@ -355,7 +363,7 @@ total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
 # ==========================================
-# BARRA FIJA CON LOGOTIPO VISIBLE
+# BARRA FIJA CON LOGOTIPO PROTAGONISTA
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header">
@@ -363,15 +371,18 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Botón superior derecho con icono Outline puro (Material Symbols)
-col_sp, col_cart = st.columns([4, 1])
+# Controles superiores (Buscador / Carrito con Icono Outline puro)
+col_spacer, col_cart = st.columns([4, 1])
 with col_cart:
-    cart_btn_label = "shopping_cart Carrito" if total_items == 0 else f"shopping_cart Carrito ({total_items})"
-    
-    # Renderizamos mediante botón con HTML personalizado integrado o texto limpio
-    if st.button("🛒 Carrito" + (f" ({total_items})" if total_items > 0 else ""), use_container_width=True, key="top_cart_btn"):
-        st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
-        st.rerun()
+    # Renderizamos mediante columnas separadas para garantizar el icono outline de Material Symbols sin emojis
+    icon_col, btn_col = st.columns([1, 3], vertical_alignment="center")
+    with icon_col:
+        st.markdown('<span class="material-symbols-outlined" style="font-size: 24px; color: #DC2626; display: block; text-align: right;">shopping_cart</span>', unsafe_allow_html=True)
+    with btn_col:
+        btn_label = f"({total_items}) - ${total_amount:.2f}" if total_items > 0 else "Carrito"
+        if st.button(btn_label, use_container_width=True, key="top_cart_btn"):
+            st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
+            st.rerun()
 
 st.write("")
 
