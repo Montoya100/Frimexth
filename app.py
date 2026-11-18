@@ -871,7 +871,7 @@ elif st.session_state.nav_view == "carrito":
                 if valid_cash:
                     cash_given = valid_cash[0]
                     change = cash_given - total_price
-                    change_text = f"Paga con: ${cash_given:.2f} MXN\nCambio:${change:.2f} MXN\n"
+                    change_text = f"Paga con: ${cash_given:.2f} MXN\nCambio: ${change:.2f} MXN\n"
 
         msg_header = "NUEVO PEDIDO FRIMEX\n"
         msg_date = f"Fecha: {order_date}\n"
@@ -924,4 +924,153 @@ elif st.session_state.nav_view == "admin":
         st.session_state.nav_view = "catalogo"
         st.rerun()
 
-    st.markdown(f"<h
+    st.markdown(f"<h3 style='color: {text_color};'><span class='material-symbols-outlined' style='vertical-align: bottom; color: {BTN_RED};'>settings</span> Panel de Administración y Ajustes</h3>", unsafe_allow_html=True)
+    
+    if not st.session_state.admin_authenticated:
+        st.subheader("Acceso Restringido")
+        pass_input = st.text_input("Ingresa la contraseña de administrador", type="password", placeholder="Clave de 4 dígitos...")
+        if st.button("Ingresar"):
+            if pass_input == "7031":
+                st.session_state.admin_authenticated = True
+                st.rerun()
+            else:
+                st.error("Contraseña incorrecta.")
+    else:
+        st.success("¡Acceso concedido!")
+        tab_prod, tab_pop, tab_sugg, tab_banner, tab_upload, tab_trivia, tab_theme = st.tabs([
+            "Productos", "Populares", "Sugerencia Carrito", "Banner", "Subir", "Trivia", "Apariencia"
+        ])
+        
+        with tab_prod:
+            st.markdown("### Inventario de Productos")
+            current_sorted_products = sorted(st.session_state.products, key=lambda x: str(x.get("name", "")).lower())
+            df_current = pd.DataFrame(current_sorted_products)
+            column_config = {
+                "id": None,
+                "category": st.column_config.SelectboxColumn("Categoría", options=["Individual", "Para compartir"], required=True)
+            }
+            edited_df = st.data_editor(df_current, num_rows="dynamic", key="editor_admin_table", column_config=column_config, hide_index=True, use_container_width=True)
+            
+            if st.button("Guardar Cambios de Productos"):
+                updated_list = []
+                for idx, row in edited_df.iterrows():
+                    raw_id = row.get("id")
+                    prod_id = str(raw_id).strip() if pd.notna(raw_id) and str(raw_id).strip() != "" else f"prod_{int(datetime.now().timestamp())}_{idx}"
+                    raw_img = str(row.get("image", "")).strip()
+                    prod_img = raw_img if raw_img != "" and raw_img.lower() != "nan" and "placeholder" not in raw_img else DEFAULT_PRODUCT_IMG
+                    raw_desc = row.get("description")
+                    prod_desc = str(raw_desc).strip() if pd.notna(raw_desc) and str(raw_desc).strip() != "nan" else ""
+                    
+                    updated_list.append({
+                        "id": prod_id,
+                        "name": str(row.get("name", "Nuevo producto")),
+                        "category": str(row.get("category", "Individual")),
+                        "price": safe_float(row.get("price"), 0.0),
+                        "description": prod_desc,
+                        "image": prod_img
+                    })
+                updated_list = sorted(updated_list, key=lambda x: str(x.get("name", "")).lower())
+                st.session_state.products = updated_list
+                save_products_to_file(updated_list)
+                st.success("¡Productos guardados correctamente!")
+                st.rerun()
+
+        with tab_pop:
+            st.markdown("### Seleccionar productos Populares")
+            current_pop_ids = [str(p.get("id")) for p in st.session_state.popular_items]
+            selected_populares_new = []
+            for prod in st.session_state.products:
+                p_id = str(prod.get("id"))
+                p_name = str(prod.get("name"))
+                p_price = safe_float(prod.get("price"), 0.0)
+                is_currently_pop = p_id in current_pop_ids
+                if st.checkbox(f"{p_name} (${p_price:.2f} MXN)", value=is_currently_pop, key=f"check_pop_{p_id}"):
+                    selected_populares_new.append({
+                        "id": p_id,
+                        "name": p_name,
+                        "price": p_price,
+                        "image": prod.get("image", DEFAULT_PRODUCT_IMG)
+                    })
+            if st.button("Guardar Populares"):
+                st.session_state.popular_items = selected_populares_new
+                save_populares_to_file(selected_populares_new)
+                st.success("¡Populares actualizados con éxito!")
+                st.rerun()
+
+        with tab_sugg:
+            st.markdown("### Producto Gancho Sugerido en el Carrito")
+            prod_options = {p.get("name"): p.get("id") for p in st.session_state.products}
+            current_sugg_id = st.session_state.cart_suggestion.get("id")
+            current_sugg_name = next((name for name, pid in prod_options.items() if str(pid) == str(current_sugg_id)), list(prod_options.keys())[0] if prod_options else "")
+            selected_sugg_name = st.selectbox("Producto sugerido", options=list(prod_options.keys()), index=list(prod_options.keys()).index(current_sugg_name) if current_sugg_name in prod_options else 0)
+            
+            if st.button("Guardar Sugerencia de Carrito"):
+                chosen_id = prod_options.get(selected_sugg_name)
+                st.session_state.cart_suggestion = {"id": chosen_id}
+                save_suggestion_to_file(st.session_state.cart_suggestion)
+                st.success("¡Sugerencia gancho guardada correctamente!")
+                st.rerun()
+
+        with tab_banner:
+            st.markdown("### Imagen del Banner Principal")
+            new_banner_url = st.text_input("URL de la imagen del banner", value=st.session_state.banner_url)
+            if st.button("Guardar Banner"):
+                if new_banner_url.strip():
+                    st.session_state.banner_url = new_banner_url.strip()
+                    with open(BANNER_FILE, "w", encoding="utf-8") as f:
+                        json.dump({"url": new_banner_url.strip()}, f, ensure_ascii=False, indent=4)
+                    st.success("¡Banner actualizado con éxito!")
+                    st.rerun()
+
+        with tab_upload:
+            st.markdown("### Subir Imágenes al Servidor")
+            uploaded_file = st.file_uploader("Elige una imagen", type=["png", "jpg", "jpeg", "webp"])
+            if uploaded_file is not None:
+                file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+                with open(file_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                st.success(f"¡Subida con éxito: `{uploaded_file.name}`!")
+                st.image(file_path, width=200)
+                st.text_input("Copia esta ruta:", value=f"/{UPLOAD_DIR}/{uploaded_file.name}")
+
+        with tab_trivia:
+            st.markdown("### Administrar Preguntas de la Trivia")
+            df_trivia = pd.DataFrame(st.session_state.trivia_questions_db)
+            edited_trivia_df = st.data_editor(df_trivia, num_rows="dynamic", key="editor_trivia_table", use_container_width=True)
+            if st.button("Guardar Preguntas de Trivia"):
+                updated_trivia_list = []
+                for _, row in edited_trivia_df.iterrows():
+                    p_text = str(row.get("pregunta", "")).strip()
+                    o_text = str(row.get("opciones", "")).strip()
+                    r_text = str(row.get("respuesta", "")).strip()
+                    if p_text and o_text and r_text:
+                        updated_trivia_list.append({"pregunta": p_text, "opciones": o_text, "respuesta": r_text})
+                if updated_trivia_list:
+                    st.session_state.trivia_questions_db = updated_trivia_list
+                    with open(TRIVIA_FILE, "w", encoding="utf-8") as f:
+                        json.dump(updated_trivia_list, f, ensure_ascii=False, indent=4)
+                    st.success("¡Preguntas guardadas con éxito!")
+                    st.rerun()
+
+        with tab_theme:
+            st.markdown("### Control de Apariencia (Modo Claro / Oscuro)")
+            dark_toggle = st.toggle("Activar Modo Oscuro", value=st.session_state.dark_mode)
+            if st.button("Aplicar y Guardar Tema"):
+                st.session_state.dark_mode = dark_toggle
+                save_dark_mode_setting(dark_toggle)
+                st.success("¡Tema actualizado!")
+                st.rerun()
+        
+        st.write("---")
+        if st.button("Cerrar Sesión Admin", use_container_width=True):
+            st.session_state.admin_authenticated = False
+            st.session_state.nav_view = "catalogo"
+            st.rerun()
+
+# PIE DE PÁGINA
+st.write("---")
+col_foot1, col_foot_admin, col_foot2 = st.columns(3)
+with col_foot_admin:
+    if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
+        st.session_state.nav_view = "admin"
+        st.rerun()
