@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: HEADER DE ANCHO COMPLETO Y BOTÓN CIRCULAR
+# CSS: HEADER DE ANCHO COMPLETO Y BOTÓN CIRCULAR CON ICONO OUTLINE
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -377,8 +377,12 @@ st.markdown(f"""
     }}
 
     /* ESTILIZACIÓN DEL BOTÓN DE CARRITO CIRCULAR DENTRO DEL HEADER */
+    div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button {{
-        background-color: rgba(0, 0, 0, 0.28) !important;
+        background-color: rgba(0, 0, 0, 0.3) !important;
         color: #ffffff !important;
         width: 48px !important;
         height: 48px !important;
@@ -389,7 +393,8 @@ st.markdown(f"""
         align-items: center !important;
         justify-content: center !important;
         border: none !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25) !important;
+        position: relative !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button p,
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button span:not(.material-symbols-outlined) {{
@@ -402,20 +407,21 @@ st.markdown(f"""
         color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DE CONTADOR CON NÚMERO NEGRO */
+    /* INSIGNIA AMARILLA DE CONTADOR CON NÚMERO NEGRO SOBRE EL BOTÓN CIRCULAR */
     .header-badge-yellow {{
         position: absolute;
-        top: 6px;
-        right: 16px;
+        top: -4px;
+        right: -4px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
         font-weight: 900;
-        font-size: 0.75rem;
-        padding: 1px 7px;
+        font-size: 0.72rem;
+        padding: 1px 6px;
         border-radius: 12px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        z-index: 10;
+        z-index: 20;
         pointer-events: none;
+        line-height: 1.2;
     }}
 
     /* BARRA DE BÚSQUEDA Y OTROS ELEMENTOS */
@@ -589,22 +595,32 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER NATIVO INTEGRADO DE LADO A LADO
+# HEADER NATIVO INTEGRADO CON BOTÓN CIRCULAR Y CONTADOR
 # ==========================================
-st.markdown(f"""
-<div class="frimex-header-container">
-    <img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
-    <div style="position: relative; display: inline-block;">
-        {'<div class="header-badge-yellow">' + str(total_items) + '</div>' if total_items > 0 else ''}
+col_logo, col_cart_btn = st.columns([8, 1.5], vertical_alignment="center")
+with col_logo:
+    st.markdown(f"""
+    <div class="frimex-header-container" style="margin: -1.5rem -0.75rem 0 -0.75rem !important;">
+        <img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-_, col_btn = st.columns([10, 1.2], vertical_alignment="center")
-with col_btn:
-    if st.button("", key="header_cart_outline_btn", use_container_width=True):
+with col_cart_btn:
+    # Contenedor especial con la franja roja integrada para que el botón luzca perfectamente en línea
+    st.markdown(f"""
+    <div style="background-color: {HEADER_RED}; padding: 12px 10px; margin: -1.5rem -0.75rem 0 -0.75rem !important; display: flex; justify-content: flex-end; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+    """, unsafe_allow_html=True)
+    
+    if total_items > 0:
+        st.markdown(f'<div class="header-badge-yellow">{total_items}</div>', unsafe_allow_html=True)
+        
+    if st.button("", key="header_cart_outline_btn", use_container_width=False):
         st.session_state.nav_view = "carrito"
         st.rerun()
+        
+    st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
