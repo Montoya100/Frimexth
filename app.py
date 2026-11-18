@@ -61,7 +61,7 @@ def save_dark_mode_setting(enabled):
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = load_dark_mode_setting()
 
-# Inicialización de Estados
+# Inicialización estricta de Estados
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILOS PARA HEADER UNIFICADO Y FAB
+# CSS: DISEÑO ROBUSTO PARA HEADER Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -376,17 +376,14 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* TRANSFORMACIÓN DEL BOTÓN DE STREAMLIT EN EL CÍRCULO ROJO OSCURO DEL HEADER */
+    /* BOTÓN DE CARRITO ESTILIZADO COMO CÍRCULO EN EL HEADER */
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
         width: 48px !important;
         height: 48px !important;
         min-height: 48px !important;
         margin: 0 !important;
         padding: 0 !important;
-        position: absolute !important;
-        top: 10px !important;
-        right: 24px !important;
-        z-index: 50 !important;
+        position: relative !important;
     }}
 
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
@@ -425,11 +422,11 @@ st.markdown(f"""
         color: #ffffff;
     }}
 
-    /* INSIGNIA AMARILLA DEL HEADER CON NÚMERO NEGRO */
+    /* INSIGNIA AMARILLA CON NÚMERO NEGRO */
     .header-badge-exact {{
         position: absolute;
-        top: 6px;
-        right: 18px;
+        top: -4px;
+        right: -4px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
         font-weight: 900;
@@ -441,49 +438,49 @@ st.markdown(f"""
         justify-content: center;
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        z-index: 60;
+        z-index: 40;
         pointer-events: none;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) INFERIOR AMARILLO */
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) {{
+    /* BOTÓN FLOTANTE (FAB) INFERIOR */
+    div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
+        left: 20px !important;
+        right: auto !important;
         z-index: 9999999 !important;
         width: auto !important;
     }}
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button {{
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
         background: {FAB_YELLOW} !important;
         color: #1e293b !important;
-        padding: 12px 28px !important;
+        padding: 12px 22px !important;
         border-radius: 50px !important;
         font-weight: 900 !important;
         font-size: 1rem !important;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
-        height: 52px !important;
+        height: 50px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 10px !important;
+        gap: 8px !important;
         white-space: nowrap !important;
     }}
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button p,
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button span {{
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
         color: #1e293b !important;
         -webkit-text-fill-color: #1e293b !important;
         font-size: 1rem !important;
         font-weight: 900 !important;
         margin: 0 !important;
     }}
-    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button::before {{
+    div[data-testid="stButton"]:has(button[kind="primary"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
         font-size: 22px;
         vertical-align: -4px;
-        margin-right: 2px;
+        margin-right: 4px;
     }}
 
     /* ESTILOS GENERALES Y FORMULARIOS */
@@ -616,16 +613,31 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (LOGO + CÍRCULO CARRITO)
+# HEADER VISUAL UNIFICADO (LOGO + CARRITO)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
 st.markdown(f"""
 <div class="frimex-unified-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <div></div>
+    <div style="width: 48px; height: 48px; position: relative; display: flex; align-items: center; justify-content: center;">
+        {badge_html}
+    </div>
 </div>
-{badge_html}
+""", unsafe_allow_html=True)
+
+# Superponemos el botón de Streamlit exactamente sobre el espacio reservado a la derecha en el header
+st.markdown("""
+<style>
+    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {
+        position: absolute !important;
+        top: 12px !important;
+        right: 24px !important;
+        z-index: 50 !important;
+        width: 48px !important;
+        height: 48px !important;
+    }
+</style>
 """, unsafe_allow_html=True)
 
 if st.button("", key="header_cart_btn", use_container_width=False):
@@ -767,7 +779,7 @@ if st.session_state.nav_view == "catalogo":
 
     # BOTÓN FLOTANTE (FAB) INFERIOR
     if total_items > 0:
-        if st.button(f"Ver Carrito • ${total_amount:.2f}", key="native_floating_fab"):
+        if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
