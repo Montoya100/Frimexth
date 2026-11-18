@@ -1077,4 +1077,19 @@ elif st.session_state.nav_view == "admin":
             if st.button("Aplicar y Guardar Tema"):
                 st.session_state.dark_mode = dark_toggle
                 save_dark_mode_setting(dark_toggle)
-                st.
+                st.success("¡Tema actualizado!")
+                st.rerun()
+        
+        st.write("---")
+        if st.button("Cerrar Sesión Admin", use_container_width=True):
+            st.session_state.admin_authenticated = False
+            st.session_state.nav_view = "catalogo"
+            st.rerun()
+
+# PIE DE PÁGINA
+st.write("---")
+col_foot1, col_foot_admin, col_foot2 = st.columns(3)
+with col_foot_admin:
+    if st.button("Admin", use_container_width=True, key="admin_footer_btn"):
+        st.session_state.nav_view = "admin"
+        st.rerun()
