@@ -298,11 +298,12 @@ else:
 HEADER_RED = "#DC2626"          # Rojo vivo corporativo para el sticky header
 BTN_SOFT_RED = "#E11D48"        # Rojo suave para botones generales
 BTN_SOFT_RED_HOVER = "#BE123C"
-FAB_STRONG_RED = "#B91C1C"      # Rojo intenso para el FAB con icono outline
 PRICE_ORANGE = "#F97316"        # Naranja vibrante para precios
+FAB_YELLOW = "#facc15"          # Amarillo distintivo para el FAB flotante del carrito
+WHATSAPP_GREEN = "#25D366"      # Verde oficial para WhatsApp
 
 # ==========================================
-# CSS: DISEÑO ANCHO FLUIDO, STICKY HEADER ROJO Y FAB A LA IZQUIERDA
+# CSS: ESTILOS GENERALES Y FAB AMARILLO/VERDE
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -334,7 +335,7 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* APROVECHAR TODO EL ANCHO DE LA PANTALLA WEB SIN ESPACIOS LATERALES */
+    /* APROVECHAR TODO EL ANCHO DE LA PANTALLA WEB */
     .block-container {{
         padding-top: 95px !important;
         padding-bottom: 5.5rem !important;
@@ -343,13 +344,13 @@ st.markdown(f"""
         max-width: 100% !important;
     }}
 
-    /* STICKY HEADER ROJO COMPLETO */
+    /* STICKY HEADER NORMAL Y LIMPIO */
     .sticky-header-container {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 76px;
+        height: 70px;
         background-color: {HEADER_RED} !important;
         z-index: 99998 !important;
         padding: 0 24px;
@@ -361,18 +362,18 @@ st.markdown(f"""
     }}
 
     .sticky-logo {{
-        max-height: 50px;
+        max-height: 48px;
         width: auto;
         object-fit: contain;
         display: block !important;
     }}
 
-    /* INSIGNIA DE CARRITO EN EL HEADER */
+    /* INSIGNIA DE CARRITO EN EL HEADER (CON CLIC FUNCIONAL) */
     .cart-badge-wrapper {{
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: rgba(0, 0, 0, 0.22);
         border-radius: 50%;
         width: 46px;
         height: 46px;
@@ -383,7 +384,7 @@ st.markdown(f"""
         position: absolute;
         top: -3px;
         right: -3px;
-        background-color: #facc15;
+        background-color: {FAB_YELLOW};
         color: #1e293b;
         font-weight: 900;
         font-size: 0.75rem;
@@ -422,7 +423,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) MOVIDO A LA IZQUIERDA CON ROJO INTENSO E ICONO OUTLINE */
+    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO (O VERDE SI ES WHATSAPP) */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 22px !important;
@@ -432,13 +433,13 @@ st.markdown(f"""
         width: auto !important;
     }}
     div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
-        background: linear-gradient(135deg, #EF4444 0%, {FAB_STRONG_RED} 100%) !important;
-        color: #ffffff !important;
+        background: {FAB_YELLOW} !important;
+        color: #1e293b !important;
         padding: 14px 26px !important;
         border-radius: 50px !important;
-        font-weight: 800 !important;
+        font-weight: 900 !important;
         font-size: 1rem !important;
-        box-shadow: 0 6px 20px rgba(185, 28, 28, 0.5) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
         height: 52px !important;
         display: flex !important;
@@ -449,10 +450,10 @@ st.markdown(f"""
     }}
     div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
     div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
+        color: #1e293b !important;
+        -webkit-text-fill-color: #1e293b !important;
         font-size: 1rem !important;
-        font-weight: 800 !important;
+        font-weight: 900 !important;
         margin: 0 !important;
     }}
 
@@ -559,33 +560,27 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER REAL (LOGO IZQ, BUSCADOR CENTRO, CARRITO DER CON BADGE)
+# STICKY HEADER NORMAL Y CARRITO FUNCIONAL
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header-container">
-    <div style="display: flex; align-items: center; gap: 12px;">
+    <div style="display: flex; align-items: center;">
         <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
-    <div style="flex-grow: 1; max-width: 600px; margin: 0 20px;">
 </div>
 """, unsafe_allow_html=True)
 
-# Controles interactivos dentro del Sticky Header real mediante columnas de Streamlit
-hdr_c1, hdr_c2, hdr_c3 = st.columns([2, 7, 1], vertical_alignment="center")
-with hdr_c1:
-    st.write("") # Espacio para alinear con el logo fijo
-with hdr_c2:
-    search_query = st.text_input("Buscar", placeholder="¿Qué estás buscando hoy?", label_visibility="collapsed", key="main_search_input")
-with hdr_c3:
-    if st.button("🛒", key="header_cart_icon_btn", help="Ir al Carrito"):
-        st.session_state.show_variants_modal = False
-        st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
-        st.rerun()
+# Manejo de redirección al presionar el carrito del header superior mediante parámetro en query
+params = st.query_params
+if "goto" in params and params["goto"] == "carrito":
+    st.session_state.nav_view = "carrito"
+    st.query_params.clear()
+    st.rerun()
 
-# Insignia flotante HTML superpuesta en la esquina superior derecha para el carrito
+# Insignia flotante HTML interactiva para el carrito del header (sin duplicados, con enlace limpio vía query params)
 st.markdown(f"""
-<div style="position: fixed; top: 14px; right: 24px; z-index: 99999;">
-    <a href="javascript:void(0);" onclick="window.parent.document.querySelector('button[key=\\'header_cart_icon_btn\\']')?.click();" style="text-decoration: none;">
+<div style="position: fixed; top: 12px; right: 24px; z-index: 99999;">
+    <a href="?goto=carrito" target="_self" style="text-decoration: none;">
         <div class="cart-badge-wrapper">
             <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
             <span class="cart-badge-count">{total_items}</span>
@@ -607,6 +602,9 @@ if st.session_state.nav_view == "catalogo":
     """, unsafe_allow_html=True)
 
     st.markdown(f'<div style="background: linear-gradient(135deg, {BTN_SOFT_RED} 0%, #F43F5E 100%); color: white; padding: 12px 16px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;"><span class="material-symbols-outlined" style="vertical-align: -5px; margin-right: 6px; font-size: 20px;">local_shipping</span> ¡Envíos directos en ruta Frimex! Pide fácil y rápido</div>', unsafe_allow_html=True)
+
+    # BUSCADOR EN EL CUERPO
+    search_query = st.text_input("Buscar productos", placeholder="¿Qué estás buscando hoy?", key="main_search_input")
 
     # POPULARES
     popular_ids = [str(p.get("id")) for p in st.session_state.popular_items]
@@ -727,9 +725,9 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) A LA IZQUIERDA CON ICONO OUTLINE Y TOTAL DINÁMICO
+    # BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE DE CARRITO
     if total_items > 0:
-        if st.button("Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
+        if st.button("shopping_cart Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
@@ -871,15 +869,28 @@ elif st.session_state.nav_view == "carrito":
         is_form_valid = bool(st.session_state.customer_name.strip() and st.session_state.customer_address.strip())
 
         if is_form_valid:
+            # Estilo dinámico verde para el FAB de WhatsApp cuando se validan los datos
             st.markdown(f"""
-            <a href="{whatsapp_url}" target="_blank" style="background-color: #25D366; color: white; padding: 14px 22px; border-radius: 50px; font-weight: 800; font-size: 1rem; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 18px rgba(37, 211, 102, 0.45);">
-                <span class="material-symbols-outlined" style="font-size: 22px; color: #ffffff;">chat</span>
-                Enviar pedido por WhatsApp
-            </a>
+            <style>
+                div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
+                    background: {WHATSAPP_GREEN} !important;
+                    color: #ffffff !important;
+                }}
+                div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
+                div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
+                    color: #ffffff !important;
+                    -webkit-text-fill-color: #ffffff !important;
+                }}
+            </style>
             """, unsafe_allow_html=True)
 
+            if st.button("chat Enviar pedido por WhatsApp", type="primary", use_container_width=True, key="whatsapp_fab_btn"):
+                st.markdown(f'<meta http-equiv="refresh" content="0;url={whatsapp_url}">', unsafe_allow_html=True)
+                st.session_state.order_sent = True
+                st.rerun()
+
             st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("Ya envié mi pedido, finalizar compra", type="primary", use_container_width=True, key="finalize_order_safe_btn"):
+            if st.button("Ya envié mi pedido, finalizar compra", use_container_width=True, key="finalize_order_safe_btn"):
                 st.session_state.order_sent = True
                 st.rerun()
         else:
