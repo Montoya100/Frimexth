@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, BUSCADOR BLANCO CON CONTORNO ROJO Y FAB CON ICONO
+# CSS: STICKY HEADER, BUSCADOR BLANCO, FAB DERECHO E IZQUIERDO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -380,29 +380,51 @@ st.markdown(f"""
         display: block !important;
     }}
 
-    /* INSIGNIA DE CARRITO EN EL HEADER */
-    .cart-badge-wrapper {{
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(0, 0, 0, 0.22);
-        border-radius: 50%;
-        width: 44px;
-        height: 44px;
-        position: relative;
-        cursor: pointer;
+    /* BOTÓN DUPLICADO EN EL HEADER (CIRCULAR CON ICONO Y BADGE AMARILLO) */
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
+        position: fixed !important;
+        top: 12px !important;
+        right: 20px !important;
+        z-index: 999999 !important;
+        width: 44px !important;
+        height: 44px !important;
     }}
-    .cart-badge-count {{
-        position: absolute;
-        top: -3px;
-        right: -3px;
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button {{
+        background: rgba(0, 0, 0, 0.22) !important;
+        border-radius: 50% !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }}
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p {{
+        font-size: 0px !important;
+    }}
+    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button::before {{
+        content: "\\e8cc";
+        font-family: 'Material Symbols Outlined';
+        font-size: 24px;
+        color: #ffffff;
+    }}
+
+    .cart-badge-count-fixed {{
+        position: fixed;
+        top: 9px;
+        right: 16px;
         background-color: {FAB_YELLOW};
         color: #1e293b;
         font-weight: 900;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         padding: 1px 6px;
         border-radius: 12px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        z-index: 9999999;
+        pointer-events: none;
     }}
 
     /* FORZAR BARRA DE BÚSQUEDA A FONDO BLANCO, TEXTO OSCURO Y CONTORNO ROJO */
@@ -445,7 +467,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL */
+    /* BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -538,15 +560,6 @@ total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
 # ==========================================
-# MANEJO DE NAVEGACIÓN Y CARRITO (PERSISTENTE)
-# ==========================================
-params = st.query_params
-if "goto" in params and params["goto"] == "carrito":
-    st.session_state.nav_view = "carrito"
-    st.query_params.clear()
-    st.rerun()
-
-# ==========================================
 # MODAL DE VARIANTES CONDICIONAL
 # ==========================================
 @st.dialog("Seleccionar Presentación")
@@ -598,23 +611,23 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER CON INSIGNIA DE CARRITO FUNCIONAL (ENLACE LIMPIO SIN REINICIAR)
+# STICKY HEADER Y BOTÓN DUPLICADO DE CARRITO (NATIVO Y SEGURO)
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header-container">
     <div style="display: flex; align-items: center;">
         <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
     </div>
-    <div>
-        <a href="?goto=carrito" target="_self" style="text-decoration: none;">
-            <div class="cart-badge-wrapper">
-                <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
-                <span class="cart-badge-count">{total_items}</span>
-            </div>
-        </a>
-    </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Botón nativo duplicado dentro del header (hace exactamente lo mismo sin vaciar el carrito)
+if st.button("🛒", key="header_cart_dup_btn"):
+    st.session_state.nav_view = "carrito"
+    st.rerun()
+
+if total_items > 0:
+    st.markdown(f'<div class="cart-badge-count-fixed">{total_items}</div>', unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO JUSTO ABAJO DEL HEADER
@@ -751,7 +764,7 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) CON ICONO OUTLINE REAL
+    # BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA
     if total_items > 0:
         if st.button(f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
