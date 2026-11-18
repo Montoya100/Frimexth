@@ -287,6 +287,8 @@ if st.session_state.dark_mode:
     sub_text_color = "#9ca3af"
     border_color = "#2d3748"
     input_bg = "#262626"
+    modal_bg = "#1e1e1e"
+    modal_text = "#f3f4f6"
 else:
     bg_color = "#f8fafc"
     card_bg = "#ffffff"
@@ -294,16 +296,18 @@ else:
     sub_text_color = "#64748b"
     border_color = "#e2e8f0"
     input_bg = "#ffffff"
+    modal_bg = "#ffffff"
+    modal_text = "#0f172a"
 
-HEADER_RED = "#DC2626"          # Rojo vivo corporativo para el sticky header
-BTN_SOFT_RED = "#E11D48"        # Rojo suave para botones generales
+HEADER_RED = "#DC2626"          
+BTN_SOFT_RED = "#E11D48"        
 BTN_SOFT_RED_HOVER = "#BE123C"
-PRICE_ORANGE = "#F97316"        # Naranja vibrante para precios
-FAB_YELLOW = "#facc15"          # Amarillo distintivo para el FAB flotante del carrito
-WHATSAPP_GREEN = "#25D366"      # Verde oficial para WhatsApp
+PRICE_ORANGE = "#F97316"        
+FAB_YELLOW = "#facc15"          
+WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILOS GENERALES Y FAB AMARILLO/VERDE
+# CSS: ANCHO COMPLETO MÓVIL/WEB, MODALES OSCUROS/CLAROS Y FAB OUTLINE
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -335,13 +339,19 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* APROVECHAR TODO EL ANCHO DE LA PANTALLA WEB */
+    /* ANCHO TOTAL SIN ESPACIOS LATERALES (MÓVIL Y ESCRITORIO) */
     .block-container {{
-        padding-top: 95px !important;
+        padding-top: 85px !important;
         padding-bottom: 5.5rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
         max-width: 100% !important;
+    }}
+    @media (min-width: 768px) {{
+        .block-container {{
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }}
     }}
 
     /* STICKY HEADER NORMAL Y LIMPIO */
@@ -350,10 +360,10 @@ st.markdown(f"""
         top: 0;
         left: 0;
         width: 100%;
-        height: 70px;
+        height: 68px;
         background-color: {HEADER_RED} !important;
         z-index: 99998 !important;
-        padding: 0 24px;
+        padding: 0 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.25);
         border-bottom: 2px solid #991b1b;
         display: flex;
@@ -362,21 +372,21 @@ st.markdown(f"""
     }}
 
     .sticky-logo {{
-        max-height: 48px;
+        max-height: 44px;
         width: auto;
         object-fit: contain;
         display: block !important;
     }}
 
-    /* INSIGNIA DE CARRITO EN EL HEADER (CON CLIC FUNCIONAL) */
+    /* INSIGNIA DE CARRITO EN EL HEADER */
     .cart-badge-wrapper {{
         display: inline-flex;
         align-items: center;
         justify-content: center;
         background-color: rgba(0, 0, 0, 0.22);
         border-radius: 50%;
-        width: 46px;
-        height: 46px;
+        width: 44px;
+        height: 44px;
         position: relative;
         cursor: pointer;
     }}
@@ -393,13 +403,22 @@ st.markdown(f"""
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }}
 
-    /* MODAL DE VARIANTES */
+    /* MODAL CON CONTRASTE CORRECTO (TEXTOS OSCUROS SI EL FONDO ES BLANCO) */
     div[data-testid="stDialog"] > div {{
-        background-color: {card_bg} !important;
-        color: {text_color} !important;
+        background-color: {modal_bg} !important;
+        color: {modal_text} !important;
         border-radius: 16px !important;
         border: 1px solid {border_color} !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
+    }}
+    div[data-testid="stDialog"] p, 
+    div[data-testid="stDialog"] h1, 
+    div[data-testid="stDialog"] h2, 
+    div[data-testid="stDialog"] h3, 
+    div[data-testid="stDialog"] span,
+    div[data-testid="stDialog"] div {{
+        color: {modal_text} !important;
+        -webkit-text-fill-color: {modal_text} !important;
     }}
 
     /* CAMPOS E INPUTS */
@@ -407,9 +426,9 @@ st.markdown(f"""
     div[data-baseweb="input"], div[data-baseweb="base-input"], 
     div[data-baseweb="textarea"], div[data-baseweb="select"],
     [data-baseweb="input"] > div, [data-baseweb="base-input"] > div {{
-        background-color: #ffffff !important;
-        color: #1e293b !important;
-        -webkit-text-fill-color: #1e293b !important;
+        background-color: {input_bg} !important;
+        color: {text_color} !important;
+        -webkit-text-fill-color: {text_color} !important;
         border: 1px solid #cbd5e1 !important;
         border-radius: 30px !important;
     }}
@@ -423,11 +442,11 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO (O VERDE SI ES WHATSAPP) */
+    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
-        bottom: 22px !important;
-        left: 22px !important;
+        bottom: 20px !important;
+        left: 20px !important;
         right: auto !important;
         z-index: 9999999 !important;
         width: auto !important;
@@ -435,24 +454,24 @@ st.markdown(f"""
     div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
         background: {FAB_YELLOW} !important;
         color: #1e293b !important;
-        padding: 14px 26px !important;
+        padding: 12px 22px !important;
         border-radius: 50px !important;
         font-weight: 900 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
-        height: 52px !important;
+        height: 50px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 10px !important;
+        gap: 8px !important;
         white-space: nowrap !important;
     }}
     div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
     div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
         color: #1e293b !important;
         -webkit-text-fill-color: #1e293b !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         font-weight: 900 !important;
         margin: 0 !important;
     }}
@@ -472,13 +491,13 @@ st.markdown(f"""
         transform: translateY(-1px) !important;
     }}
 
-    /* TARJETAS */
+    /* TARJETAS DE PRODUCTO */
     .product-card, .pop-card-box {{
         background-color: {card_bg};
         border: 1px solid {border_color};
         border-radius: 14px;
-        padding: 14px;
-        margin-bottom: 14px;
+        padding: 12px;
+        margin-bottom: 12px;
         position: relative;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }}
@@ -487,9 +506,9 @@ st.markdown(f"""
     .price-tag {{
         color: {PRICE_ORANGE} !important;
         font-weight: 900 !important;
-        font-size: 1.25rem !important;
+        font-size: 1.2rem !important;
         margin-top: 6px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         display: block;
     }}
 </style>
@@ -507,6 +526,15 @@ def remove_from_cart(pid):
 
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
+
+# ==========================================
+# MANEJO DE NAVEGACIÓN Y CARRITO (SIN REINICIOS)
+# ==========================================
+params = st.query_params
+if "goto" in params and params["goto"] == "carrito":
+    st.session_state.nav_view = "carrito"
+    st.query_params.clear()
+    st.rerun()
 
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
@@ -532,7 +560,7 @@ def variants_modal_dialog(base_name, variants_list):
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                 <img src="{v_img}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;" onerror="this.src='{DEFAULT_PRODUCT_IMG}';" />
                 <div style="flex-grow: 1;">
-                    <span style="color: {text_color} !important; font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2;">{v_name}</span>
+                    <span style="color: {modal_text} !important; font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2;">{v_name}</span>
                     <span style="color: {PRICE_ORANGE} !important; font-weight: 900; font-size: 1.05rem;">${v_price:.2f} MXN</span>
                 </div>
             </div>
@@ -544,7 +572,7 @@ def variants_modal_dialog(base_name, variants_list):
                 remove_from_cart(v_id)
                 st.rerun()
         with col_n:
-            st.markdown(f"<div style='font-size: 1.15rem; font-weight: 900; text-align: center; color: {text_color} !important;'>{qty_in_cart}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size: 1.15rem; font-weight: 900; text-align: center; color: {modal_text} !important;'>{qty_in_cart}</div>", unsafe_allow_html=True)
         with col_p:
             if st.button("+", key=f"m_plus_{v_id}_{idx}", use_container_width=True):
                 add_to_cart(v_id)
@@ -570,16 +598,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Manejo de redirección al presionar el carrito del header superior mediante parámetro en query
-params = st.query_params
-if "goto" in params and params["goto"] == "carrito":
-    st.session_state.nav_view = "carrito"
-    st.query_params.clear()
-    st.rerun()
-
-# Insignia flotante HTML interactiva para el carrito del header (sin duplicados, con enlace limpio vía query params)
+# Insignia flotante interactiva para el carrito del header (sin duplicados)
 st.markdown(f"""
-<div style="position: fixed; top: 12px; right: 24px; z-index: 99999;">
+<div style="position: fixed; top: 12px; right: 16px; z-index: 99999;">
     <a href="?goto=carrito" target="_self" style="text-decoration: none;">
         <div class="cart-badge-wrapper">
             <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
@@ -596,8 +617,8 @@ if st.session_state.nav_view == "catalogo":
         banner_to_show = DEFAULT_BANNER
 
     st.markdown(f"""
-    <div style="border: 1px solid {border_color}; border-radius: 16px; padding: 6px; margin-top: 10px; margin-bottom: 16px; background: {card_bg}; text-align: center; width: 100%; overflow: hidden;">
-        <img src="{banner_to_show}" style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
+    <div style="border: 1px solid {border_color}; border-radius: 16px; padding: 4px; margin-top: 10px; margin-bottom: 16px; background: {card_bg}; text-align: center; width: 100%; overflow: hidden;">
+        <img src="{banner_to_show}" style="width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null;this.src='{DEFAULT_BANNER}';" />
     </div>
     """, unsafe_allow_html=True)
 
@@ -620,8 +641,8 @@ if st.session_state.nav_view == "catalogo":
                     st.markdown(f"""
                     <div class="pop-card-box">
                         <div style="background: {BTN_SOFT_RED}; color: white; font-size: 0.68rem; font-weight: 800; padding: 3px 10px; border-radius: 20px; position: absolute; top: 10px; right: 10px;">Popular</div>
-                        <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 115px; object-fit: cover; border-radius: 8px; margin-top: 12px;" />
-                        <div style="font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: {text_color};">{p.get('name')}</div>
+                        <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-top: 10px;" />
+                        <div style="font-weight: 800; font-size: 1rem; margin-top: 8px; color: {text_color};">{p.get('name')}</div>
                         <span class="price-tag">${p_price:.2f} MXN</span>
                     </div>
                     """, unsafe_allow_html=True)
@@ -690,15 +711,14 @@ if st.session_state.nav_view == "catalogo":
                             img_src = DEFAULT_PRODUCT_IMG
                         
                         st.image(img_src, use_container_width=True)
-                        st.markdown(f'<div style="font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: {text_color};">{base_name}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div style="font-weight: 800; font-size: 1rem; margin-top: 8px; color: {text_color};">{base_name}</div>', unsafe_allow_html=True)
                         desc_text = str(representative.get("description", "")).strip()
                         if desc_text and desc_text.lower() != "nan":
-                            st.markdown(f'<div style="color: {sub_text_color}; font-size: 0.85rem; margin-top: 2px;">{desc_text}</div>', unsafe_allow_html=True)
+                            st.markdown(f'<div style="color: {sub_text_color}; font-size: 0.82rem; margin-top: 2px;">{desc_text}</div>', unsafe_allow_html=True)
                         
                         prices = [safe_float(it.get("price"), 0.0) for it in items_group]
                         st.markdown(f'<span class="price-tag">${prices[0]:.2f} MXN</span>', unsafe_allow_html=True)
                         
-                        # Solo abre el modal si tiene múltiples variantes; si es único, agrega directo
                         if len(items_group) > 1:
                             if st.button("Ver Opciones", key=f"variants_btn_{base_name}_{pid}", use_container_width=True):
                                 st.session_state.current_modal_base = base_name
@@ -718,16 +738,16 @@ if st.session_state.nav_view == "catalogo":
                                         remove_from_cart(pid)
                                         st.rerun()
                                 with sub_c2:
-                                    st.markdown(f"<div style='font-size: 1.1rem; font-weight: 900; text-align: center; color: {text_color};'>{qty_in_cart}</div>", unsafe_allow_html=True)
+                                    st.markdown(f"<div style='font-size: 1.05rem; font-weight: 900; text-align: center; color: {text_color};'>{qty_in_cart}</div>", unsafe_allow_html=True)
                                 with sub_c3:
                                     if st.button("+", key=f"plus_{pid}", use_container_width=True):
                                         add_to_cart(pid)
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE DE CARRITO
+    # BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL DE CARRITO
     if total_items > 0:
-        if st.button("shopping_cart Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
+        if st.button("🛒 Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
@@ -869,7 +889,7 @@ elif st.session_state.nav_view == "carrito":
         is_form_valid = bool(st.session_state.customer_name.strip() and st.session_state.customer_address.strip())
 
         if is_form_valid:
-            # Estilo dinámico verde para el FAB de WhatsApp cuando se validan los datos
+            # Estilo dinámico verde para el FAB de WhatsApp
             st.markdown(f"""
             <style>
                 div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
@@ -884,7 +904,7 @@ elif st.session_state.nav_view == "carrito":
             </style>
             """, unsafe_allow_html=True)
 
-            if st.button("chat Enviar pedido por WhatsApp", type="primary", use_container_width=True, key="whatsapp_fab_btn"):
+            if st.button("💬 Enviar pedido por WhatsApp", type="primary", use_container_width=True, key="whatsapp_fab_btn"):
                 st.markdown(f'<meta http-equiv="refresh" content="0;url={whatsapp_url}">', unsafe_allow_html=True)
                 st.session_state.order_sent = True
                 st.rerun()
