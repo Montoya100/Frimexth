@@ -278,7 +278,7 @@ if "popular_items" not in st.session_state:
     ]
 
 # ==========================================
-# PALETAS DE COLORES (CON #cf291d Y #b0271a)
+# PALETAS DE COLORES Y ESTILOS
 # ==========================================
 if st.session_state.dark_mode:
     bg_color = "#121212"
@@ -299,15 +299,15 @@ else:
     modal_bg = "#ffffff"
     modal_text = "#0f172a"
 
-HEADER_RED = "#cf291d"          # Color solicitado para el header
-BTN_RED = "#b0271a"             # Color solicitado para botones generales
+HEADER_RED = "#cf291d"          
+BTN_RED = "#b0271a"             
 BTN_RED_HOVER = "#8f1f14"
-PRICE_ORANGE = "#F97316"        
+PRICE_BLUE = "#1e3a8a"          # Azul oscuro fuerte y grande para precios
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ANCHO COMPLETO, CONTORNO ROJO EN BUSCADOR Y MODALES
+# CSS: ANCHO COMPLETO, CONTORNO ROJO EN BUSCADOR Y PRECIOS GRANDES AZULES
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -339,7 +339,7 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ANCHO TOTAL SIN ESPACIOS LATERALES (MÓVIL Y ESCRITORIO) */
+    /* ANCHO TOTAL SIN ESPACIOS LATERALES */
     .block-container {{
         padding-top: 85px !important;
         padding-bottom: 5.5rem !important;
@@ -354,7 +354,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* STICKY HEADER NORMAL Y LIMPIO CON #cf291d */
+    /* STICKY HEADER CON #cf291d */
     .sticky-header-container {{
         position: fixed;
         top: 0;
@@ -434,7 +434,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL DE CARRITO */
+    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -449,7 +449,7 @@ st.markdown(f"""
         padding: 12px 22px !important;
         border-radius: 50px !important;
         font-weight: 900 !important;
-        font-size: 0.95rem !important;
+        font-size: 1rem !important;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
         height: 50px !important;
@@ -463,7 +463,7 @@ st.markdown(f"""
     div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
         color: #1e293b !important;
         -webkit-text-fill-color: #1e293b !important;
-        font-size: 0.95rem !important;
+        font-size: 1rem !important;
         font-weight: 900 !important;
         margin: 0 !important;
     }}
@@ -494,11 +494,11 @@ st.markdown(f"""
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }}
 
-    /* PRECIOS EN NARANJA */
+    /* PRECIOS EN AZUL OSCURO FUERTE Y MÁS GRANDES */
     .price-tag {{
-        color: {PRICE_ORANGE} !important;
+        color: {PRICE_BLUE} !important;
         font-weight: 900 !important;
-        font-size: 1.2rem !important;
+        font-size: 1.35rem !important;
         margin-top: 6px;
         margin-bottom: 8px;
         display: block;
@@ -520,7 +520,7 @@ total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
 # ==========================================
-# MANEJO DE NAVEGACIÓN Y CARRITO (CON PERSISTENCIA)
+# MANEJO DE NAVEGACIÓN Y CARRITO (PERSISTENTE SIN REINICIOS)
 # ==========================================
 params = st.query_params
 if "goto" in params and params["goto"] == "carrito":
@@ -553,7 +553,7 @@ def variants_modal_dialog(base_name, variants_list):
                 <img src="{v_img}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;" onerror="this.src='{DEFAULT_PRODUCT_IMG}';" />
                 <div style="flex-grow: 1;">
                     <span style="color: {modal_text} !important; font-weight: 800; font-size: 0.9rem; display: block; line-height: 1.2;">{v_name}</span>
-                    <span style="color: {PRICE_ORANGE} !important; font-weight: 900; font-size: 1.05rem;">${v_price:.2f} MXN</span>
+                    <span style="color: {PRICE_BLUE} !important; font-weight: 900; font-size: 1.15rem;">${v_price:.2f} MXN</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -580,7 +580,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER NORMAL Y CARRITO FUNCIONAL
+# STICKY HEADER NORMAL Y CARRITO FUNCIONAL (CONSERVANDO ESTADO)
 # ==========================================
 st.markdown(f"""
 <div class="sticky-header-container">
@@ -603,7 +603,10 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
-    # BANNER PRINCIPAL
+    # 1. BARRA DE BÚSQUEDA JUSTO ABAJO DEL STICKY HEADER Y ANTES DEL BANNER
+    search_query = st.text_input("Buscar productos", placeholder="¿Qué estás buscando hoy?", key="main_search_input")
+
+    # 2. BANNER PRINCIPAL
     banner_to_show = str(st.session_state.banner_url).strip()
     if not banner_to_show or banner_to_show.lower() == "nan":
         banner_to_show = DEFAULT_BANNER
@@ -615,9 +618,6 @@ if st.session_state.nav_view == "catalogo":
     """, unsafe_allow_html=True)
 
     st.markdown(f'<div style="background: linear-gradient(135deg, {BTN_RED} 0%, #d4382c 100%); color: white; padding: 12px 16px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;"><span class="material-symbols-outlined" style="vertical-align: -5px; margin-right: 6px; font-size: 20px;">local_shipping</span> ¡Envíos directos en ruta Frimex! Pide fácil y rápido</div>', unsafe_allow_html=True)
-
-    # BARRA DE BÚSQUEDA JUSTO ABAJO DEL STICKY HEADER CON CONTORNO ROJO
-    search_query = st.text_input("Buscar productos", placeholder="¿Qué estás buscando hoy?", key="main_search_input")
 
     # POPULARES
     popular_ids = [str(p.get("id")) for p in st.session_state.popular_items]
@@ -737,11 +737,23 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) CON ICONO OUTLINE VECTORIAL REAL DE CARRITO
+    # BOTÓN FLOTANTE (FAB) CON ICONO OUTLINE VECTORIAL REAL (SIN TEXTO PLANO)
     if total_items > 0:
-        if st.button("<span class='material-symbols-outlined' style='vertical-align: -3px; font-size: 20px;'>shopping_cart</span> Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
+        if st.button("Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
+        # Inserción limpia del icono outline mediante contenedor estilizado
+        st.markdown(f"""
+        <style>
+            div[data-testid="stButton"]:has(button[key="native_floating_fab"]) button::before {{
+                content: "\\e8cc";
+                font-family: 'Material Symbols Outlined';
+                font-size: 20px;
+                vertical-align: -3px;
+                margin-right: 6px;
+            }}
+        </style>
+        """, unsafe_allow_html=True)
 
 elif st.session_state.nav_view == "carrito":
     if st.button("← Volver al Catálogo", use_container_width=False):
@@ -789,10 +801,10 @@ elif st.session_state.nav_view == "carrito":
                         
         st.write("---")
         st.markdown(f"""
-        <div style="background: {card_bg}; border: 2px solid {PRICE_ORANGE}; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;">
-            <span class="material-symbols-outlined" style="font-size: 28px; color: {PRICE_ORANGE}; vertical-align: middle; margin-right: 6px;">receipt_long</span>
+        <div style="background: {card_bg}; border: 2px solid {PRICE_BLUE}; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;">
+            <span class="material-symbols-outlined" style="font-size: 28px; color: {PRICE_BLUE}; vertical-align: middle; margin-right: 6px;">receipt_long</span>
             <span style="font-size: 1rem; font-weight: 700; color: {sub_text_color}; display: inline-block;">TOTAL DEL PEDIDO:</span>
-            <span style="font-size: 1.8rem; font-weight: 900; color: {PRICE_ORANGE}; display: block; margin-top: 4px;">${total_price:.2f} MXN</span>
+            <span style="font-size: 1.8rem; font-weight: 900; color: {PRICE_BLUE}; display: block; margin-top: 4px;">${total_price:.2f} MXN</span>
         </div>
         """, unsafe_allow_html=True)
 
