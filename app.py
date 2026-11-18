@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER Y BOTÓN OUTLINE PERFECTO
+# CSS: DISEÑO LIMPIO DEL HEADER Y BOTÓN OUTLINE
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -341,9 +341,9 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ANCHO TOTAL SIN ESPACIOS LATERALES */
+    /* ESPACIADO SUPERIOR PARA EL CONTENIDO */
     .block-container {{
-        padding-top: 85px !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 5.5rem !important;
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
@@ -356,80 +356,46 @@ st.markdown(f"""
         }}
     }}
 
-    /* STICKY HEADER FIJO CON #cf291d */
-    .sticky-header-container {{
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 68px;
-        background-color: {HEADER_RED} !important;
-        z-index: 99998 !important;
-        padding: 0 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-        border-bottom: 2px solid #991b1b;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }}
-
-    .sticky-logo {{
-        max-height: 42px;
-        width: auto;
-        object-fit: contain;
-        display: block !important;
-    }}
-
-    /* BOTÓN SUPERIOR EXACTAMENTE DENTRO DE LA FRANJA ROJA */
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
-        position: fixed !important;
-        top: 12px !important;
-        right: 20px !important;
-        z-index: 999999 !important;
-        width: 44px !important;
-        height: 44px !important;
-        margin: 0 !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button {{
-        background: rgba(0, 0, 0, 0.25) !important;
+    /* ESTILIZACIÓN DEL BOTÓN DE CARRITO DENTRO DEL HEADER ROJO */
+    div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button {{
+        background-color: rgba(0, 0, 0, 0.25) !important;
+        color: #ffffff !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-height: 48px !important;
         border-radius: 50% !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
         padding: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        border: none !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+        margin-left: auto !important;
     }}
-    /* Ocultar cualquier texto residual del botón ("cart", etc.) */
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p,
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button span:not(.material-symbols-outlined) {{
-        font-size: 0px !important;
+    div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button p,
+    div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button span:not(.material-symbols-outlined) {{
         display: none !important;
     }}
-    /* Inyectar icono outline real de Material Symbols */
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button::before {{
+    div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
         font-size: 24px;
         color: #ffffff;
-        font-weight: normal;
     }}
 
-    .cart-badge-count-fixed {{
-        position: fixed;
-        top: 9px;
-        right: 16px;
+    /* INSIGNIA AMARILLA DE CONTADOR FLOTANTE */
+    .header-badge-yellow {{
+        position: absolute;
+        top: 6px;
+        right: 12px;
         background-color: {FAB_YELLOW};
         color: #1e293b;
         font-weight: 900;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         padding: 1px 6px;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        z-index: 9999999;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        z-index: 10;
         pointer-events: none;
     }}
 
@@ -456,15 +422,6 @@ st.markdown(f"""
         border-radius: 16px !important;
         border: 1px solid {border_color} !important;
         box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
-    }}
-    div[data-testid="stDialog"] p, 
-    div[data-testid="stDialog"] h1, 
-    div[data-testid="stDialog"] h2, 
-    div[data-testid="stDialog"] h3, 
-    div[data-testid="stDialog"] span,
-    div[data-testid="stDialog"] div {{
-        color: {modal_text} !important;
-        -webkit-text-fill-color: {modal_text} !important;
     }}
 
     label p, .stTextInput label, .stTextArea label, [data-testid="stWidgetLabel"] p, .stRadio label p {{
@@ -617,23 +574,24 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER Y BOTÓN INCURSTADO EN LA FRANJA ROJA
+# HEADER NATIVO INTEGRADO (FRANJA ROJA #cf291d)
 # ==========================================
-st.markdown(f"""
-<div class="sticky-header-container">
-    <div style="display: flex; align-items: center; padding-left: 4px;">
-        <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
+header_bg_box = st.container()
+with header_bg_box:
+    st.markdown(f"""
+    <div style="background-color: {HEADER_RED}; padding: 10px 16px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.18); position: relative;">
+        <img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
     </div>
-</div>
-""", unsafe_allow_html=True)
-
-# Botón funcional dentro del header (oculto en texto y estilizado como icono outline perfecto mediante CSS)
-if st.button("", key="header_cart_dup_btn"):
-    st.session_state.nav_view = "carrito"
-    st.rerun()
-
-if total_items > 0:
-    st.markdown(f'<div class="cart-badge-count-fixed">{total_items}</div>', unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+    
+    # Superponemos el botón y el contador mediante columnas alineadas exactamente dentro de la franja roja
+    col_dummy, col_btn = st.columns([10, 1.4], vertical_alignment="center")
+    with col_btn:
+        if total_items > 0:
+            st.markdown(f'<div class="header-badge-yellow">{total_items}</div>', unsafe_allow_html=True)
+        if st.button("", key="header_cart_outline_btn", use_container_width=True):
+            st.session_state.nav_view = "carrito"
+            st.rerun()
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
