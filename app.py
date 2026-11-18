@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: BOTÓN CIRCULAR PERFECTO Y CONTADOR EXACTO
+# CSS: HEADER DE ANCHO COMPLETO Y BOTÓN CIRCULAR PERFECTO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -341,9 +341,9 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ESPACIADO SUPERIOR */
+    /* ESPACIADO SUPERIOR Y MÁRGENES */
     .block-container {{
-        padding-top: 1.5rem !important;
+        padding-top: 0rem !important;
         padding-bottom: 5.5rem !important;
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
@@ -356,36 +356,29 @@ st.markdown(f"""
         }}
     }}
 
-    /* CONTENEDOR PRINCIPAL DEL HEADER (FRANJA ROJA DE LADO A LADO) */
-    .frimex-header-container {{
+    /* FRANJA ROJA DE HEADER DE LADO A LADO SIN CORTES */
+    .frimex-full-header {{
         background-color: {HEADER_RED} !important;
-        width: 100% !important;
-        padding: 12px 20px !important;
-        margin: -1.5rem -0.75rem 1.5rem -0.75rem !important;
+        width: 100vw !important;
+        position: relative !important;
+        left: calc(-50vw + 50%) !important;
+        padding: 12px 24px !important;
+        margin-bottom: 1.5rem !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
     }}
-    @media (min-width: 768px) {{
-        .frimex-header-container {{
-            margin: -1.5rem -2rem 1.5rem -2rem !important;
-            width: calc(100% + 4rem) !important;
-            padding: 14px 32px !important;
-        }}
-    }}
 
-    /* FIJAMOS EL CONTENEDOR DEL BOTÓN A 48x48 PARA EVITAR DEFORMACIONES */
+    /* CONTENEDOR EXACTO DEL BOTÓN DE CARRITO EN EL HEADER */
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) {{
         width: 48px !important;
         height: 48px !important;
         min-height: 48px !important;
-        margin-left: auto !important;
-        margin-right: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
-
-    /* ESTILIZACIÓN EXACTA DEL BOTÓN CIRCULAR ROJO CON ÍCONO */
     div[data-testid="stButton"]:has(button[key="header_cart_outline_btn"]) > button {{
         background-color: {BTN_RED} !important;
         color: #ffffff !important;
@@ -606,19 +599,22 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER NATIVO INTEGRADO DE LADO A LADO
+# HEADER NATIVO INTEGRADO DE LADO A LADO SIN CORTES
 # ==========================================
-col_logo, col_cart_btn = st.columns([8, 1.5], vertical_alignment="center")
-with col_logo:
+logo_html = f'<img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display=\'none\'" />'
+
+# Renderizamos la franja roja completa mediante HTML contenedor
+col_left_h, col_right_h = st.columns([8, 1.5], vertical_alignment="center")
+with col_left_h:
     st.markdown(f"""
-    <div class="frimex-header-container" style="margin: -1.5rem -0.75rem 0 -0.75rem !important;">
-        <img src="{LOGO_URL}" style="max-height: 42px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+    <div class="frimex-full-header">
+        {logo_html}
     </div>
     """, unsafe_allow_html=True)
 
-with col_cart_btn:
+with col_right_h:
     st.markdown(f"""
-    <div style="background-color: {HEADER_RED}; padding: 12px 10px; margin: -1.5rem -0.75rem 0 -0.75rem !important; display: flex; justify-content: flex-end; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.18); position: relative;">
+    <div class="frimex-full-header" style="justify-content: flex-end !important;">
     """, unsafe_allow_html=True)
     
     if total_items > 0:
@@ -629,8 +625,6 @@ with col_cart_btn:
         st.rerun()
         
     st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
