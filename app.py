@@ -278,7 +278,7 @@ if "popular_items" not in st.session_state:
     ]
 
 # ==========================================
-# PALETAS DE COLORES
+# PALETAS DE COLORES (CON #cf291d Y #b0271a)
 # ==========================================
 if st.session_state.dark_mode:
     bg_color = "#121212"
@@ -299,15 +299,15 @@ else:
     modal_bg = "#ffffff"
     modal_text = "#0f172a"
 
-HEADER_RED = "#DC2626"          
-BTN_SOFT_RED = "#E11D48"        
-BTN_SOFT_RED_HOVER = "#BE123C"
+HEADER_RED = "#cf291d"          # Color solicitado para el header
+BTN_RED = "#b0271a"             # Color solicitado para botones generales
+BTN_RED_HOVER = "#8f1f14"
 PRICE_ORANGE = "#F97316"        
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ANCHO COMPLETO MÓVIL/WEB, MODALES OSCUROS/CLAROS Y FAB OUTLINE
+# CSS: ANCHO COMPLETO, CONTORNO ROJO EN BUSCADOR Y MODALES
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -354,7 +354,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* STICKY HEADER NORMAL Y LIMPIO */
+    /* STICKY HEADER NORMAL Y LIMPIO CON #cf291d */
     .sticky-header-container {{
         position: fixed;
         top: 0;
@@ -403,7 +403,14 @@ st.markdown(f"""
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }}
 
-    /* MODAL CON CONTRASTE CORRECTO (TEXTOS OSCUROS SI EL FONDO ES BLANCO) */
+    /* BARRA DE BÚSQUEDA CON CONTORNO ROJO (#cf291d) */
+    div[data-baseweb="input"], div[data-baseweb="base-input"] {{
+        border: 2px solid {HEADER_RED} !important;
+        border-radius: 30px !important;
+        background-color: {input_bg} !important;
+    }}
+
+    /* MODAL CON CONTRASTE CORRECTO */
     div[data-testid="stDialog"] > div {{
         background-color: {modal_bg} !important;
         color: {modal_text} !important;
@@ -421,28 +428,13 @@ st.markdown(f"""
         -webkit-text-fill-color: {modal_text} !important;
     }}
 
-    /* CAMPOS E INPUTS */
-    input[type="text"], input[type="password"], textarea, select, 
-    div[data-baseweb="input"], div[data-baseweb="base-input"], 
-    div[data-baseweb="textarea"], div[data-baseweb="select"],
-    [data-baseweb="input"] > div, [data-baseweb="base-input"] > div {{
-        background-color: {input_bg} !important;
-        color: {text_color} !important;
-        -webkit-text-fill-color: {text_color} !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 30px !important;
-    }}
-    input[type="text"]:focus, textarea:focus {{
-        border-color: {HEADER_RED} !important;
-    }}
-
     label p, .stTextInput label, .stTextArea label, [data-testid="stWidgetLabel"] p, .stRadio label p {{
         color: {text_color} !important;
         -webkit-text-fill-color: {text_color} !important;
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL */
+    /* BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL DE CARRITO */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -476,18 +468,18 @@ st.markdown(f"""
         margin: 0 !important;
     }}
 
-    /* BOTONES GENERALES */
+    /* BOTONES GENERALES CON #b0271a */
     button, .stButton > button {{
-        background-color: {BTN_SOFT_RED} !important;
+        background-color: {BTN_RED} !important;
         color: #ffffff !important;
         border: none !important;
         border-radius: 10px !important;
         font-weight: 700 !important;
-        box-shadow: 0 2px 6px rgba(225, 29, 72, 0.18) !important;
+        box-shadow: 0 2px 6px rgba(176, 39, 26, 0.25) !important;
         transition: all 0.2s ease !important;
     }}
     button:hover, .stButton > button:hover {{
-        background-color: {BTN_SOFT_RED_HOVER} !important;
+        background-color: {BTN_RED_HOVER} !important;
         transform: translateY(-1px) !important;
     }}
 
@@ -528,7 +520,7 @@ total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
 # ==========================================
-# MANEJO DE NAVEGACIÓN Y CARRITO (SIN REINICIOS)
+# MANEJO DE NAVEGACIÓN Y CARRITO (CON PERSISTENCIA)
 # ==========================================
 params = st.query_params
 if "goto" in params and params["goto"] == "carrito":
@@ -541,7 +533,7 @@ if "goto" in params and params["goto"] == "carrito":
 # ==========================================
 @st.dialog("Seleccionar Presentación")
 def variants_modal_dialog(base_name, variants_list):
-    st.markdown(f"<h3 style='color: {BTN_SOFT_RED} !important; margin-bottom: 2px; text-align: center; font-size: 1.3rem;'>{base_name}</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: {BTN_RED} !important; margin-bottom: 2px; text-align: center; font-size: 1.3rem;'>{base_name}</h3>", unsafe_allow_html=True)
     st.markdown(f"<p style='color: {sub_text_color} !important; font-size: 0.85rem; font-weight: 600; text-align: center; margin-bottom: 10px;'>Escoge la opción que deseas agregar:</p>", unsafe_allow_html=True)
     st.markdown(f"<hr style='margin: 4px 0 12px 0; border-color: {border_color};'>", unsafe_allow_html=True)
     
@@ -598,7 +590,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Insignia flotante interactiva para el carrito del header (sin duplicados)
+# Insignia flotante interactiva para el carrito del header
 st.markdown(f"""
 <div style="position: fixed; top: 12px; right: 16px; z-index: 99999;">
     <a href="?goto=carrito" target="_self" style="text-decoration: none;">
@@ -622,15 +614,15 @@ if st.session_state.nav_view == "catalogo":
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown(f'<div style="background: linear-gradient(135deg, {BTN_SOFT_RED} 0%, #F43F5E 100%); color: white; padding: 12px 16px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;"><span class="material-symbols-outlined" style="vertical-align: -5px; margin-right: 6px; font-size: 20px;">local_shipping</span> ¡Envíos directos en ruta Frimex! Pide fácil y rápido</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background: linear-gradient(135deg, {BTN_RED} 0%, #d4382c 100%); color: white; padding: 12px 16px; border-radius: 12px; text-align: center; font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;"><span class="material-symbols-outlined" style="vertical-align: -5px; margin-right: 6px; font-size: 20px;">local_shipping</span> ¡Envíos directos en ruta Frimex! Pide fácil y rápido</div>', unsafe_allow_html=True)
 
-    # BUSCADOR EN EL CUERPO
+    # BARRA DE BÚSQUEDA JUSTO ABAJO DEL STICKY HEADER CON CONTORNO ROJO
     search_query = st.text_input("Buscar productos", placeholder="¿Qué estás buscando hoy?", key="main_search_input")
 
     # POPULARES
     popular_ids = [str(p.get("id")) for p in st.session_state.popular_items]
     if popular_ids and not search_query:
-        st.markdown(f"<h4 style='margin-bottom: 12px; color: {text_color};'><span class='material-symbols-outlined' style='font-size: 22px; color: {BTN_SOFT_RED}; vertical-align: bottom; margin-right: 6px;'>local_fire_department</span> Lo más pedido</h4>", unsafe_allow_html=True)
+        st.markdown(f"<h4 style='margin-bottom: 12px; color: {text_color};'><span class='material-symbols-outlined' style='font-size: 22px; color: {BTN_RED}; vertical-align: bottom; margin-right: 6px;'>local_fire_department</span> Lo más pedido</h4>", unsafe_allow_html=True)
         pop_list = [p for p in st.session_state.products if str(p.get("id")) in popular_ids]
         if pop_list:
             pop_cols = st.columns(min(len(pop_list), 3))
@@ -640,7 +632,7 @@ if st.session_state.nav_view == "catalogo":
                     p_price = safe_float(p.get("price"), 0.0)
                     st.markdown(f"""
                     <div class="pop-card-box">
-                        <div style="background: {BTN_SOFT_RED}; color: white; font-size: 0.68rem; font-weight: 800; padding: 3px 10px; border-radius: 20px; position: absolute; top: 10px; right: 10px;">Popular</div>
+                        <div style="background: {BTN_RED}; color: white; font-size: 0.68rem; font-weight: 800; padding: 3px 10px; border-radius: 20px; position: absolute; top: 10px; right: 10px;">Popular</div>
                         <img src="{p.get('image', DEFAULT_PRODUCT_IMG)}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-top: 10px;" />
                         <div style="font-weight: 800; font-size: 1rem; margin-top: 8px; color: {text_color};">{p.get('name')}</div>
                         <span class="price-tag">${p_price:.2f} MXN</span>
@@ -745,9 +737,9 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL DE CARRITO
+    # BOTÓN FLOTANTE (FAB) CON ICONO OUTLINE VECTORIAL REAL DE CARRITO
     if total_items > 0:
-        if st.button("🛒 Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
+        if st.button("<span class='material-symbols-outlined' style='vertical-align: -3px; font-size: 20px;'>shopping_cart</span> Ver Carrito • $" + f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
@@ -756,7 +748,7 @@ elif st.session_state.nav_view == "carrito":
         st.session_state.nav_view = "catalogo"
         st.rerun()
         
-    st.markdown(f"<h3 style='color: {text_color};'><span class='material-symbols-outlined' style='vertical-align: bottom; color: {BTN_SOFT_RED};'>shopping_cart</span> Carrito de Compras</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: {text_color};'><span class='material-symbols-outlined' style='vertical-align: bottom; color: {BTN_RED};'>shopping_cart</span> Carrito de Compras</h3>", unsafe_allow_html=True)
     st.caption(f"Artículos seleccionados: {total_items}")
     
     if st.session_state.get("order_sent", False):
@@ -921,7 +913,7 @@ elif st.session_state.nav_view == "admin":
         st.session_state.nav_view = "catalogo"
         st.rerun()
 
-    st.markdown(f"<h3 style='color: {text_color};'><span class='material-symbols-outlined' style='vertical-align: bottom; color: {BTN_SOFT_RED};'>settings</span> Panel de Administración y Ajustes</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: {text_color};'><span class='material-symbols-outlined' style='vertical-align: bottom; color: {BTN_RED};'>settings</span> Panel de Administración y Ajustes</h3>", unsafe_allow_html=True)
     
     if not st.session_state.admin_authenticated:
         st.subheader("Acceso Restringido")
