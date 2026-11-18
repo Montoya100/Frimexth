@@ -302,12 +302,13 @@ else:
 HEADER_RED = "#cf291d"          
 BTN_RED = "#b0271a"             
 BTN_RED_HOVER = "#8f1f14"
+DARK_CIRCLE_RED = "#7a160e"     
 PRICE_BLACK = "#000000" if not st.session_state.dark_mode else "#ffffff"        
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILOS GENERALES (SIN HTML COMPLEJO EN HEADER)
+# CSS: DISEÑO RESPONSIVO PARA HEADER Y CARRITO HTML
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -353,16 +354,75 @@ st.markdown(f"""
         }}
     }}
 
-    /* CONTENEDOR DE FRANJA ROJA SUPERIOR */
-    .frimex-native-header {{
+    /* FRANJA ROJA SUPERIOR UNIFICADA (FLEXBOX REAL) */
+    .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        padding: 8px 20px !important;
+        padding: 10px 24px !important;
         margin-bottom: 1.5rem !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
+    }}
+
+    .frimex-unified-header img {{
+        max-height: 40px !important;
+        width: auto !important;
+        object-fit: contain !important;
+    }}
+
+    /* CARRITO CIRCULAR EN EL HEADER CON HTML PURO */
+    .header-cart-container {{
+        position: relative;
+        display: inline-block;
+    }}
+
+    .header-cart-circle {{
+        background-color: {DARK_CIRCLE_RED} !important;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }}
+
+    .header-cart-circle:hover {{
+        background-color: #5d100a !important;
+        transform: scale(1.05);
+    }}
+
+    .header-cart-circle .material-symbols-outlined {{
+        font-size: 22px;
+        color: #ffffff;
+    }}
+
+    .header-badge-exact {{
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background-color: {FAB_YELLOW};
+        color: #000000 !important;
+        font-weight: 900;
+        font-size: 0.75rem;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        z-index: 40;
+        pointer-events: none;
     }}
 
     /* BOTÓN FLOTANTE (FAB) INFERIOR */
@@ -484,6 +544,13 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
+# Detectar si el usuario hizo clic en el icono del carrito del header mediante query_params
+query_params = st.query_params
+if query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
+    st.session_state.nav_view = "carrito"
+    st.query_params.clear()
+    st.rerun()
+
 # ==========================================
 # MODAL DE VARIANTES CONDICIONAL
 # ==========================================
@@ -536,18 +603,21 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER NATIVO ROBUSTO (COLUMNAS DE STREAMLIT)
+# HEADER VISUAL UNIFICADO (LOGO + CARRITO HTML FUNCIONAL)
 # ==========================================
-st.markdown('<div class="frimex-native-header">', unsafe_allow_html=True)
-h_col1, h_col2 = st.columns([4, 1], vertical_alignment="center")
-with h_col1:
-    st.image(LOGO_URL, width=140)
-with h_col2:
-    cart_label = f"🛒 {total_items}" if total_items > 0 else "🛒 0"
-    if st.button(cart_label, key="header_cart_native_btn", use_container_width=True):
-        st.session_state.nav_view = "carrito"
-        st.rerun()
-st.markdown('</div>', unsafe_allow_html=True)
+badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
+
+st.markdown(f"""
+<div class="frimex-unified-header">
+    <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+    <div class="header-cart-container">
+        {badge_html}
+        <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+            <span class="material-symbols-outlined">shopping_cart</span>
+        </a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
@@ -963,7 +1033,7 @@ elif st.session_state.nav_view == "admin":
             uploaded_file = st.file_uploader("Elige una imagen", type=["png", "jpg", "jpeg", "webp"])
             if uploaded_file is not None:
                 file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
-                with open(file_path, "wb") as f:
+                with open(file_path, "wb":) as f:
                     f.write(uploaded_file.getbuffer())
                 st.success(f"¡Subida con éxito: `{uploaded_file.name}`!")
                 st.image(file_path, width=200)
