@@ -582,15 +582,22 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE Y SEGURO (NATIVO FLUIDO)
+# STICKY HEADER PERMANENTE (SOLO APARECE SI HAY PRODUCTOS)
 # ==========================================
+if total_items > 0:
+    cart_icon_html = f"""
+    <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+        <div class="header-badge-exact">{total_items}</div>
+        <span class="material-symbols-outlined">shopping_cart</span>
+    </a>
+    """
+else:
+    cart_icon_html = ""
+
 st.markdown(f"""
 <div class="frimex-sticky-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
-        {"<div class='header-badge-exact'>" + str(total_items) + "</div>" if total_items > 0 else ""}
-        <span class="material-symbols-outlined">shopping_cart</span>
-    </a>
+    {cart_icon_html}
 </div>
 """, unsafe_allow_html=True)
 
