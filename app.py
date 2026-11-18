@@ -295,15 +295,14 @@ else:
     border_color = "#e2e8f0"
     input_bg = "#ffffff"
 
-# Rojos suaves para la interfaz general, rojo fuerte para el FAB y naranja grande para precios
-BTN_SOFT_RED = "#E11D48"        # Rojo suave / carmesí elegante
+HEADER_RED = "#DC2626"          # Rojo vivo corporativo para el sticky header
+BTN_SOFT_RED = "#E11D48"        # Rojo suave para botones generales
 BTN_SOFT_RED_HOVER = "#BE123C"
-HEADER_BG = "#E11D48"           # Sticky header en rojo suave
-BTN_CART_FAB = "#DC2626"        # Rojo fuerte para el FAB
-PRICE_ORANGE = "#F97316"        # Naranja vibrante para precios
+BTN_CART_FAB = "#EF4444"        # Rojo fuerte para FAB
+PRICE_ORANGE = "#F97316"        # Naranja vibrante para precios grandes
 
 # ==========================================
-# CSS: ESTILO VISUAL LIMPIO, SIN ESPACIO VACÍO BAJO HEADER, MODAL LEGIBLE, ICONO CARRITO Y FAB CON TOTAL
+# CSS: STICKY HEADER INSPIRADO EN LA REFERENCIA, BUSCADOR INTEGRADO, ICONOS OUTLINE Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -335,35 +334,56 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* Eliminación del espacio vacío excesivo debajo del sticky header */
+    /* Ajuste de padding superior para dejar espacio al sticky header extendido */
     .block-container {{
-        padding-top: 84px !important;
+        padding-top: 105px !important;
         padding-bottom: 5.5rem !important;
         max-width: 1200px !important;
     }}
 
-    /* STICKY HEADER COMPACTO */
-    .sticky-header {{
+    /* STICKY HEADER INSPIRADO EN LA IMAGEN DE REFERENCIA */
+    .sticky-header-container {{
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 72px;
+        background-color: {HEADER_RED} !important;
         z-index: 999999 !important;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 24px;
-        background-color: {HEADER_BG} !important;
-        border-bottom: 1px solid rgba(0,0,0,0.1) !important;
-        box-shadow: 0 2px 12px rgba(225, 29, 72, 0.25);
+        padding: 10px 20px 12px 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        border-bottom: 2px solid #b91c1c;
     }}
 
     .sticky-logo {{
-        max-height: 54px;
+        max-height: 48px;
         width: auto;
         object-fit: contain;
         display: block !important;
+    }}
+
+    /* Estilo del badge de carrito inspirado en la referencia */
+    .cart-badge-wrapper {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.22);
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        position: relative;
+        cursor: pointer;
+    }}
+    .cart-badge-count {{
+        position: absolute;
+        top: -2px;
+        right: -4px;
+        background-color: #facc15;
+        color: #1e293b;
+        font-weight: 900;
+        font-size: 0.75rem;
+        padding: 1px 6px;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }}
 
     /* MODAL ESTILIZADO Y LEGIBLE ACORDE AL TEMA */
@@ -383,19 +403,19 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* CAMPOS DE TEXTO E INPUTS */
+    /* CAMPOS DE TEXTO E INPUTS (Buscador limpio estilo referencia) */
     input[type="text"], input[type="password"], textarea, select, 
     div[data-baseweb="input"], div[data-baseweb="base-input"], 
     div[data-baseweb="textarea"], div[data-baseweb="select"],
     [data-baseweb="input"] > div, [data-baseweb="base-input"] > div {{
-        background-color: {input_bg} !important;
-        color: {text_color} !important;
-        -webkit-text-fill-color: {text_color} !important;
-        border: 1.5px solid {border_color} !important;
-        border-radius: 10px !important;
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+        -webkit-text-fill-color: #1e293b !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 30px !important;
     }}
     input[type="text"]:focus, textarea:focus {{
-        border-color: {BTN_SOFT_RED} !important;
+        border-color: {HEADER_RED} !important;
     }}
 
     label p, .stTextInput label, .stTextArea label, [data-testid="stWidgetLabel"] p, .stRadio label p {{
@@ -476,19 +496,6 @@ st.markdown(f"""
         margin-bottom: 10px;
         display: block;
     }}
-
-    /* BARRA SUPERIOR DE CARRITO INTEGRADA */
-    .top-cart-badge {{
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background-color: rgba(255, 255, 255, 0.18);
-        color: #ffffff;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-weight: 700;
-        font-size: 0.9rem;
-    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -506,7 +513,7 @@ total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
 # ==========================================
-# MODAL DE VARIANTES (SOLO SE ABRE EN PRODUCTOS CON OPCIONES)
+# MODAL DE VARIANTES CONDICIONAL
 # ==========================================
 @st.dialog("Seleccionar Presentación")
 def variants_modal_dialog(base_name, variants_list):
@@ -557,32 +564,44 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# BARRA FIJA CON LOGOTIPO Y RESUMEN DE CARRITO VISIBLE
+# STICKY HEADER AVANZADO (LOGO A LA IZQUIERDA, CARRITO CON BADGE A LA DERECHA)
 # ==========================================
-cart_summary_header = f"{total_items} art. | ${total_amount:.2f}" if total_items > 0 else "Carrito vacío"
 st.markdown(f"""
-<div class="sticky-header">
-    <div style="width: 120px;"></div>
-    <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
-    <div class="top-cart-badge">
-        <span class="material-symbols-outlined" style="font-size: 18px; color: #ffffff;">shopping_cart</span>
-        <span>{cart_summary_header}</span>
+<div class="sticky-header-container" id="stickyHeader">
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="javascript:void(0);" onclick="window.parent.document.querySelector('button[key=\\'header_cart_trigger\\']')?.click();" style="text-decoration: none;">
+                <div class="cart-badge-wrapper">
+                    <span class="material-symbols-outlined" style="font-size: 26px; color: #ffffff;">shopping_cart</span>
+                    <span class="cart-badge-count">{total_items}</span>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Botón superior accesible para ir/volver del carrito con icono SVG garantizado
-col_spacer, col_cart = st.columns([4.2, 1])
-with col_cart:
-    cart_btn_label = f"🛒 Carrito ({total_items})" if st.session_state.nav_view == "catalogo" else "← Catálogo"
-    if st.button(cart_btn_label, use_container_width=True, key="top_cart_btn"):
-        st.session_state.show_variants_modal = False
-        st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
-        st.rerun()
+# Botón fantasma invisible para manejar el clic del carrito desde el header
+if st.button("Trigger Cart", key="header_cart_trigger", help="Ir al carrito"):
+    st.session_state.show_variants_modal = False
+    st.session_state.nav_view = "carrito" if st.session_state.nav_view != "carrito" else "catalogo"
+    st.rerun()
+
+# Barra de búsqueda integrada justo debajo del logo
+search_col1, search_col2 = st.columns([6, 1])
+with search_col1:
+    search_query = st.text_input("Buscar productos", placeholder="¿Qué estás buscando hoy?", label_visibility="collapsed", key="main_search_input")
+
+with search_col2:
+    if st.session_state.nav_view == "carrito":
+        if st.button("Catálogo", use_container_width=True):
+            st.session_state.nav_view = "catalogo"
+            st.rerun()
 
 if st.session_state.nav_view == "catalogo":
-    search_query = st.text_input("Buscar productos...", placeholder="Buscar productos en Frimex...", label_visibility="collapsed")
-    
     # BANNER PRINCIPAL
     banner_to_show = str(st.session_state.banner_url).strip()
     if not banner_to_show or banner_to_show.lower() == "nan":
@@ -598,7 +617,7 @@ if st.session_state.nav_view == "catalogo":
 
     # POPULARES
     popular_ids = [str(p.get("id")) for p in st.session_state.popular_items]
-    if popular_ids:
+    if popular_ids and not search_query:
         st.markdown(f"<h4 style='margin-bottom: 10px; color: {text_color};'><span class='material-symbols-outlined' style='font-size: 22px; color: {BTN_SOFT_RED}; vertical-align: bottom; margin-right: 4px;'>local_fire_department</span> Lo más pedido</h4>", unsafe_allow_html=True)
         pop_list = [p for p in st.session_state.products if str(p.get("id")) in popular_ids]
         if pop_list:
@@ -646,7 +665,7 @@ if st.session_state.nav_view == "catalogo":
         filtered_products = []
 
     if not filtered_products:
-        st.info("No se encontraron productos en esta categoría.")
+        st.info("No se encontraron productos en esta categoría o búsqueda.")
     else:
         grouped_dict = {}
         for p in filtered_products:
