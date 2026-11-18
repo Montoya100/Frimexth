@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILOS PARA AMBOS FABs (INFERIOR Y SUPERIOR DERECHO)
+# CSS: POSICIONAMIENTO EXACTO DE AMBOS FABs
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -355,7 +355,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* 1. FAB INFERIOR (EL ORIGINAL) */
+    /* 1. FAB INFERIOR (IZQUIERDA) */
     div[data-testid="stButton"]:has(button[key="native_floating_fab"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -373,12 +373,33 @@ st.markdown(f"""
         font-size: 1rem !important;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
         border: none !important;
+        height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        white-space: nowrap !important;
+    }}
+    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button p,
+    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button span {{
+        color: #1e293b !important;
+        -webkit-text-fill-color: #1e293b !important;
+        font-size: 1rem !important;
+        font-weight: 900 !important;
+        margin: 0 !important;
+    }}
+    div[data-testid="stButton"]:has(button[key="native_floating_fab"]) > button::before {{
+        content: "\\e8cc";
+        font-family: 'Material Symbols Outlined';
+        font-size: 22px;
+        vertical-align: -4px;
+        margin-right: 4px;
     }}
 
-    /* 2. FAB SUPERIOR (EN EL HEADER, ESQUINA DERECHA) */
+    /* 2. FAB SUPERIOR (DERECHA, EN EL HEADER) */
     div[data-testid="stButton"]:has(button[key="header_fab_btn"]) {{
         position: fixed !important;
-        top: 14px !important;
+        top: 12px !important;
         right: 20px !important;
         left: auto !important;
         z-index: 9999999 !important;
@@ -391,6 +412,8 @@ st.markdown(f"""
         width: 48px !important;
         height: 48px !important;
         min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
         border-radius: 50% !important;
         padding: 0 !important;
         display: flex !important;
@@ -417,7 +440,7 @@ st.markdown(f"""
     /* BURBUJA AMARILLA DE CONTADOR PARA EL FAB SUPERIOR */
     .header-badge-yellow {{
         position: fixed;
-        top: 10px;
+        top: 8px;
         right: 14px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
@@ -571,7 +594,7 @@ if st.button("", key="header_fab_btn", use_container_width=False):
     st.rerun()
 
 # ==========================================
-# LOGO CORPORATIVO NORMAL
+# LOGO CORPORATIVO EN EL HEADER (IZQUIERDA)
 # ==========================================
 st.image(LOGO_URL, width=160)
 st.write("")
@@ -710,7 +733,7 @@ if st.session_state.nav_view == "catalogo":
                         st.markdown('</div>', unsafe_allow_html=True)
 
     # ==========================================
-    # 2. FAB INFERIOR (EL ORIGINAL)
+    # 2. FAB INFERIOR (IZQUIERDA)
     # ==========================================
     if total_items > 0:
         if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
