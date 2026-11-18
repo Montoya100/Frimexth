@@ -380,30 +380,20 @@ st.markdown(f"""
         display: block !important;
     }}
 
-    /* CONTENEDOR FLEXIBLE DENTRO DEL HEADER PARA ALINEAR LOGO Y BOTÓN */
-    .header-flex-wrapper {{
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 68px;
+    /* POSICIONAMIENTO PERFECTO DEL BOTÓN DEL CARRITO DENTRO DEL HEADER */
+    div[data-testid="stHorizontalBlock"]:has(button[key="header_cart_dup_btn"]) {{
+        position: fixed !important;
+        top: 12px !important;
+        left: 0 !important;
+        width: 100% !important;
         z-index: 99999 !important;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        pointer-events: none;
+        padding: 0 20px !important;
+        pointer-events: none !important;
     }}
-    .header-flex-wrapper > * {{
-        pointer-events: auto;
+    div[data-testid="stHorizontalBlock"]:has(button[key="header_cart_dup_btn"]) > div {{
+        pointer-events: auto !important;
     }}
 
-    /* ESTILOS PARA EL BOTÓN DUPLICADO EN EL HEADER */
-    div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
-        margin: 0 !important;
-        width: 44px !important;
-        height: 44px !important;
-    }}
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button {{
         background: rgba(0, 0, 0, 0.25) !important;
         border-radius: 50% !important;
@@ -416,6 +406,7 @@ st.markdown(f"""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        float: right !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) > button p {{
         font-size: 0px !important;
@@ -428,9 +419,9 @@ st.markdown(f"""
     }}
 
     .cart-badge-count-fixed {{
-        position: absolute;
-        top: 8px;
-        right: 14px;
+        position: fixed;
+        top: 10px;
+        right: 16px;
         background-color: {FAB_YELLOW};
         color: #1e293b;
         font-weight: 900;
@@ -627,19 +618,19 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER Y CONTENEDOR SUPERIOR SEGURO
+# STICKY HEADER Y BOTÓN DUPLICADO DE CARRITO
 # ==========================================
 st.markdown(f"""
-<div class="sticky-header-container"></div>
-<div class="header-flex-wrapper">
-    <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
-    <div></div>
+<div class="sticky-header-container">
+    <div style="display: flex; align-items: center; padding-left: 5px;">
+        <img src="{LOGO_URL}" class="sticky-logo" onerror="this.style.display='none'" />
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Botón nativo duplicado alineado perfectamente dentro del header rojo
-col_h_left, col_h_right = st.columns([10, 1])
-with col_h_right:
+# Botón incrustado en el header de forma limpia
+_, col_dup = st.columns([11, 1])
+with col_dup:
     if st.button("🛒", key="header_cart_dup_btn"):
         st.session_state.nav_view = "carrito"
         st.rerun()
