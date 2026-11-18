@@ -61,7 +61,7 @@ def save_dark_mode_setting(enabled):
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = load_dark_mode_setting()
 
-# Inicialización estricta de Estados
+# Inicialización estricta y persistente de Estados
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER PERMANENTE Y LIMPIO
+# CSS: STICKY HEADER PERMANENTE Y SEGURO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -325,7 +325,6 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
-    /* ESPACIADO SUPERIOR PARA QUE EL CONTENIDO NO QUEDE OCASIONADO BAJO EL HEADER FIJO */
     .block-container {{
         padding-top: 5rem !important;
         padding-bottom: 6rem !important;
@@ -340,7 +339,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* STICKY / FIXED HEADER PERMANENTE EN LA PARTE SUPERIOR */
+    /* STICKY HEADER PERMANENTE */
     .frimex-sticky-header {{
         position: fixed !important;
         top: 0 !important;
@@ -363,7 +362,6 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* CARRITO CIRCULAR FLOTANTE EN EL HEADER */
     .header-cart-circle {{
         background-color: {DARK_CIRCLE_RED} !important;
         width: 42px;
@@ -525,7 +523,7 @@ def remove_from_cart(pid):
 total_items = sum(st.session_state.cart.values())
 total_amount = sum(safe_float(next((p.get("price") for p in st.session_state.products if str(p.get("id")) == str(pid)), 0)) * qty for pid, qty in st.session_state.cart.items())
 
-# Detectar navegación limpia mediante query_params
+# Detectar navegación limpia mediante query_params sin perder el estado del carrito
 query_params = st.query_params
 if query_params.get("view") == "carrito" and st.session_state.nav_view != "carrito":
     st.session_state.nav_view = "carrito"
@@ -584,9 +582,12 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE (SIN INSIGNIA SI ESTÁ EN 0)
+# STICKY HEADER PERMANENTE Y SEGURO (CON BADGE CONDICIONAL ESTRICTO)
 # ==========================================
-badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
+if total_items > 0:
+    badge_html = f'<div class="header-badge-exact">{total_items}</div>'
+else:
+    badge_html = ''
 
 header_html = f"""
 <div class="frimex-sticky-header">
