@@ -61,7 +61,7 @@ def save_dark_mode_setting(enabled):
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = load_dark_mode_setting()
 
-# Inicialización estricta de Estados
+# Inicialización de Estados
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: DISEÑO ROBUSTO PARA HEADER Y FAB
+# CSS: ESTILOS CORREGIDOS PARA EL HEADER Y CARRITO SUPERIOR
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -354,13 +354,13 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR UNIFICADA (FLEXBOX REAL) */
+    /* FRANJA ROJA SUPERIOR UNIFICADA CON POSICIONAMIENTO RELATIVO ESTRICTO */
     .frimex-unified-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        padding: 10px 24px !important;
+        padding: 12px 24px !important;
         margin-bottom: 1.5rem !important;
         display: flex !important;
         flex-direction: row !important;
@@ -368,6 +368,8 @@ st.markdown(f"""
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
+        min-height: 64px !important;
+        z-index: 40 !important;
     }}
 
     .frimex-unified-header img {{
@@ -376,30 +378,33 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* BOTÓN DE CARRITO ESTILIZADO COMO CÍRCULO EN EL HEADER */
+    /* CONTENEDOR Y BOTÓN DEL CARRITO EN EL HEADER (CÍRCULO ROJO OSCURO) */
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
-        width: 48px !important;
-        height: 48px !important;
-        min-height: 48px !important;
+        width: 46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
         margin: 0 !important;
         padding: 0 !important;
-        position: relative !important;
+        position: absolute !important;
+        top: 10px !important;
+        right: 20px !important;
+        z-index: 100 !important;
     }}
 
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
         background-color: {DARK_CIRCLE_RED} !important;
         color: transparent !important;
-        width: 48px !important;
-        height: 48px !important;
-        min-height: 48px !important;
-        max-width: 48px !important;
-        max-height: 48px !important;
+        width: 46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        max-width: 46px !important;
+        max-height: 46px !important;
         border-radius: 50% !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border: none !important;
+        border: 2px solid rgba(255, 255, 255, 0.2) !important;
         box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
         cursor: pointer !important;
         transition: transform 0.2s ease !important;
@@ -407,7 +412,7 @@ st.markdown(f"""
 
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button:hover {{
         background-color: #5d100a !important;
-        transform: scale(1.05) !important;
+        transform: scale(1.06) !important;
     }}
 
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button p,
@@ -418,69 +423,29 @@ st.markdown(f"""
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button::before {{
         content: "\\e8cc";
         font-family: 'Material Symbols Outlined';
-        font-size: 24px;
-        color: #ffffff;
+        font-size: 22px;
+        color: #ffffff !important;
+        display: block !important;
     }}
 
-    /* INSIGNIA AMARILLA CON NÚMERO NEGRO */
+    /* INSIGNIA AMARILLA FLOTANTE DEL HEADER */
     .header-badge-exact {{
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        background-color: {FAB_YELLOW};
-        color: #000000 !important;
-        font-weight: 900;
-        font-size: 0.75rem;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        z-index: 40;
-        pointer-events: none;
-    }}
-
-    /* BOTÓN FLOTANTE (FAB) INFERIOR */
-    div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
-        bottom: 20px !important;
-        left: 20px !important;
-        right: auto !important;
-        z-index: 9999999 !important;
-        width: auto !important;
-    }}
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button {{
-        background: {FAB_YELLOW} !important;
-        color: #1e293b !important;
-        padding: 12px 22px !important;
-        border-radius: 50px !important;
+        top: 10px !important;
+        right: 16px !important;
+        background-color: {FAB_YELLOW} !important;
+        color: #000000 !important;
         font-weight: 900 !important;
-        font-size: 1rem !important;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
-        border: none !important;
-        height: 50px !important;
+        font-size: 0.72rem !important;
+        width: 20px !important;
+        height: 20px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
-        white-space: nowrap !important;
-    }}
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button p,
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button span {{
-        color: #1e293b !important;
-        -webkit-text-fill-color: #1e293b !important;
-        font-size: 1rem !important;
-        font-weight: 900 !important;
-        margin: 0 !important;
-    }}
-    div[data-testid="stButton"]:has(button[kind="primary"]) > button::before {{
-        content: "\\e8cc";
-        font-family: 'Material Symbols Outlined';
-        font-size: 22px;
-        vertical-align: -4px;
-        margin-right: 4px;
+        border-radius: 50% !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.4) !important;
+        z-index: 110 !important;
+        pointer-events: none !important;
     }}
 
     /* ESTILOS GENERALES Y FORMULARIOS */
@@ -613,31 +578,16 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (LOGO + CARRITO)
+# HEADER VISUAL UNIFICADO (LOGO + CARRITO SUPERIOR)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
 st.markdown(f"""
 <div class="frimex-unified-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    <div style="width: 48px; height: 48px; position: relative; display: flex; align-items: center; justify-content: center;">
-        {badge_html}
-    </div>
+    <div></div>
 </div>
-""", unsafe_allow_html=True)
-
-# Superponemos el botón de Streamlit exactamente sobre el espacio reservado a la derecha en el header
-st.markdown("""
-<style>
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {
-        position: absolute !important;
-        top: 12px !important;
-        right: 24px !important;
-        z-index: 50 !important;
-        width: 48px !important;
-        height: 48px !important;
-    }
-</style>
+{badge_html}
 """, unsafe_allow_html=True)
 
 if st.button("", key="header_cart_btn", use_container_width=False):
@@ -776,12 +726,6 @@ if st.session_state.nav_view == "catalogo":
                                         add_to_cart(pid)
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
-
-    # BOTÓN FLOTANTE (FAB) INFERIOR
-    if total_items > 0:
-        if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
-            st.session_state.nav_view = "carrito"
-            st.rerun()
 
 elif st.session_state.nav_view == "carrito":
     if st.button("← Volver al Catálogo", use_container_width=False):
