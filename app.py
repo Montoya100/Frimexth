@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, BOTÓN OUTLINE Y FAB
+# CSS: STICKY HEADER, ICONO OUTLINE Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -621,8 +621,8 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Botón nativo posicionado exactamente dentro de la franja roja del header con icono outline
-if st.button("x", key="header_cart_dup_btn"):
+# Botón posicionado exactamente dentro de la franja roja superior del header (con icono outline real vía CSS)
+if st.button("cart", key="header_cart_dup_btn"):
     st.session_state.nav_view = "carrito"
     st.rerun()
 
