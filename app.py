@@ -309,7 +309,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER, BUSCADOR BLANCO Y FAB
+# CSS: STICKY HEADER, BUSCADOR BLANCO CON CONTORNO ROJO Y FAB
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -380,7 +380,7 @@ st.markdown(f"""
         display: block !important;
     }}
 
-    /* BOTÓN DUPLICADO EN EL HEADER (CIRCULAR CON ICONO Y BADGE AMARILLO) */
+    /* BOTÓN DUPLICADO EN EL HEADER (CIRCULAR, DENTRO DE LA FRANJA ROJA) */
     div[data-testid="stButton"]:has(button[key="header_cart_dup_btn"]) {{
         position: fixed !important;
         top: 12px !important;
@@ -427,7 +427,7 @@ st.markdown(f"""
         pointer-events: none;
     }}
 
-    /* FORZAR BARRA DE BÚSQUEDA A FONDO BLANCO, TEXTO OSCURO Y CONTORNO ROJO */
+    /* FORZAR BARRA DE BÚSQUEDA A FONDO BLANCO, TEXTO OSCURO Y CONTORNO ROJO EXACTO */
     div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="select"] {{
         background-color: #ffffff !important;
         border: 2px solid {HEADER_RED} !important;
@@ -440,6 +440,7 @@ st.markdown(f"""
     }}
     div[data-testid="stTextInput"] > div {{
         background-color: #ffffff !important;
+        border: 2px solid {HEADER_RED} !important;
         border-radius: 30px !important;
     }}
 
@@ -467,7 +468,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
 
-    /* BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA EN AMARILLO CON ICONO OUTLINE REAL */
+    /* BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA EN AMARILLO CON TEXTO Y MONTO */
     div[data-testid="stButton"]:has(button[kind="primary"]) {{
         position: fixed !important;
         bottom: 20px !important;
@@ -710,8 +711,8 @@ if st.session_state.nav_view == "catalogo":
             else:
                 if name_raw not in grouped_dict:
                     grouped_dict[name_raw] = []
-                if not any(str(it.get("id")) == str(p.get("id")) for it in grouped_dict[name_raw]):
-                    grouped_dict[name_raw].append(p)
+                if not any(str(it.get("id")) == str(p.get("id")) for it in grouped_dict[base_name]):
+                    grouped_dict[base_name].append(p)
 
         group_items_list = sorted(list(grouped_dict.items()), key=lambda x: 0 if len(x[1]) > 1 else 1)
         
@@ -764,9 +765,9 @@ if st.session_state.nav_view == "catalogo":
                                         st.rerun()
                         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA
+    # BOTÓN FLOTANTE (FAB) PRINCIPAL A LA IZQUIERDA CON TEXTO COMPLETO Y MONTO
     if total_items > 0:
-        if st.button(f"{total_amount:.2f}", type="primary", key="native_floating_fab"):
+        if st.button(f"Ver Carrito • ${total_amount:.2f}", type="primary", key="native_floating_fab"):
             st.session_state.nav_view = "carrito"
             st.rerun()
 
