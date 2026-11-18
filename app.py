@@ -582,24 +582,24 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE (SOLO APARECE SI HAY PRODUCTOS)
+# STICKY HEADER PERMANENTE (SEGURO Y SEPARADO)
 # ==========================================
 if total_items > 0:
-    cart_icon_html = f"""
-    <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
-        <div class="header-badge-exact">{total_items}</div>
-        <span class="material-symbols-outlined">shopping_cart</span>
-    </a>
-    """
+    st.markdown(f"""
+    <div class="frimex-sticky-header">
+        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+        <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
+            <div class="header-badge-exact">{total_items}</div>
+            <span class="material-symbols-outlined">shopping_cart</span>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
 else:
-    cart_icon_html = ""
-
-st.markdown(f"""
-<div class="frimex-sticky-header">
-    <img src="{LOGO_URL}" onerror="this.style.display='none'" />
-    {cart_icon_html}
-</div>
-""", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="frimex-sticky-header">
+        <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+    </div>
+    """, unsafe_allow_html=True)
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
