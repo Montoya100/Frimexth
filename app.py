@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: STICKY HEADER Y BOTÓN FANTASMA OVERLAY
+# CSS: STICKY HEADER Y ANCLAJE PERFECTO DEL BOTÓN FANTASMA
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -351,9 +351,9 @@ st.markdown(f"""
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important;
+        box-shadow: c 4px 14px rgba(0,0,0,0.25) !important;
         box-sizing: border-box !important;
-        z-index: 999999 !important;
+        z-index: 99999 !important;
     }}
 
     .frimex-sticky-header img {{
@@ -362,7 +362,7 @@ st.markdown(f"""
         object-fit: contain !important;
     }}
 
-    /* DISEÑO VISUAL DEL CARRITO EN EL HEADER */
+    /* CAPA VISUAL DEL CARRITO EN EL HEADER (NO BLOQUEA CLICS) */
     .header-cart-display {{
         position: fixed !important;
         top: 10px !important;
@@ -376,7 +376,7 @@ st.markdown(f"""
         justify-content: center !important;
         box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
         z-index: 999998 !important;
-        pointer-events: none !important; /* Deja pasar los clics al botón fantasma de arriba */
+        pointer-events: none !important;
     }}
 
     .header-cart-display .material-symbols-outlined {{
@@ -399,27 +399,30 @@ st.markdown(f"""
         justify-content: center !important;
         border-radius: 50% !important;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-        z-index: 10000000 !important;
+        z-index: 9999999 !important;
         pointer-events: none !important;
     }}
 
-    /* BOTÓN NATIVO FANTASMA (OVERLAY TRANSPARENTE EXACTO ENCIMA) */
+    /* ANCLAJE EXACTO Y FIJO DEL BOTÓN NATIVO FANTASMA (ENCIMA DE TODO) */
     div[data-testid="stButton"]:has(button[key="ghost_header_cart_btn"]) {{
         position: fixed !important;
         top: 10px !important;
         right: 24px !important;
-        z-index: 9999999 !important;
+        z-index: 10000000 !important;
         width: 42px !important;
         height: 42px !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
     div[data-testid="stButton"]:has(button[key="ghost_header_cart_btn"]) > button {{
         background-color: transparent !important;
         width: 42px !important;
         height: 42px !important;
+        min-height: 42px !important;
         border-radius: 50% !important;
         border: none !important;
         padding: 0 !important;
-        opacity: 0 !important; /* Completamente invisible / fantasma */
+        opacity: 0 !important; /* 100% invisible pero funcional */
         cursor: pointer !important;
     }}
 
@@ -594,7 +597,7 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# STICKY HEADER PERMANENTE Y BOTÓN FANTASMA NATIVO
+# RENDERIZADO DEL STICKY HEADER Y EL BOTÓN FANTASMA
 # ==========================================
 st.markdown(f"""
 <div class="frimex-sticky-header">
@@ -603,7 +606,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 if total_items > 0:
-    # 1. Dibujamos la parte visual exacta que ya tenías (icono y badge con la insignia)
+    # Capa visual del carrito y badge
     st.markdown(f"""
     <div class="header-cart-display">
         <span class="material-symbols-outlined">shopping_cart</span>
@@ -611,7 +614,7 @@ if total_items > 0:
     <div class="header-badge-exact">{total_items}</div>
     """, unsafe_allow_html=True)
     
-    # 2. Colocamos el botón nativo de Streamlit exactamente encima pero transparente (fantasma)
+    # Botón nativo fantasma posicionado exactamente encima para capturar el clic y retener el estado
     if st.button("", key="ghost_header_cart_btn", help="Ver Carrito"):
         st.session_state.nav_view = "carrito"
         st.rerun()
