@@ -308,7 +308,7 @@ FAB_YELLOW = "#facc15"
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILOS LIMPIOS Y SEGUROS
+# CSS: STICKY HEADER PERMANENTE Y LIMPIO
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -325,8 +325,9 @@ st.markdown(f"""
         color: {text_color} !important;
     }}
 
+    /* ESPACIADO SUPERIOR PARA QUE EL CONTENIDO NO QUEDE OCASIONADO BAJO EL HEADER FIJO */
     .block-container {{
-        padding-top: 1rem !important;
+        padding-top: 5rem !important;
         padding-bottom: 6rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
@@ -339,32 +340,34 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA SUPERIOR UNIFICADA */
-    .frimex-unified-header {{
+    /* STICKY / FIXED HEADER PERMANENTE EN LA PARTE SUPERIOR */
+    .frimex-sticky-header {{
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
         background-color: {HEADER_RED} !important;
-        width: 100% !important;
-        padding: 12px 20px !important;
-        margin-bottom: 1.5rem !important;
-        border-radius: 12px;
+        padding: 10px 24px !important;
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important;
         box-sizing: border-box !important;
+        z-index: 999999 !important;
     }}
 
-    .frimex-unified-header img {{
-        max-height: 45px !important;
+    .frimex-sticky-header img {{
+        max-height: 44px !important;
         width: auto !important;
         object-fit: contain !important;
     }}
 
-    /* CARRITO CIRCULAR EN EL HEADER */
+    /* CARRITO CIRCULAR FLOTANTE EN EL HEADER */
     .header-cart-circle {{
         background-color: {DARK_CIRCLE_RED} !important;
-        width: 44px;
-        height: 44px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -581,12 +584,12 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL UNIFICADO (SIN INSIGNIA CUANDO ESTÁ VACÍO)
+# STICKY HEADER PERMANENTE (SIN INSIGNIA SI ESTÁ EN 0)
 # ==========================================
 badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
 header_html = f"""
-<div class="frimex-unified-header">
+<div class="frimex-sticky-header">
     <img src="{LOGO_URL}" onerror="this.style.display='none'" />
     <a href="?view=carrito" target="_self" class="header-cart-circle" title="Ver Carrito">
         {badge_html}
