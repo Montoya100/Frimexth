@@ -20,7 +20,6 @@ UPLOAD_DIR = "uploaded_images"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
-# 1. Configuración de la página en modo wide
 st.set_page_config(
     page_title="Frimex - Página Frimex",
     page_icon=LOGO_URL,
@@ -28,7 +27,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Función auxiliar robusta para precios
 def safe_float(val, default=0.0):
     try:
         if val is None:
@@ -304,12 +302,13 @@ else:
 HEADER_RED = "#cf291d"          
 BTN_RED = "#b0271a"             
 BTN_RED_HOVER = "#8f1f14"
+DARK_CIRCLE_RED = "#7a160e"     # Rojo oscuro para el círculo del carrito
 PRICE_BLACK = "#000000" if not st.session_state.dark_mode else "#ffffff"        
 FAB_YELLOW = "#facc15"          
 WHATSAPP_GREEN = "#25D366"      
 
 # ==========================================
-# CSS: ESTILO EXACTO DEL ICONO SOLICITADO
+# CSS: HEADER FLEXBOX PURO (EVITA APILAMIENTO MÓVIL)
 # ==========================================
 st.markdown(f"""
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -355,66 +354,68 @@ st.markdown(f"""
         }}
     }}
 
-    /* FRANJA ROJA CORPORATIVA DEL HEADER */
-    .frimex-header-bar {{
+    /* FRANJA ROJA SUPERIOR CON FLEXBOX (MANTIENE TODO EN UNA SOLA LÍNEA EN MÓVIL) */
+    .frimex-flex-header {{
         background-color: {HEADER_RED} !important;
         width: 100vw !important;
         position: relative !important;
         left: calc(-50vw + 50%) !important;
-        padding: 10px 24px !important;
+        padding: 10px 20px !important;
         margin-bottom: 1.5rem !important;
         display: flex !important;
+        flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
     }}
 
-    /* ESTILO EXACTO DEL BOTÓN CIRCULAR CON CARRITO BLANCO Y FONDO ROJO */
+    .frimex-flex-header img {{
+        max-height: 40px !important;
+        width: auto !important;
+        object-fit: contain !important;
+    }}
+
+    /* BOTÓN DE ACCIÓN PARA EL CARRITO EN EL HEADER (INVISIBLE PERO FUNCIONAL SOBRE EL CÍRCULO) */
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) {{
-        width: 48px !important;
-        height: 48px !important;
-        min-height: 48px !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 30 !important;
+        opacity: 0 !important;
     }}
     div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button {{
-        background-color: {HEADER_RED} !important;
-        color: #ffffff !important;
+        width: 100% !important;
+        height: 100% !important;
+        cursor: pointer !important;
+    }}
+
+    /* CONTENEDOR DEL CÍRCULO ROJO OSCURO */
+    .cart-icon-wrapper {{
+        position: relative !important;
+        background-color: {DARK_CIRCLE_RED} !important;
         width: 48px !important;
         height: 48px !important;
-        min-height: 48px !important;
-        max-width: 48px !important;
-        max-height: 48px !important;
         border-radius: 50% !important;
-        padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border: none !important;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.2) !important;
-        position: relative !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button:hover {{
-        background-color: {BTN_RED_HOVER} !important;
-        transform: scale(1.05) !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button p,
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button span:not(.material-symbols-outlined) {{
-        display: none !important;
-    }}
-    div[data-testid="stButton"]:has(button[key="header_cart_btn"]) > button::before {{
-        content: "\\e8cc";
-        font-family: 'Material Symbols Outlined';
-        font-size: 26px;
-        color: #ffffff;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
+        cursor: pointer !important;
     }}
 
-    /* INSIGNIA AMARILLA CIRCULAR EXACTA CON NÚMERO NEGRO */
+    .cart-icon-wrapper:hover {{
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+    }}
+
+    /* INSIGNIA AMARILLA CON NÚMERO NEGRO */
     .header-badge-exact {{
         position: absolute;
-        top: -2px;
-        right: -2px;
+        top: -4px;
+        right: -4px;
         background-color: {FAB_YELLOW};
         color: #000000 !important;
         font-weight: 900;
@@ -426,7 +427,7 @@ st.markdown(f"""
         justify-content: center;
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        z-index: 20;
+        z-index: 40;
         pointer-events: none;
     }}
 
@@ -560,30 +561,26 @@ if st.session_state.show_variants_modal and st.session_state.nav_view == "catalo
     variants_modal_dialog(st.session_state.current_modal_base, st.session_state.current_modal_items)
 
 # ==========================================
-# HEADER VISUAL EXACTO
+# HEADER VISUAL FLEXBOX (NO SE ROMPE EN MÓVIL)
 # ==========================================
-col_logo_h, col_cart_h = st.columns([8, 1.5], vertical_alignment="center")
+badge_html = f'<div class="header-badge-exact">{total_items}</div>' if total_items > 0 else ''
 
-with col_logo_h:
-    st.markdown(f"""
-    <div class="frimex-header-bar">
-        <img src="{LOGO_URL}" style="max-height: 38px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+st.markdown(f"""
+<div class="frimex-flex-header">
+    <img src="{LOGO_URL}" onerror="this.style.display='none'" />
+    <div style="position: relative;">
+        <div class="cart-icon-wrapper">
+            <span class="material-symbols-outlined" style="color: #ffffff; font-size: 24px;">shopping_cart</span>
+            {badge_html}
+        </div>
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
-with col_cart_h:
-    st.markdown(f"""
-    <div class="frimex-header-bar" style="justify-content: flex-end !important;">
-    """, unsafe_allow_html=True)
-    
-    if total_items > 0:
-        st.markdown(f'<div class="header-badge-exact">{total_items}</div>', unsafe_allow_html=True)
-        
-    if st.button("", key="header_cart_btn", use_container_width=False):
-        st.session_state.nav_view = "carrito"
-        st.rerun()
-        
-    st.markdown("</div>", unsafe_allow_html=True)
+# Botón interactivo invisible posicionado exactamente sobre el círculo del carrito
+if st.button("", key="header_cart_btn", use_container_width=False):
+    st.session_state.nav_view = "carrito"
+    st.rerun()
 
 if st.session_state.nav_view == "catalogo":
     # 1. BARRA DE BÚSQUEDA BLANCA CON CONTORNO ROJO
